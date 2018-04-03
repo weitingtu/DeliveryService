@@ -4,7 +4,7 @@
 #define district 4     // j 區域 
 #define fleet 8        // i 自有車數 
 #define task 2         // k 任務:集貨&繼送 
-#define type 3         // n 套次1.2.3 
+#define car_type 3         // n 套次1.2.3 
 #define station 2      // m 其他轉運中心數  
 
 #define scenario 50    // s 隨機情況 
