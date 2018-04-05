@@ -5,7 +5,40 @@
 #include <cmath> 
 #include <string>
 
-Gurobi::Gurobi()
+Gurobi::Gurobi():
+	_c1(),
+	_c2(),
+	_b1(),
+	_b2(),
+	_a1(),
+	_c3({27500, 51500}),
+	_b4({11000, 20600}),
+	_c4({21500, 21500}),
+	_b6({8600, 8600}),
+	_a2({8000, 15000}),
+	_a3({6200, 6200}),
+	_load({14, 20}),
+	_u1(),
+	_u2({2, 4}),
+	_u3({1.11}),
+	_d1(),
+	_d2(),
+	_d3(),
+	_sum_task_demand(),
+	_mean_task_demand(),
+	_std_task_demand(),
+	_sum_transfer_majorcustomer(),
+	_mean_transfer_majorcustomer(),
+	_std_tranfer_majorcustomer(),
+	_sum_transfer_demand(),
+	_mean_transfer_demand(),
+	_std_transfer_demand(),
+	_pro({ 1.0 / SCENARIO }),
+	_num_x1(),
+	_num_y1(),
+	_num_v1(),
+	_num_v2(),
+	_num_v3()
 {
 }
 
@@ -148,41 +181,41 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 	for (int i = 0; i < DAY; ++i) {
 		for (int j = 0; j < DISTRICT; ++j) {
 			for (int k = 0; k < TASK; ++k) {
-				sum_task_demand[j][k] = 0;
-				mean_task_demand[j][k] = 0;
-				std_task_demand[j][k] = 0;
-				sum_task_demand[j][k] = sum_task_demand[j][k] + _d1[0][i][j][k];
-				mean_task_demand[j][k] = (sum_task_demand[j][k] / DAY);
-				temp_var = temp_var + pow((_d1[0][i][j][k] - mean_task_demand[j][k]), 2);
-				std_task_demand[j][k] = pow((temp_var / DAY), 0.5);
+				_sum_task_demand[j][k] = 0;
+				_mean_task_demand[j][k] = 0;
+				_std_task_demand[j][k] = 0;
+				_sum_task_demand[j][k] = _sum_task_demand[j][k] + _d1[0][i][j][k];
+				_mean_task_demand[j][k] = (_sum_task_demand[j][k] / DAY);
+				temp_var = temp_var + pow((_d1[0][i][j][k] - _mean_task_demand[j][k]), 2);
+				_std_task_demand[j][k] = pow((temp_var / DAY), 0.5);
 			}
 		}
 	}
 	//transshipment task
 	for (int i = 0; i < DAY; ++i) {
 		for (int j = 0; j < STATION; ++j) {
-			sum_transfer_demand[j] = 0;
-			mean_transfer_demand[j] = 0;
-			std_transfer_demand[j] = 0;
-			sum_transfer_demand[j] = sum_transfer_demand[j] + _d2[0][i][j];
-			mean_transfer_demand[j] = (sum_transfer_demand[j] / DAY);
+			_sum_transfer_demand[j] = 0;
+			_mean_transfer_demand[j] = 0;
+			_std_transfer_demand[j] = 0;
+			_sum_transfer_demand[j] = _sum_transfer_demand[j] + _d2[0][i][j];
+			_mean_transfer_demand[j] = (_sum_transfer_demand[j] / DAY);
 			temp_var = 0;
-			temp_var = temp_var + pow((_d2[0][i][j] - mean_transfer_demand[j]), 2);
-			std_transfer_demand[j] = pow((temp_var / DAY), 0.5);
+			temp_var = temp_var + pow((_d2[0][i][j] - _mean_transfer_demand[j]), 2);
+			_std_transfer_demand[j] = pow((temp_var / DAY), 0.5);
 
 		}
 	}
 	//major customer
 	for (int i = 0; i < DAY; ++i) {
 		for (int j = 0; j < TASK; ++j) {
-			sum_transfer_majorcustomer[j] = 0;
-			mean_transfer_majorcustomer[j] = 0;
-			std_tranfer_majorcustomer[j] = 0;
-			sum_transfer_majorcustomer[j] = sum_transfer_majorcustomer[j] + _d3[0][i][j];
-			mean_transfer_majorcustomer[j] = (sum_transfer_majorcustomer[j] / DAY);
+			_sum_transfer_majorcustomer[j] = 0;
+			_mean_transfer_majorcustomer[j] = 0;
+			_std_tranfer_majorcustomer[j] = 0;
+			_sum_transfer_majorcustomer[j] = _sum_transfer_majorcustomer[j] + _d3[0][i][j];
+			_mean_transfer_majorcustomer[j] = (_sum_transfer_majorcustomer[j] / DAY);
 			temp_var = 0;
-			temp_var = temp_var + pow((_d3[0][i][j] - mean_transfer_majorcustomer[j]), 2);
-			std_tranfer_majorcustomer[j] = pow((temp_var / DAY), 0.5);
+			temp_var = temp_var + pow((_d3[0][i][j] - _mean_transfer_majorcustomer[j]), 2);
+			_std_tranfer_majorcustomer[j] = pow((temp_var / DAY), 0.5);
 
 		}
 	}
@@ -197,7 +230,7 @@ void Gurobi::_generate_stochastic_demand()
 				for (int l = 0; l < TASK; ++l) {
 					r1 = rand() / (double)RAND_MAX;
 					r2 = rand() / (double)RAND_MAX;
-					_d1[1][j][k][l] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * std_task_demand[j][k] + mean_task_demand[j][k];
+					_d1[1][j][k][l] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
 
 				}
 			}
@@ -209,7 +242,7 @@ void Gurobi::_generate_stochastic_demand()
 			for (int k = 0; k < TASK; ++k) {
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d3[1][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *std_tranfer_majorcustomer[j] + mean_transfer_majorcustomer[j];
+				_d3[1][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_tranfer_majorcustomer[j] + _mean_transfer_majorcustomer[j];
 			}
 		}
 	}
@@ -219,7 +252,7 @@ void Gurobi::_generate_stochastic_demand()
 			for (int k = 0; k < STATION; ++k) {
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d2[1][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *std_transfer_demand[j] + mean_transfer_demand[j];
+				_d2[1][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[j] + _mean_transfer_demand[j];
 			}
 		}
 	}
@@ -233,7 +266,7 @@ void Gurobi::_read_num_x1()
 			for (int k = 0; k < DISTRICT; ++k) {
 				for (int l = 0; l < FLEET; ++l) {
 					for (int m = 0; m < TASK; ++k) {
-						ifile >> num_x1[i][j][k][l][m];
+						ifile >> _num_x1[i][j][k][l][m];
 					}
 				}
 			}
@@ -249,7 +282,7 @@ void Gurobi::_read_num_y1()
 		for (int j = 0; j < DAY; ++j) {
 			for (int k = 0; k < DISTRICT; ++k) {
 				for (int l = 0; l < TASK; ++l) {
-					ifile >> num_y1[i][j][k][l];
+					ifile >> _num_y1[i][j][k][l];
 				}
 			}
 		}
@@ -264,7 +297,7 @@ void Gurobi::_read_num_v1()
 		for (int j = 0; j < DAY; ++j) {
 			for (int k = 0; k < DISTRICT; ++k) {
 				for (int l = 0; l < TASK; ++l) {
-					ifile >> num_v1[i][j][k][l];
+					ifile >> _num_v1[i][j][k][l];
 				}
 			}
 		}
@@ -279,7 +312,7 @@ void Gurobi::_read_num_v2()
 		for (int j = 0; j < DAY; ++j) {
 			for (int k = 0; k < STATION; ++k) {
 				for (int l = 0; l < CAR_TYPE; ++l) {
-					ifile >> num_v2[i][j][k][l];
+					ifile >> _num_v2[i][j][k][l];
 				}
 			}
 		}
@@ -293,7 +326,7 @@ void Gurobi::_read_num_v3()
 	for (int i = 0; i < SCENARIO; ++i) {
 		for (int j = 0; j < DAY; ++j) {
 			for (int k = 0; k < TASK; ++k) {
-				ifile >> num_v3[i][j][k];
+				ifile >> _num_v3[i][j][k];
 			}
 		}
 	}
