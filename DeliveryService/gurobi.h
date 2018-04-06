@@ -9,6 +9,7 @@ public:
 	~Gurobi();
 
 	void read();
+	void start();
 	void test() const;
 
 private:

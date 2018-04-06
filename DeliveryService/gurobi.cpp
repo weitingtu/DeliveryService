@@ -98,6 +98,11 @@ void Gurobi::read()
 	_generate_stochastic_demand();
 }
 
+void Gurobi::start()
+{
+	// add gurobi to solve lp here
+}
+
 bool Gurobi::_read_var_cost(const std::string& input_cost_varcost)
 {
 	std::ifstream ifile(input_cost_varcost);   // self truck (c1&c2)
