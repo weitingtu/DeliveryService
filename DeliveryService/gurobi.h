@@ -11,17 +11,17 @@ public:
 	void read();
 
 private:
-	bool _read_var_cost(const std::string& file_name);
-	bool _read_outsourcing_cost(const std::string & file_name);
-	void _read_traveltime();
-	void _read_d1();
-	void _read_d2();
-	void _read_d3();
-	void _read_num_x1();
-	void _read_num_y1();
-	void _read_num_v1();
-	void _read_num_v2();
-	void _read_num_v3();
+	bool _read_var_cost(const std::string& input_cost_varcost);
+	bool _read_outsourcing_cost(const std::string & input_cost_outsourcing17);
+	bool _read_traveltime(const std::string& input_traveltime);
+	bool _read_d1(const std::string& input_demand_task_collection, const std::string& input_demand_task_sending);
+	bool _read_d2(const std::string& input_demand_transfer);
+	bool _read_d3(const std::string& input_demand_transfer_majorcoutomer);
+	bool _read_num_x1(const std::string& x1);
+	bool _read_num_y1(const std::string& y1);
+	bool _read_num_v1(const std::string& v1);
+	bool _read_num_v2(const std::string& v2);
+	bool _read_num_v3(const std::string& v3);
 	void _generate_stochastic_parameter();
 	void _generate_stochastic_demand();
 
@@ -65,7 +65,7 @@ private:
 
 	std::array<double, TASK> _sum_transfer_majorcustomer;
 	std::array<double, TASK> _mean_transfer_majorcustomer;
-	std::array<double, TASK> _std_tranfer_majorcustomer;
+	std::array<double, TASK> _std_transfer_majorcustomer;
 
 	std::array<double, STATION> _sum_transfer_demand;
 	std::array<double, STATION> _mean_transfer_demand;

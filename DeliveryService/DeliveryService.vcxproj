@@ -126,7 +126,18 @@
     <ClInclude Include="gurobi.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="input_cost_outsourcing17.txt" />
     <Text Include="input_cost_varcost.txt" />
+    <Text Include="input_demand_task_collection.txt" />
+    <Text Include="input_demand_task_sending.txt" />
+    <Text Include="input_demand_transfer.txt" />
+    <Text Include="input_demand_transfer_majorcoutomer.txt" />
+    <Text Include="input_traveltime.txt" />
+    <Text Include="v1.txt" />
+    <Text Include="v2.txt" />
+    <Text Include="v3.txt" />
+    <Text Include="x1.txt" />
+    <Text Include="y1.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
