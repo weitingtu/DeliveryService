@@ -9,6 +9,7 @@ public:
 	~Gurobi();
 
 	void read();
+	void test() const;
 
 private:
 	bool _read_var_cost(const std::string& input_cost_varcost);
