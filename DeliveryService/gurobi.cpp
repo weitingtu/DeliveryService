@@ -115,13 +115,11 @@ void Gurobi::start()
 
 		// Create variables
 
-		//GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
-		//GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
-		//GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
-
 		std::vector<GRBVar> x2(FLEET);
+		std::vector<std::vector<GRBVar> > x3(FLEET);
 		std::vector<GRBVar> x4(FLEET);
 		GRBVar y2 = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y2");
+		std::vector<GRBVar> y3(STATION);
 		GRBVar y4 = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y4");
 
 		for (size_t i = 0; i < FLEET; ++i)
@@ -130,18 +128,39 @@ void Gurobi::start()
 			x4[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x4");
 		}
 
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			x3[i].resize(STATION);
+			for (size_t j = 0; j < STATION; ++j)
+			{
+				x3[i][j] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x3");
+			}
+		}
+
+		for (size_t i = 0; i < STATION; ++i)
+		{
+			y3[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y3");
+		}
+
+
 		model.update();
 
-		// Set objective: maximize x + y + 2 z
+		// Set objective: 
 		model.set(GRB_IntAttr_ModelSense, 1);
-
-		//model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
 
 		GRBLinExpr obj = 0.0;
 		int c2 = _c2[district][task];
 		for (size_t i = 0; i < FLEET; ++i)
 		{
 			obj += c2 * x2[i];
+		}
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t j = 0; j < STATION; ++j)
+			{
+				int c3 = _c3[j];
+				obj += c3 * x3[i][j];
+			}
 		}
 		int c4 = _c4[task];
 		for (size_t i = 0; i < FLEET; ++i)
@@ -150,14 +169,17 @@ void Gurobi::start()
 		}
 		int b2 = _b2[district][task];
 		obj += b2 * y2;
+		for (size_t i = 0; i < STATION; ++i)
+		{
+			int b3 = _b3[i];
+			obj += b3 * y3[i];
+		}
 		int b4 = _b4[task];
 		obj += b4 * y4;
 
 		model.setObjective(obj, GRB_MINIMIZE);
 
-		// Add constraint: x + 2 y + 3 z <= 4
-
-		//model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
+		// Add constraint: 
 
 		int constr_count = 0;
 		GRBLinExpr constr = 0.0;
@@ -184,6 +206,27 @@ void Gurobi::start()
 		double d1 = _d1[scenerio][day][district][task];
 		model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
 
+		for (size_t i = 0; i < STATION; ++i)
+		{
+			constr.clear();
+
+			int sum_v2 = 0;
+			for (size_t j = 0; j < CAR_TYPE; ++j)
+			{
+				sum_v2 += _num_v2[scenerio][day][i][j];
+			}
+			for (size_t j = 0; j < FLEET; ++j)
+			{
+				constr += x3[j][i];
+			}
+			constr += y3[i];
+			constr *= _load[0];
+			constr += _load[1] * sum_v2;
+
+			double d2 = _d2[scenerio][day][i];
+			model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
+		}
+
 		constr.clear();
 
 		int v3 = _num_v3[scenerio][day][task];
@@ -200,23 +243,29 @@ void Gurobi::start()
 
 		double u1 = _u1[district][task];
 		double u3 = _u3[0];
-		
+
 		for (size_t i = 0; i < FLEET; ++i)
-		{ 
-		    constr.clear();
+		{
+			constr.clear();
 			int x1 = _num_x1[scenerio][day][district][i][task];
 			constr += x1;
 			constr += x2[i];
 			constr *= u1;
 			constr += u3 * x4[i];
-		    model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+			model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
 		}
 
-		// Add constraint: x + 2 y + 3 z <= 4
-
-		// Add constraint: x + y >= 1
-
-		//model.addConstr(x + y >= 1, "c1");
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			constr.clear();
+			for (size_t j = 0; j < STATION; ++j)
+			{
+				double u2 = _u2[j];
+				constr += u2 * x3[i][j];
+			}
+			// ??? t''
+			model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+		}
 
 		// Optimize model
 
@@ -224,20 +273,11 @@ void Gurobi::start()
 		model.write("out.lp");
 		printf("finish optimization\n");
 
-		/*std::cout << x.get(GRB_StringAttr_VarName) << " "
-			<< x.get(GRB_DoubleAttr_X) << std::endl;
-		std::cout << y.get(GRB_StringAttr_VarName) << " "
-			<< y.get(GRB_DoubleAttr_X) << std::endl;
-		std::cout << z.get(GRB_StringAttr_VarName) << " "
-			<< z.get(GRB_DoubleAttr_X) << std::endl;
-
-		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;*/
-		
 		for (size_t i = 0; i < FLEET; ++i)
 		{
-            std::cout << x2[i].get(GRB_StringAttr_VarName) << " " << x2[i].get(GRB_DoubleAttr_X) << std::endl;
+			std::cout << x2[i].get(GRB_StringAttr_VarName) << " " << x2[i].get(GRB_DoubleAttr_X) << std::endl;
 		}
-        std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;
+		std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
 	}
