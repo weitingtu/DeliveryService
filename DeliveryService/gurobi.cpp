@@ -328,6 +328,7 @@ void Gurobi::start()
 			}
 		}
 
+		// (20)
 		for (size_t i = 0; i < FLEET; ++i)
 		{
 			constr.clear();
