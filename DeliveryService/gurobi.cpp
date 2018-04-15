@@ -22,7 +22,7 @@ Gurobi::Gurobi() :
 	_load({ { 14, 20 } }),
 	_u1(),
 	_u2({ { 2, 4 } }),
-	_u3({ {1.11} }),
+	_u3({ {1.11, 1.11} }),
 	_d1(),
 	_d2(),
 	_d3(),
@@ -115,17 +115,24 @@ void Gurobi::start()
 
 		// Create variables
 
-		std::vector<GRBVar> x2(FLEET);
+		std::vector<std::vector<std::vector<GRBVar> > > x2(FLEET);
 		std::vector<std::vector<GRBVar> > x3(FLEET);
-		std::vector<GRBVar> x4(FLEET);
-		GRBVar y2 = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y2");
+		std::vector<std::vector<GRBVar> > x4(FLEET);
+		std::vector<std::vector<GRBVar> > y2(DISTRICT);
 		std::vector<GRBVar> y3(STATION);
-		GRBVar y4 = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y4");
+		std::vector<GRBVar> y4(TASK);
 
 		for (size_t i = 0; i < FLEET; ++i)
 		{
-			x2[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x2");
-			x4[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x4");
+			x2[i].resize(DISTRICT);
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				x2[i][j].resize(TASK);
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					x2[i][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x2");
+				}
+			}
 		}
 
 		for (size_t i = 0; i < FLEET; ++i)
@@ -137,23 +144,53 @@ void Gurobi::start()
 			}
 		}
 
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			x4[i].resize(TASK);
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				x4[i][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x4");
+			}
+		}
+
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			y2[j].resize(TASK);
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				y2[j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y2");
+			}
+		}
+
 		for (size_t m = 0; m < STATION; ++m)
 		{
 			y3[m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y3");
 		}
 
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			y4[k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y4");
+		}
 
 		model.update();
 
 		// Set objective: 
 		model.set(GRB_IntAttr_ModelSense, 1);
 
+		// (15)
 		GRBLinExpr obj = 0.0;
-		int c2 = _c2[district][task];
 		for (size_t i = 0; i < FLEET; ++i)
 		{
-			obj += c2 * x2[i];
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					int c2 = _c2[j][k];
+					obj += c2 * x2[i][j][k];
+				}
+			}
 		}
+
 		for (size_t i = 0; i < FLEET; ++i)
 		{
 			for (size_t m = 0; m < STATION; ++m)
@@ -162,20 +199,36 @@ void Gurobi::start()
 				obj += c3 * x3[i][m];
 			}
 		}
-		int c4 = _c4[task];
+
 		for (size_t i = 0; i < FLEET; ++i)
 		{
-			obj += c4 * x4[i];
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				int c4 = _c4[k];
+				obj += c4 * x4[i][k];
+			}
 		}
-		int b2 = _b2[district][task];
-		obj += b2 * y2;
+
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				int b2 = _b2[j][k];
+				obj += b2 * y2[j][k];
+			}
+		}
+
 		for (size_t m = 0; m < STATION; ++m)
 		{
 			int b3 = _b3[m];
 			obj += b3 * y3[m];
 		}
-		int b4 = _b4[task];
-		obj += b4 * y4;
+
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			int b4 = _b4[k];
+			obj += b4 * y4[k];
+		}
 
 		model.setObjective(obj, GRB_MINIMIZE);
 
@@ -184,28 +237,37 @@ void Gurobi::start()
 		int constr_count = 0;
 		GRBLinExpr constr = 0.0;
 
-		int sum_x1 = 0;
-		for (size_t i = 0; i < FLEET; ++i)
+		// (16)
+		for (size_t j = 0; j < DISTRICT; ++j)
 		{
-			sum_x1 += _num_x1[scenerio][day][district][i][task];
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				constr.clear();
+				int sum_x1 = 0;
+				for (size_t i = 0; i < FLEET; ++i)
+				{
+					sum_x1 += _num_x1[scenerio][day][j][i][k];
+				}
+				int y1 = _num_y1[scenerio][day][j][k];
+				int v1 = _num_v1[scenerio][day][j][k];
+
+				constr += sum_x1;
+				constr += y1;
+
+				for (size_t i = 0; i < FLEET; ++i)
+				{
+					constr += x2[i][j][k];
+				}
+				constr += y2[j][k];
+				constr *= _load[0];
+				constr += _load[1] * v1;
+
+				double d1 = _d1[scenerio][day][j][k];
+				model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
+			}
 		}
-		int y1 = _num_y1[scenerio][day][district][task];
-		int v1 = _num_v1[scenerio][day][district][task];
 
-		constr += sum_x1;
-		constr += y1;
-
-		for (size_t i = 0; i < FLEET; ++i)
-		{
-			constr += x2[i];
-		}
-		constr += y2;
-		constr *= _load[0];
-		constr += _load[1] * v1;
-
-		double d1 = _d1[scenerio][day][district][task];
-		model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
-
+		// (17)
 		for (size_t m = 0; m < STATION; ++m)
 		{
 			constr.clear();
@@ -227,32 +289,43 @@ void Gurobi::start()
 			model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
 		}
 
-		constr.clear();
-
-		int v3 = _num_v3[scenerio][day][task];
-		for (size_t i = 0; i < FLEET; ++i)
-		{
-			constr += x4[i];
-		}
-		constr += y4;
-		constr *= _load[0];
-		constr += _load[1] * v3;
-
-		double d3 = _d3[scenerio][day][task];
-		model.addConstr(constr >= d3, "c" + std::to_string(constr_count++));
-
-		double u1 = _u1[district][task];
-		double u3 = _u3[0];
-
-		for (size_t i = 0; i < FLEET; ++i)
+		// (18)
+		for (size_t k = 0; k < TASK; ++k)
 		{
 			constr.clear();
-			int x1 = _num_x1[scenerio][day][district][i][task];
-			constr += x1;
-			constr += x2[i];
-			constr *= u1;
-			constr += u3 * x4[i];
-			model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+
+			int v3 = _num_v3[scenerio][day][k];
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				constr += x4[i][k];
+			}
+			constr += y4[k];
+			constr *= _load[0];
+			constr += _load[1] * v3;
+
+			double d3 = _d3[scenerio][day][k];
+			model.addConstr(constr >= d3, "c" + std::to_string(constr_count++));
+		}
+
+		// (19)
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				constr.clear();
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					double u1 = _u1[j][k];
+					int x1 = _num_x1[scenerio][day][j][i][k];
+					constr += u1 * x1;
+					constr += u1 * x2[i][j][k];
+				}
+
+				double u3 = _u3[k];
+
+				constr += u3 * x4[i][k];
+				model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+			}
 		}
 
 		for (size_t i = 0; i < FLEET; ++i)

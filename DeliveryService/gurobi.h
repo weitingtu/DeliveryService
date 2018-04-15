@@ -52,7 +52,7 @@ private:
 	/*travel time*/
 	std::array<std::array<double, TASK>, DISTRICT> _u1; // travel time and operating time for serving district j and task k  (file:input_traveltime)
 	std::array<double, STATION> _u2;                    // travel time and operating time for serving another transshipment center m    
-	std::array<double, 1> _u3;                          // travel time and operating time for serving task k for major customer
+	std::array<double, TASK> _u3;                       // travel time and operating time for serving task k for major customer
 
 
 	/* 運量*/
@@ -61,7 +61,7 @@ private:
 	std::array<std::array<std::array<double, TASK>, DAY>, SCENARIO> _d3;    // 在scenerio s下,第 t day,大客戶任務k的配送量
 
 	/*產生隨機需求*/
-	std::array < std::array<double, TASK>, DISTRICT> _sum_task_demand;  //district task
+	std::array<std::array<double, TASK>, DISTRICT> _sum_task_demand;  //district task
 	std::array<std::array<double, TASK>, DISTRICT> _mean_task_demand;
 	std::array<std::array<double, TASK>, DISTRICT> _std_task_demand;
 
