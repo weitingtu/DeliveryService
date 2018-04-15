@@ -39,9 +39,9 @@ private:
 
 	/* stochastic cost */
 	std::array<double, STATION> _c3;
-	std::array<double, STATION> _b4;
+	std::array<double, STATION> _b3;
 	std::array<double, TASK> _c4;
-	std::array<double, TASK> _b6;
+	std::array<double, TASK> _b4;
 	std::array<double, STATION> _a2; // monthly cost of outsourcing container truck to another transshipment center  
 	std::array<double, TASK> _a3;    // 外包貨櫃車配送大型客戶 之任務 k 一趟次之費用
 
