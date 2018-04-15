@@ -5,6 +5,7 @@
 #include <cmath> 
 #include <string>
 #include <gurobi_c++.h>
+#include <vector>
 
 Gurobi::Gurobi() :
 	_c1(),
@@ -101,6 +102,129 @@ void Gurobi::read()
 void Gurobi::start()
 {
 	// add gurobi to solve lp here
+	try {
+
+		size_t task = 0;
+		size_t district = 0;
+		size_t day = 0;
+		size_t scenerio = 0;
+
+		GRBEnv env = GRBEnv();
+
+		GRBModel model = GRBModel(env);
+
+		// Create variables
+
+		//GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "x");
+		//GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "y");
+		//GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB_BINARY, "z");
+
+		std::vector<GRBVar> x2(FLEET);
+		GRBVar y2 = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y2");
+
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			x2[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x2");
+		}
+
+		model.update();
+
+		// Set objective: maximize x + y + 2 z
+		model.set(GRB_IntAttr_ModelSense, 1);
+
+		//model.setObjective(x + y + 2 * z, GRB_MAXIMIZE);
+
+		GRBLinExpr obj = 0.0;
+		int c2 = _c2[district][task];
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			obj += c2 * x2[i];
+		}
+		int b2 = _b2[district][task];
+		obj += b2 * y2;
+
+		model.setObjective(obj, GRB_MINIMIZE);
+
+		// Add constraint: x + 2 y + 3 z <= 4
+
+		//model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
+
+		int constr_count = 0;
+
+		int sum_x1 = 0;
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			sum_x1 += _num_x1[scenerio][day][district][i][task];
+		}
+		int y1 = _num_y1[scenerio][day][district][task];
+		int v1 = _num_v1[scenerio][day][district][task];
+
+		GRBLinExpr constr = 0.0;
+
+		constr += sum_x1;
+		constr += y1;
+
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			constr += x2[i];
+		}
+		constr += y2;
+		constr *= _load[0];
+		constr += _load[1] * v1;
+
+		double d1 = _d1[scenerio][day][district][task];
+		model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
+
+		double u1 = _u1[district][task];
+		//double u3 = _u3[0];
+		
+		for (size_t i = 0; i < FLEET; ++i)
+		{ 
+		    constr.clear();
+			int x1 = _num_x1[scenerio][day][district][i][task];
+			constr += x1;
+			constr += x2[i];
+			constr *= u1;
+			// ignore u3 * x4;
+		    model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+		}
+
+		// Add constraint: x + 2 y + 3 z <= 4
+
+		// Add constraint: x + y >= 1
+
+		//model.addConstr(x + y >= 1, "c1");
+
+		// Optimize model
+
+		model.optimize();
+		model.write("out.lp");
+		printf("finish optimization\n");
+
+		/*std::cout << x.get(GRB_StringAttr_VarName) << " "
+			<< x.get(GRB_DoubleAttr_X) << std::endl;
+		std::cout << y.get(GRB_StringAttr_VarName) << " "
+			<< y.get(GRB_DoubleAttr_X) << std::endl;
+		std::cout << z.get(GRB_StringAttr_VarName) << " "
+			<< z.get(GRB_DoubleAttr_X) << std::endl;
+
+		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;*/
+		
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+            std::cout << x2[i].get(GRB_StringAttr_VarName) << " " << x2[i].get(GRB_DoubleAttr_X) << std::endl;
+		}
+        std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;
+		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
+
+	}
+	catch (GRBException e) {
+		std::cout << "Error code = " << e.getErrorCode() << std::endl;
+		std::cout << e.getMessage() << std::endl;
+	}
+	catch (...) {
+		std::cout << "Exception during optimization" << std::endl;
+	}
 }
 
 bool Gurobi::_read_var_cost(const std::string& input_cost_varcost)

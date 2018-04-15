@@ -3,6 +3,7 @@ int main()
 {
 	Gurobi gurobi;
 	gurobi.read();
-	gurobi.test();
+	gurobi.start();
+	//gurobi.test();
 	return 0;
 }
