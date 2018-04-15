@@ -131,15 +131,15 @@ void Gurobi::start()
 		for (size_t i = 0; i < FLEET; ++i)
 		{
 			x3[i].resize(STATION);
-			for (size_t j = 0; j < STATION; ++j)
+			for (size_t m = 0; m < STATION; ++m)
 			{
-				x3[i][j] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x3");
+				x3[i][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "x3");
 			}
 		}
 
-		for (size_t i = 0; i < STATION; ++i)
+		for (size_t m = 0; m < STATION; ++m)
 		{
-			y3[i] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y3");
+			y3[m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, "y3");
 		}
 
 
@@ -156,10 +156,10 @@ void Gurobi::start()
 		}
 		for (size_t i = 0; i < FLEET; ++i)
 		{
-			for (size_t j = 0; j < STATION; ++j)
+			for (size_t m = 0; m < STATION; ++m)
 			{
-				int c3 = _c3[j];
-				obj += c3 * x3[i][j];
+				int c3 = _c3[m];
+				obj += c3 * x3[i][m];
 			}
 		}
 		int c4 = _c4[task];
@@ -169,10 +169,10 @@ void Gurobi::start()
 		}
 		int b2 = _b2[district][task];
 		obj += b2 * y2;
-		for (size_t i = 0; i < STATION; ++i)
+		for (size_t m = 0; m < STATION; ++m)
 		{
-			int b3 = _b3[i];
-			obj += b3 * y3[i];
+			int b3 = _b3[m];
+			obj += b3 * y3[m];
 		}
 		int b4 = _b4[task];
 		obj += b4 * y4;
@@ -206,24 +206,24 @@ void Gurobi::start()
 		double d1 = _d1[scenerio][day][district][task];
 		model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
 
-		for (size_t i = 0; i < STATION; ++i)
+		for (size_t m = 0; m < STATION; ++m)
 		{
 			constr.clear();
 
 			int sum_v2 = 0;
-			for (size_t j = 0; j < CAR_TYPE; ++j)
+			for (size_t n = 0; n < CAR_TYPE; ++n)
 			{
-				sum_v2 += _num_v2[scenerio][day][i][j];
+				sum_v2 += _num_v2[scenerio][day][m][n];
 			}
-			for (size_t j = 0; j < FLEET; ++j)
+			for (size_t i = 0; i < FLEET; ++i)
 			{
-				constr += x3[j][i];
+				constr += x3[i][m];
 			}
-			constr += y3[i];
+			constr += y3[m];
 			constr *= _load[0];
 			constr += _load[1] * sum_v2;
 
-			double d2 = _d2[scenerio][day][i];
+			double d2 = _d2[scenerio][day][m];
 			model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
 		}
 
@@ -258,10 +258,10 @@ void Gurobi::start()
 		for (size_t i = 0; i < FLEET; ++i)
 		{
 			constr.clear();
-			for (size_t j = 0; j < STATION; ++j)
+			for (size_t m = 0; m < STATION; ++m)
 			{
-				double u2 = _u2[j];
-				constr += u2 * x3[i][j];
+				double u2 = _u2[m];
+				constr += u2 * x3[i][m];
 			}
 			// ??? t''
 			model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
@@ -273,11 +273,11 @@ void Gurobi::start()
 		model.write("out.lp");
 		printf("finish optimization\n");
 
-		for (size_t i = 0; i < FLEET; ++i)
+		/*for (size_t i = 0; i < FLEET; ++i)
 		{
 			std::cout << x2[i].get(GRB_StringAttr_VarName) << " " << x2[i].get(GRB_DoubleAttr_X) << std::endl;
 		}
-		std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;
+		std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;*/
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
 	}
