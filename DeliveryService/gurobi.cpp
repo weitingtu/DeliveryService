@@ -372,10 +372,12 @@ bool Gurobi::_read_var_cost(const std::string& input_cost_varcost)
 		printf("Unable to open %s\n", input_cost_varcost.c_str());
 		return false;
 	}
-	for (int i = 0; i < DISTRICT; ++i) {
-		for (int j = 0; j < TASK; ++j) {
-			ifile >> _c1[i][j];
-			_c2[i][j] = _c1[i][j] * COST_TEMPORARY_17; //2.5
+	for (int j = 0; j < DISTRICT; ++j) 
+	{
+		for (int k = 0; k < TASK; ++k) 
+		{
+			ifile >> _c1[j][k];
+			_c2[j][k] = _c1[j][k] * COST_TEMPORARY_17; //2.5
 			//std::cout << i << " " << j << " " << _c1[i][j] << std::endl;
 			//std::cout << i << " " << j << " " << _c2[i][j] << std::endl;
 		}
@@ -393,15 +395,16 @@ bool Gurobi::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
 		printf("Unable to open %s\n", input_cost_outsourcing17.c_str());
 		return false;
 	}
-	for (int i = 0; i < DISTRICT; ++i) {
-		for (int j = 0; j < TASK; ++j) {
-			ifile >> _b1[i][j];
-			_b2[i][j] = _b1[i][j] * COST_TEMPORARY_OUTSOURCING17; //2
-			_a1[i][j] = _b1[i][j] * COST_OUTSOURCING_CONTAINER; //1.45
+	for (int j = 0; j < DISTRICT; ++j) 
+	{
+		for (int k = 0; k < TASK; ++k) 
+		{
+			ifile >> _b1[j][k];
+			_b2[j][k] = _b1[j][k] * COST_TEMPORARY_OUTSOURCING17; //2
+			_a1[j][k] = _b1[j][k] * COST_OUTSOURCING_CONTAINER; //1.45
 			//std::cout << i << " " << j << " " << _b1[i][j] << std::endl;
 			//std::cout << i << " " << j << " " << _b2[i][j] << std::endl;
 			//std::cout << i << " " << j << " " << _a1[i][j] << std::endl;
-
 		}
 	}
 	ifile.close();
@@ -417,9 +420,11 @@ bool Gurobi::_read_traveltime(const std::string& input_traveltime)
 		printf("Unable to open%s\n", input_traveltime.c_str());
 		return false;
 	}
-	for (int i = 0; i < DISTRICT; ++i) {
-		for (int j = 0; j < TASK; ++j) {
-			ifile >> _u1[i][j];
+	for (int j = 0; j < DISTRICT; ++j) 
+	{
+		for (int k = 0; k < TASK; ++k) 
+		{
+			ifile >> _u1[j][k];
 			//std::cout << i << " " << j << " " << _u1[i][j] << std::endl;
 
 		}
@@ -443,25 +448,30 @@ bool Gurobi::_read_d1(const std::string& input_demand_task_collection, const std
 		printf("Unable to open%s\n", input_demand_task_sending.c_str());
 		return false;
 	}
-	for (int i = 0; i < TASK; ++i) {
-		if (i == 0) {
-			for (int j = 0; j < DISTRICT; ++j) {
-				for (int k = 0; k < DAY; ++k) {
-					ifile1 >> _d1[0][k][j][i];//第一組需求		stjk
+	for (int k = 0; k < TASK; ++k) 
+	{
+		if (k == 0) 
+		{
+			for (int j = 0; j < DISTRICT; ++j) 
+			{
+				for (int t = 0; t < DAY; ++t) 
+				{
+					ifile1 >> _d1[0][t][j][k];//第一組需求		stjk
 				//std::cout << k << " " <<j<< " "<<i<<" " << _d1[0][k][j][i] << std::endl;
 				}
 			}
-
 		}
-		else if (i == 1) {
-			for (int j = 0; j < DISTRICT; ++j) {
-				for (int k = 0; k < DAY; ++k) {
-					ifile2 >> _d1[0][k][j][i];//第一組需求	
+		else if (k == 1) 
+		{
+			for (int j = 0; j < DISTRICT; ++j) 
+			{
+				for (int t = 0; t < DAY; ++t) 
+				{
+					ifile2 >> _d1[0][t][j][k];//第一組需求	
 			  //std::cout << k << " " <<j<< " "<<i<<" " << _d1[0][k][j][i] << std::endl;
 				}
 			}
 		}
-
 	}
 
 	ifile1.close();
@@ -478,9 +488,11 @@ bool Gurobi::_read_d2(const std::string& input_demand_transfer)
 		printf("Unable to open%s\n", input_demand_transfer.c_str());
 		return false;
 	}
-	for (int i = 0; i < STATION; ++i) {
-		for (int j = 0; j < DAY; ++j) {
-			ifile >> _d2[0][j][i];//第一組需求
+	for (int m = 0; m < STATION; ++m) 
+	{
+		for (int t = 0; t < DAY; ++t) 
+		{
+			ifile >> _d2[0][t][m];//第一組需求
 			//std::cout << j << " " << i << " " << _d2[0][j][i] << std::endl;
 		}
 	}
@@ -498,9 +510,11 @@ bool Gurobi::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
 		printf("Unable to open%s\n", input_demand_transfer_majorcoutomer.c_str());
 		return false;
 	}
-	for (int i = 0; i < TASK; ++i) {
-		for (int j = 0; j < DAY; ++j) {
-			ifile >> _d3[0][j][i];//第一組需求
+	for (int k = 0; k < TASK; ++k) 
+	{
+		for (int t = 0; t < DAY; ++t) 
+		{
+			ifile >> _d3[0][t][k];//第一組需求
 		//std::cout << j << " " << i << " " << _d3[0][j][i] << std::endl;
 
 		}
@@ -514,23 +528,28 @@ bool Gurobi::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
 
 void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 {    //district task
-	int temp_var = 0;
-	for (int i = 0; i < TASK; ++i) {
-		for (int j = 0; j < DISTRICT; ++j) {
-			_sum_task_demand[j][i] = 0;
-			_mean_task_demand[j][i] = 0;
-			_std_task_demand[j][i] = 0;
-			temp_var = 0;
+	for (int k = 0; k < TASK; ++k) 
+	{
+		for (int j = 0; j < DISTRICT; ++j) 
+		{
+			_sum_task_demand[j][k] = 0;
+			_mean_task_demand[j][k] = 0;
+			_std_task_demand[j][k] = 0;
+			int temp_var = 0;
 
-			for (int k = 0; k < DAY; ++k) {
-				_sum_task_demand[j][i] = _sum_task_demand[j][i] + _d1[0][k][j][i];
-				_mean_task_demand[j][i] = (_sum_task_demand[j][i] / DAY);
-			}
-			for (int k = 0; k < DAY; ++k) {
-				temp_var = temp_var + pow((_d1[0][k][j][i] - _mean_task_demand[j][i]), 2);
+			for (int t = 0; t < DAY; ++t) 
+			{
+				_sum_task_demand[j][k] +=  _d1[0][t][j][k];
 			}
 
-			_std_task_demand[j][i] = pow((temp_var / DAY), 0.5);
+			_mean_task_demand[j][k] = (_sum_task_demand[j][k] / DAY);
+
+			for (int t = 0; t < DAY; ++t) 
+			{
+				temp_var += pow((_d1[0][t][j][k] - _mean_task_demand[j][k]), 2);
+			}
+
+			_std_task_demand[j][k] = pow((temp_var / DAY), 0.5);
 			//std::cout << j << " " << i << " " << _sum_task_demand[j][i] << std::endl;
 			//std::cout << _sum_task_demand[j][i] << std::endl;
 			//std::cout << j << " " << i << " " << _mean_task_demand[j][i] << std::endl;
@@ -538,19 +557,24 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 
 		}
 	}
+
 	//transshipment task
 	for (int i = 0; i < STATION; ++i) {
 		_sum_transfer_demand[i] = 0;
 		_mean_transfer_demand[i] = 0;
 		_std_transfer_demand[i] = 0;
-		temp_var = 0;
+		int temp_var = 0;
 
-		for (int j = 0; j < DAY; ++j) {
-			_sum_transfer_demand[i] = _sum_transfer_demand[i] + _d2[0][j][i];
-			_mean_transfer_demand[i] = (_sum_transfer_demand[i] / DAY);
+		for (int j = 0; j < DAY; ++j) 
+		{
+			_sum_transfer_demand[i] += _d2[0][j][i];
 		}
-		for (int k = 0; k < DAY; ++k) {
-			temp_var = temp_var + pow((_d2[0][k][i] - _mean_transfer_demand[i]), 2);
+
+		_mean_transfer_demand[i] = (_sum_transfer_demand[i] / DAY);
+
+		for (int k = 0; k < DAY; ++k) 
+		{
+			temp_var += pow((_d2[0][k][i] - _mean_transfer_demand[i]), 2);
 		}
 		_std_transfer_demand[i] = pow((temp_var / DAY), 0.5);
 		//std::cout << i << " " << _sum_transfer_demand[i] << std::endl;
@@ -558,18 +582,24 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 		//std::cout << i << " " << _mean_transfer_demand[i] << std::endl;
 		//std::cout << i << " " << _std_transfer_demand[i] << std::endl;
 	}
+
 	//major customer
-	for (int i = 0; i < TASK; ++i) {
+	for (int i = 0; i < TASK; ++i) 
+	{
 		_sum_transfer_majorcustomer[i] = 0;
 		_mean_transfer_majorcustomer[i] = 0;
 		_std_transfer_majorcustomer[i] = 0;
-		temp_var = 0;
-		for (int j = 0; j < DAY; ++j) {
-			_sum_transfer_majorcustomer[i] = _sum_transfer_majorcustomer[i] + _d3[0][j][i];
-			_mean_transfer_majorcustomer[i] = (_sum_transfer_majorcustomer[i] / DAY);
+		int temp_var = 0;
+
+		for (int j = 0; j < DAY; ++j) 
+		{
+			_sum_transfer_majorcustomer[i] += _d3[0][j][i];
 		}
-		for (int k = 0; k < DAY; ++k) {
-			temp_var = temp_var + pow((_d3[0][k][i] - _mean_transfer_majorcustomer[i]), 2);
+		_mean_transfer_majorcustomer[i] = (_sum_transfer_majorcustomer[i] / DAY);
+
+		for (int k = 0; k < DAY; ++k) 
+		{
+			temp_var += pow((_d3[0][k][i] - _mean_transfer_majorcustomer[i]), 2);
 		}
 		_std_transfer_majorcustomer[i] = pow((temp_var / DAY), 0.5);
 		//std::cout << i << " " << _sum_transfer_majorcustomer[i] << std::endl;
@@ -577,42 +607,51 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 		//std::cout << i << " " << _mean_transfer_majorcustomer[i] << std::endl;
 		//std::cout << i << " " << _std_transfer_majorcustomer[i] << std::endl;
 	}
-
 }
 
 void Gurobi::_generate_stochastic_demand()
 {
 	double r1, r2;
-	for (int i = 1; i < SCENARIO; ++i) { //第二組需求開始
-		for (int j = 0; j < DAY; ++j) {
-			for (int k = 0; k < DISTRICT; ++k) {
-				for (int l = 0; l < TASK; ++l) {
+	for (int s = 1; s < SCENARIO; ++s) 
+	{ //第二組需求開始
+		for (int t = 0; t < DAY; ++t) 
+		{
+			for (int j = 0; j < DISTRICT; ++j) 
+			{
+				for (int k = 0; k < TASK; ++k) 
+				{
 					r1 = rand() / (double)RAND_MAX;
 					r2 = rand() / (double)RAND_MAX;
-					_d1[i][j][k][l] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[k][l] + _mean_task_demand[k][l];
+					_d1[s][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
 					//std::cout <<"scenario" <<i << " " << j << " " << k << " " << l << " " << _d1[i][j][k][l] << std::endl;
 				}
 			}
 		}
 	}
 
-	for (int i = 1; i < SCENARIO; ++i) {//第二組需求開始
-		for (int j = 0; j < DAY; ++j) {
-			for (int k = 0; k < TASK; ++k) {
+	for (int s = 1; s < SCENARIO; ++s) 
+	{//第二組需求開始
+		for (int t = 0; t < DAY; ++t) 
+		{
+			for (int k = 0; k < TASK; ++k) 
+			{
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d3[i][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
+				_d3[s][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
 				//std::cout <<"scenario" <<i << " " << j << " " << k  << " " << _d3[i][j][k] << std::endl;
 			}
 		}
 	}
 
-	for (int i = 1; i < SCENARIO; ++i) {
-		for (int j = 0; j < DAY; ++j) {
-			for (int k = 0; k < STATION; ++k) {
+	for (int s = 1; s < SCENARIO; ++s) 
+	{
+		for (int t = 0; t < DAY; ++t) 
+		{
+			for (int m = 0; m < STATION; ++m) 
+			{
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d2[i][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[k] + _mean_transfer_demand[k];
+				_d2[s][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
 				//std::cout <<"scenario" <<i << " " << j << " " << k  << " " << _d2[i][j][k] << std::endl;
 			}
 		}
@@ -628,12 +667,17 @@ bool Gurobi::_read_num_x1(const std::string& x1)
 		printf("Unable to open%s\n", x1.c_str());
 		return false;
 	}
-	for (int i = 0; i < TASK; ++i) {
-		for (int j = 0; j < FLEET; ++j) {
-			for (int k = 0; k < DISTRICT; ++k) {
-				for (int l = 0; l < DAY; ++l) {
-					for (int m = 0; m < SCENARIO; ++m) {
-						ifile >> _num_x1[m][l][k][j][i];
+	for (int k = 0; k < TASK; ++k) 
+	{
+		for (int i = 0; i < FLEET; ++i) 
+		{
+			for (int j = 0; j < DISTRICT; ++j) 
+			{
+				for (int t = 0; t < DAY; ++t) 
+				{
+					for (int s = 0; s < SCENARIO; ++s) 
+					{
+						ifile >> _num_x1[s][t][j][i][k];
 						//std::cout << m << " " << l << " " << k << " " << j << " " << i << " " << _num_x1[m][l][k][j][i] << std::endl;
 					}
 				}
@@ -653,11 +697,15 @@ bool Gurobi::_read_num_y1(const std::string& y1)
 		printf("Unable to open%s\n", y1.c_str());
 		return false;
 	}
-	for (int i = 0; i < TASK; ++i) {
-		for (int j = 0; j < DISTRICT; ++j) {
-			for (int k = 0; k < DAY; ++k) {
-				for (int l = 0; l < SCENARIO; ++l) {
-					ifile >> _num_y1[l][k][j][i];
+	for (int k = 0; k < TASK; ++k) 
+	{
+		for (int j = 0; j < DISTRICT; ++j) 
+		{
+			for (int t = 0; t < DAY; ++t) 
+			{
+				for (int s = 0; s < SCENARIO; ++s) 
+				{
+					ifile >> _num_y1[s][t][j][k];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_y1[l][k][j][i] << std::endl;
 				}
 			}
@@ -676,11 +724,15 @@ bool Gurobi::_read_num_v1(const std::string& v1)
 		printf("Unable to open%s\n", v1.c_str());
 		return false;
 	}
-	for (int i = 0; i < TASK; ++i) {
-		for (int j = 0; j < DISTRICT; ++j) {
-			for (int k = 0; k < DAY; ++k) {
-				for (int l = 0; l < SCENARIO; ++l) {
-					ifile >> _num_v1[l][k][j][i];
+	for (int k = 0; k < TASK; ++k) 
+	{
+		for (int j = 0; j < DISTRICT; ++j) 
+		{
+			for (int t = 0; t < DAY; ++t) 
+			{
+				for (int s = 0; s < SCENARIO; ++s) 
+				{
+					ifile >> _num_v1[s][t][j][k];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_v1[l][k][j][i] << std::endl;
 				}
 			}
@@ -699,11 +751,15 @@ bool Gurobi::_read_num_v2(const std::string& v2)
 		printf("Unable to open%s\n", v2.c_str());
 		return false;
 	}
-	for (int i = 0; i < CAR_TYPE; ++i) {
-		for (int j = 0; j < STATION; ++j) {
-			for (int k = 0; k < DAY; ++k) {
-				for (int l = 0; l < SCENARIO; ++l) {
-					ifile >> _num_v2[l][k][j][i];
+	for (int n = 0; n < CAR_TYPE; ++n) 
+	{
+		for (int m = 0; m < STATION; ++m) 
+		{
+			for (int t = 0; t < DAY; ++t) 
+			{
+				for (int s = 0; s < SCENARIO; ++s) 
+				{
+					ifile >> _num_v2[s][t][m][n];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_v2[l][k][j][i] << std::endl;
 				}
 			}
@@ -722,10 +778,13 @@ bool Gurobi::_read_num_v3(const std::string& v3)
 		printf("Unable to open%s\n", v3.c_str());
 		return false;
 	}
-	for (int i = 0; i < TASK; ++i) {
-		for (int j = 0; j < DAY; ++j) {
-			for (int k = 0; k < SCENARIO; ++k) {
-				ifile >> _num_v3[k][j][i];
+	for (int k = 0; k < TASK; ++k) 
+	{
+		for (int t = 0; t < DAY; ++t) 
+		{
+			for (int s = 0; s < SCENARIO; ++s) 
+			{
+				ifile >> _num_v3[s][t][k];
 				//std::cout <<k << " " << j << " " << i << " " << _num_v3[k][j][i] << std::endl;
 			}
 		}
