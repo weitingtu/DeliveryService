@@ -1,6 +1,8 @@
 #pragma once
 #include "defines.h"
 #include <array>
+#include <vector>
+#include <string>
 
 class Gurobi
 {
@@ -26,6 +28,7 @@ private:
 	bool _read_num_v3(const std::string& v3);
 	void _generate_stochastic_parameter();
 	void _generate_stochastic_demand();
+	std::string _var_name(std::string str, const std::vector<size_t>& idx) const;
 
 
 	/*cost*/
