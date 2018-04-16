@@ -419,11 +419,6 @@ void Gurobi::start()
 		model.write("out.lp");
 		printf("finish optimization\n");
 
-		/*for (size_t i = 0; i < FLEET; ++i)
-		{
-			std::cout << x2[i].get(GRB_StringAttr_VarName) << " " << x2[i].get(GRB_DoubleAttr_X) << std::endl;
-		}
-		std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;*/
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
 		if (!_write_x2("x2.txt", x2))
@@ -1017,7 +1012,6 @@ bool Gurobi::_read_num_v3(const std::string& v3)
 	ifile.close();
 	return true;
 }
-
 
 void Gurobi::test() const
 {
