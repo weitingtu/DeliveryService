@@ -104,8 +104,6 @@ void Gurobi::start()
 	// add gurobi to solve lp here
 	try {
 
-		size_t task = 0;
-		size_t district = 0;
 		size_t day = 0;
 		size_t scenerio = 0;
 
