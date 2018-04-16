@@ -140,7 +140,7 @@ void Gurobi::start()
 					x2[t][i][j].resize(TASK);
 					for (size_t k = 0; k < TASK; ++k)
 					{
-						x2[t][i][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x2", {t, i, j, k}));
+						x2[t][i][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x2", { t, i, j, k }));
 					}
 				}
 			}
@@ -154,7 +154,7 @@ void Gurobi::start()
 				x3[t][i].resize(STATION);
 				for (size_t m = 0; m < STATION; ++m)
 				{
-					x3[t][i][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x3", {t, i, m}));
+					x3[t][i][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x3", { t, i, m }));
 				}
 			}
 		}
@@ -167,7 +167,7 @@ void Gurobi::start()
 				x4[t][i].resize(TASK);
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					x4[t][i][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x4", {t, i, k}));
+					x4[t][i][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x4", { t, i, k }));
 				}
 			}
 		}
@@ -180,7 +180,7 @@ void Gurobi::start()
 				y2[t][j].resize(TASK);
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					y2[t][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y2", {t, j, k}));
+					y2[t][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y2", { t, j, k }));
 				}
 			}
 		}
@@ -190,7 +190,7 @@ void Gurobi::start()
 			y3[t].resize(STATION);
 			for (size_t m = 0; m < STATION; ++m)
 			{
-				y3[t][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y3", {t, m}));
+				y3[t][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y3", { t, m }));
 			}
 		}
 
@@ -199,7 +199,7 @@ void Gurobi::start()
 			y4[t].resize(TASK);
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				y4[t][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y4", {t, k}));
+				y4[t][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y4", { t, k }));
 			}
 		}
 
@@ -373,7 +373,7 @@ void Gurobi::start()
 				for (size_t k = 0; k < TASK; ++k)
 				{
 					constr.clear();
-					double sum_u1_x1 = 0.0; 
+					double sum_u1_x1 = 0.0;
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
 						double u1 = _u1[j][k];
@@ -426,6 +426,30 @@ void Gurobi::start()
 		std::cout << y2.get(GRB_StringAttr_VarName) << " " << y2.get(GRB_DoubleAttr_X) << std::endl;*/
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
+		if (!_write_x2("x2.txt", x2))
+		{
+			return;
+		}
+		if (!_write_x3("x3.txt", x3))
+		{
+			return;
+		}
+		if (!_write_x4("x4.txt", x4))
+		{
+			return;
+		}
+		if (!_write_y2("y2.txt", y2))
+		{
+			return;
+		}
+		if (!_write_y3("y3.txt", y3))
+		{
+			return;
+		}
+		if (!_write_y4("y4.txt", y4))
+		{
+			return;
+		}
 	}
 	catch (GRBException e) {
 		std::cout << "Error code = " << e.getErrorCode() << std::endl;
@@ -434,6 +458,135 @@ void Gurobi::start()
 	catch (...) {
 		std::cout << "Exception during optimization" << std::endl;
 	}
+}
+
+bool Gurobi::_write_x2(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x2) const
+{
+	std::ofstream ofile(file_name);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					ofile << x2[t][i][j][k].get(GRB_DoubleAttr_X) << std::endl;
+				}
+			}
+		}
+	}
+	ofile.close();
+	return true;
+}
+
+bool Gurobi::_write_x3(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x3) const
+{
+	std::ofstream ofile(file_name);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				ofile << x3[t][i][m].get(GRB_DoubleAttr_X) << std::endl;
+			}
+		}
+	}
+	ofile.close();
+	return true;
+}
+
+bool Gurobi::_write_x4(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x4) const
+{
+	std::ofstream ofile(file_name);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				ofile << x4[t][i][k].get(GRB_DoubleAttr_X) << std::endl;
+			}
+		}
+	}
+	ofile.close();
+	return true;
+}
+
+bool Gurobi::_write_y2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y2) const
+{
+	std::ofstream ofile(file_name);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				ofile << y2[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
+			}
+		}
+	}
+	ofile.close();
+	return true;
+}
+
+bool Gurobi::_write_y3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y3) const
+{
+	std::ofstream ofile(file_name);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			ofile << y3[t][m].get(GRB_DoubleAttr_X) << std::endl;
+		}
+	}
+	ofile.close();
+	return true;
+}
+
+bool Gurobi::_write_y4(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y4) const
+{
+	std::ofstream ofile(file_name);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			ofile << y4[t][k].get(GRB_DoubleAttr_X) << std::endl;
+		}
+	}
+	ofile.close();
+	return true;
 }
 
 bool Gurobi::_read_var_cost(const std::string& input_cost_varcost)

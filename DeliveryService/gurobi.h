@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <gurobi_c++.h>
 
 class Gurobi
 {
@@ -29,6 +30,12 @@ private:
 	void _generate_stochastic_parameter();
 	void _generate_stochastic_demand();
 	std::string _var_name(std::string str, const std::vector<size_t>& idx) const;
+	bool _write_x2(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x2) const;
+	bool _write_x3(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x3) const;
+	bool _write_x4(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x4) const;
+	bool _write_y2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y2) const;
+	bool _write_y3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y3) const;
+	bool _write_y4(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y4) const;
 
 
 	/*cost*/
