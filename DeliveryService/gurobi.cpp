@@ -109,12 +109,64 @@ std::string Gurobi::_var_name(std::string str, const std::vector<size_t>& idx) c
 	return str;
 }
 
+bool Gurobi::_delere_file(const std::string& file_name) const
+{
+	if (remove(file_name.c_str()) != 0)
+	{
+		printf("Error deleting file %s\n", file_name);
+		return false;
+	}
+	return true;
+}
+
+bool Gurobi::_delere_files() const
+{
+	if (!_delere_file("x2.txt"))
+	{
+		return false;
+	}
+	if (!_delere_file("x3.txt"))
+	{
+		return false;
+	}
+	if (!_delere_file("x4.txt"))
+	{
+		return false;
+	}
+	if (!_delere_file("y2.txt"))
+	{
+		return false;
+	}
+	if (!_delere_file("y3.txt"))
+	{
+		return false;
+	}
+	if (!_delere_file("y4.txt"))
+	{
+		return false;
+	}
+	return true;
+}
+
 void Gurobi::start()
+{
+	if (!_delere_files())
+	{
+		return;
+	}
+	for (size_t s = 0; s < SCENARIO; ++s)
+	{
+		printf("Run scenerio %zu\n", s);
+		_run(s);
+	}
+}
+
+void Gurobi::_run(size_t scenerio)
 {
 	// add gurobi to solve lp here
 	try {
 
-		size_t scenerio = 0;
+		//size_t scenerio = 1;
 
 		GRBEnv env = GRBEnv();
 
@@ -457,7 +509,7 @@ void Gurobi::start()
 
 bool Gurobi::_write_x2(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x2) const
 {
-	std::ofstream ofile(file_name);
+	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
 	{
 		printf("Unable to open %s\n", file_name.c_str());
@@ -482,7 +534,7 @@ bool Gurobi::_write_x2(const std::string& file_name, const std::vector<std::vect
 
 bool Gurobi::_write_x3(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x3) const
 {
-	std::ofstream ofile(file_name);
+	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
 	{
 		printf("Unable to open %s\n", file_name.c_str());
@@ -504,7 +556,7 @@ bool Gurobi::_write_x3(const std::string& file_name, const std::vector<std::vect
 
 bool Gurobi::_write_x4(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x4) const
 {
-	std::ofstream ofile(file_name);
+	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
 	{
 		printf("Unable to open %s\n", file_name.c_str());
@@ -526,7 +578,7 @@ bool Gurobi::_write_x4(const std::string& file_name, const std::vector<std::vect
 
 bool Gurobi::_write_y2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y2) const
 {
-	std::ofstream ofile(file_name);
+	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
 	{
 		printf("Unable to open %s\n", file_name.c_str());
@@ -548,7 +600,7 @@ bool Gurobi::_write_y2(const std::string& file_name, const std::vector<std::vect
 
 bool Gurobi::_write_y3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y3) const
 {
-	std::ofstream ofile(file_name);
+	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
 	{
 		printf("Unable to open %s\n", file_name.c_str());
@@ -567,7 +619,7 @@ bool Gurobi::_write_y3(const std::string& file_name, const std::vector<std::vect
 
 bool Gurobi::_write_y4(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y4) const
 {
-	std::ofstream ofile(file_name);
+	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
 	{
 		printf("Unable to open %s\n", file_name.c_str());

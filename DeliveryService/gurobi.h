@@ -16,6 +16,9 @@ public:
 	void test() const;
 
 private:
+	bool _delere_file(const std::string& file_name) const;
+	bool _delere_files() const;
+	void _run(size_t scenerio);
 	bool _read_var_cost(const std::string& input_cost_varcost);
 	bool _read_outsourcing_cost(const std::string & input_cost_outsourcing17);
 	bool _read_traveltime(const std::string& input_traveltime);
