@@ -16,6 +16,7 @@ public:
 	void test() const;
 
 private:
+	bool _is_file_exist(const std::string& file_name) const;
 	bool _delere_file(const std::string& file_name) const;
 	bool _delere_files() const;
 	void _run(size_t scenerio);

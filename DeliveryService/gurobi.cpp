@@ -109,8 +109,18 @@ std::string Gurobi::_var_name(std::string str, const std::vector<size_t>& idx) c
 	return str;
 }
 
+bool Gurobi::_is_file_exist(const std::string& file_name) const
+{
+	struct stat buffer;
+	return (stat(file_name.c_str(), &buffer) == 0);
+}
+
 bool Gurobi::_delere_file(const std::string& file_name) const
 {
+	if (!_is_file_exist(file_name))
+	{
+		return true;
+	}
 	if (remove(file_name.c_str()) != 0)
 	{
 		printf("Error deleting file %s\n", file_name);
