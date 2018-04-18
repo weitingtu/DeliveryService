@@ -123,11 +123,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="demand.cpp" />
     <ClCompile Include="gurobi.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
+    <ClInclude Include="demand.h" />
     <ClInclude Include="gurobi.h" />
   </ItemGroup>
   <ItemGroup>
