@@ -103,6 +103,12 @@ private:
 	std::array<std::array<std::array<std::array<int, CAR_TYPE>, STATION>, DAY>, SCENARIO> _num_v2;                 // (file:v2)
 	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _num_v3;                                         // (file:v3)
 
+	std::array<std::array<std::array<std::array<std::array<int, TASK>, FLEET>, DISTRICT>, DAY>, SCENARIO> _x1; 
+	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _y1;                   
+	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _v1;                   
+	std::array<std::array<std::array<std::array<int, CAR_TYPE>, STATION>, DAY>, SCENARIO> _v2;                
+	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _v3;                                        
+
 	Demand _demand;
 
 };

@@ -41,6 +41,11 @@ Gurobi::Gurobi() :
 	_num_v1(),
 	_num_v2(),
 	_num_v3(),
+	_x1(),
+	_y1(),
+	_v1(),
+	_v2(),
+	_v3(),
 	_demand()
 {
 }
@@ -83,6 +88,8 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 		printf("finish optimization\n");
 
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
+
+		// save result in _x1[scenerio], _y1[scenerio], _v1[scenerio] _v2[scenerio] _v3[scenerio]
 	}
 	catch (GRBException e) {
 		std::cout << "Error code = " << e.getErrorCode() << std::endl;
