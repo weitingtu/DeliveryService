@@ -40,13 +40,57 @@ Gurobi::Gurobi() :
 	_num_y1(),
 	_num_v1(),
 	_num_v2(),
-	_num_v3()
+	_num_v3(),
+	_demand()
 {
 }
 
 
 Gurobi::~Gurobi()
 {
+}
+
+void Gurobi::monthly_trips(const Demand& demand)
+{
+	_demand = demand;
+
+	//for (size_t s = 0; s < SCENARIO; ++s)
+	{
+		size_t s = 0;
+		printf("Run scenerio %zu\n", s);
+		_run_monthly_trips(s);
+	}
+}
+
+void Gurobi::_run_monthly_trips(size_t scenerio)
+{
+	// add gurobi to solve lp here
+	try {
+		GRBEnv env = GRBEnv();
+
+		GRBModel model = GRBModel(env);
+
+		// Create variables
+
+		// Set objective: 
+
+		// Add constraint: 
+
+		// Optimize model
+
+		model.optimize();
+		model.write("out.lp");
+		printf("finish optimization\n");
+
+		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
+	}
+	catch (GRBException e) {
+		std::cout << "Error code = " << e.getErrorCode() << std::endl;
+		std::cout << e.getMessage() << std::endl;
+	}
+	catch (...) {
+		std::cout << "Exception during optimization" << std::endl;
+	}
 }
 
 void Gurobi::read()
@@ -175,8 +219,6 @@ void Gurobi::_run(size_t scenerio)
 {
 	// add gurobi to solve lp here
 	try {
-
-		//size_t scenerio = 1;
 
 		GRBEnv env = GRBEnv();
 

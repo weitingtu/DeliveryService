@@ -1,4 +1,11 @@
+#define _USE_MATH_DEFINES //產生隨機需求
 #include "demand.h"
+#include <iostream>
+#include <fstream>
+#include <cmath> 
+#include <string>
+#include <gurobi_c++.h>
+#include <vector>
 
 Demand::Demand():
 _c1(),
@@ -29,10 +36,330 @@ _sum_transfer_demand(),
 _mean_transfer_demand(),
 _std_transfer_demand(),
 _pro({ { 1.0 / SCENARIO } })
+
 {
 }
 
 
 Demand::~Demand()
 {
+}
+
+void Demand::read()
+{
+	if (!_read_var_cost("input_cost_varcost.txt"))
+	{
+		return;
+	}
+	if (!_read_outsourcing_cost("input_cost_outsourcing17.txt"))
+	{
+		return;
+	}
+	if (!_read_traveltime("input_traveltime.txt"))
+	{
+		return;
+	}
+	if (!_read_d1("input_demand_task_collection.txt", "input_demand_task_sending.txt"))
+	{
+		return;
+	}
+	if (!_read_d2("input_demand_transfer.txt"))
+	{
+		return;
+	}
+	if (!_read_d3("input_demand_transfer_majorcoutomer.txt"))
+	{
+		return;
+	}
+	
+	_generate_stochastic_parameter();
+	_generate_stochastic_demand();
+}
+
+bool Demand::_read_var_cost(const std::string& input_cost_varcost)
+{
+	std::ifstream ifile(input_cost_varcost);   // self truck (c1&c2)
+	if (ifile.fail())
+	{
+		printf("Unable to open %s\n", input_cost_varcost.c_str());
+		return false;
+	}
+	for (int j = 0; j < DISTRICT; ++j)
+	{
+		for (int k = 0; k < TASK; ++k)
+		{
+			ifile >> _c1[j][k];
+			_c2[j][k] = _c1[j][k] * COST_TEMPORARY_17; //2.5
+													   //std::cout << i << " " << j << " " << _c1[i][j] << std::endl;
+													   //std::cout << i << " " << j << " " << _c2[i][j] << std::endl;
+		}
+	}
+	ifile.close();
+
+	return true;
+}
+bool Demand::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
+{
+	std::ifstream ifile(input_cost_outsourcing17); //outsoucing truck and container (b1&b2&a1)
+	if (ifile.fail())
+	{
+		printf("Unable to open %s\n", input_cost_outsourcing17.c_str());
+		return false;
+	}
+	for (int j = 0; j < DISTRICT; ++j)
+	{
+		for (int k = 0; k < TASK; ++k)
+		{
+			ifile >> _b1[j][k];
+			_b2[j][k] = _b1[j][k] * COST_TEMPORARY_OUTSOURCING17; //2
+			_a1[j][k] = _b1[j][k] * COST_OUTSOURCING_CONTAINER; //1.45
+																//std::cout << i << " " << j << " " << _b1[i][j] << std::endl;
+																//std::cout << i << " " << j << " " << _b2[i][j] << std::endl;
+																//std::cout << i << " " << j << " " << _a1[i][j] << std::endl;
+		}
+	}
+	ifile.close();
+
+	return true;
+}
+bool Demand::_read_traveltime(const std::string& input_traveltime)
+{
+	std::ifstream ifile(input_traveltime);
+	if (ifile.fail())
+	{
+		printf("Unable to open%s\n", input_traveltime.c_str());
+		return false;
+	}
+	for (int j = 0; j < DISTRICT; ++j)
+	{
+		for (int k = 0; k < TASK; ++k)
+		{
+			ifile >> _u1[j][k];
+			//std::cout << i << " " << j << " " << _u1[i][j] << std::endl;
+
+		}
+	}
+	ifile.close();
+
+	return true;
+}
+bool Demand::_read_d1(const std::string& input_demand_task_collection, const std::string& input_demand_task_sending)
+{
+	std::ifstream ifile1(input_demand_task_collection);
+	std::ifstream ifile2(input_demand_task_sending);
+	if (ifile1.fail())
+	{
+		printf("Unable to open%s\n", input_demand_task_collection.c_str());
+		return false;
+	}
+	if (ifile2.fail())
+	{
+		printf("Unable to open%s\n", input_demand_task_sending.c_str());
+		return false;
+	}
+	for (int k = 0; k < TASK; ++k)
+	{
+		if (k == 0)
+		{
+			for (int j = 0; j < DISTRICT; ++j)
+			{
+				for (int t = 0; t < DAY; ++t)
+				{
+					ifile1 >> _d1[0][t][j][k];//第一組需求		stjk
+											  //std::cout << k << " " <<j<< " "<<i<<" " << _d1[0][k][j][i] << std::endl;
+				}
+			}
+		}
+		else if (k == 1)
+		{
+			for (int j = 0; j < DISTRICT; ++j)
+			{
+				for (int t = 0; t < DAY; ++t)
+				{
+					ifile2 >> _d1[0][t][j][k];//第一組需求	
+											  //std::cout << k << " " <<j<< " "<<i<<" " << _d1[0][k][j][i] << std::endl;
+				}
+			}
+		}
+	}
+
+	ifile1.close();
+	ifile2.close();
+
+	return true;
+}
+bool Demand::_read_d2(const std::string& input_demand_transfer)
+{
+	std::ifstream ifile(input_demand_transfer);
+	if (ifile.fail())
+	{
+		printf("Unable to open%s\n", input_demand_transfer.c_str());
+		return false;
+	}
+	for (int m = 0; m < STATION; ++m)
+	{
+		for (int t = 0; t < DAY; ++t)
+		{
+			ifile >> _d2[0][t][m];//第一組需求
+								  //std::cout << j << " " << i << " " << _d2[0][j][i] << std::endl;
+		}
+	}
+
+	ifile.close();
+
+	return true;
+}
+bool Demand::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
+{
+	std::ifstream ifile(input_demand_transfer_majorcoutomer);
+	if (ifile.fail())
+	{
+		printf("Unable to open%s\n", input_demand_transfer_majorcoutomer.c_str());
+		return false;
+	}
+	for (int k = 0; k < TASK; ++k)
+	{
+		for (int t = 0; t < DAY; ++t)
+		{
+			ifile >> _d3[0][t][k];//第一組需求
+								  //std::cout << j << " " << i << " " << _d3[0][j][i] << std::endl;
+
+		}
+
+	}
+
+	ifile.close();
+
+	return true;
+}
+void Demand::_generate_stochastic_parameter() //sum, mean, std
+{    //district task
+	for (int k = 0; k < TASK; ++k)
+	{
+		for (int j = 0; j < DISTRICT; ++j)
+		{
+			_sum_task_demand[j][k] = 0;
+			_mean_task_demand[j][k] = 0;
+			_std_task_demand[j][k] = 0;
+			int temp_var = 0;
+
+			for (int t = 0; t < DAY; ++t)
+			{
+				_sum_task_demand[j][k] += _d1[0][t][j][k];
+			}
+
+			_mean_task_demand[j][k] = (_sum_task_demand[j][k] / DAY);
+
+			for (int t = 0; t < DAY; ++t)
+			{
+				temp_var += pow((_d1[0][t][j][k] - _mean_task_demand[j][k]), 2);
+			}
+
+			_std_task_demand[j][k] = pow((temp_var / DAY), 0.5);
+			//std::cout << j << " " << i << " " << _sum_task_demand[j][i] << std::endl;
+			//std::cout << _sum_task_demand[j][i] << std::endl;
+			//std::cout << j << " " << i << " " << _mean_task_demand[j][i] << std::endl;
+			//std::cout << j << " " << i << " " << _std_task_demand[j][i] << std::endl;
+
+		}
+	}
+
+	//transshipment task
+	for (int i = 0; i < STATION; ++i) {
+		_sum_transfer_demand[i] = 0;
+		_mean_transfer_demand[i] = 0;
+		_std_transfer_demand[i] = 0;
+		int temp_var = 0;
+
+		for (int j = 0; j < DAY; ++j)
+		{
+			_sum_transfer_demand[i] += _d2[0][j][i];
+		}
+
+		_mean_transfer_demand[i] = (_sum_transfer_demand[i] / DAY);
+
+		for (int k = 0; k < DAY; ++k)
+		{
+			temp_var += pow((_d2[0][k][i] - _mean_transfer_demand[i]), 2);
+		}
+		_std_transfer_demand[i] = pow((temp_var / DAY), 0.5);
+		//std::cout << i << " " << _sum_transfer_demand[i] << std::endl;
+		//std::cout << _sum_transfer_demand[i] << std::endl;
+		//std::cout << i << " " << _mean_transfer_demand[i] << std::endl;
+		//std::cout << i << " " << _std_transfer_demand[i] << std::endl;
+	}
+
+	//major customer
+	for (int i = 0; i < TASK; ++i)
+	{
+		_sum_transfer_majorcustomer[i] = 0;
+		_mean_transfer_majorcustomer[i] = 0;
+		_std_transfer_majorcustomer[i] = 0;
+		int temp_var = 0;
+
+		for (int j = 0; j < DAY; ++j)
+		{
+			_sum_transfer_majorcustomer[i] += _d3[0][j][i];
+		}
+		_mean_transfer_majorcustomer[i] = (_sum_transfer_majorcustomer[i] / DAY);
+
+		for (int k = 0; k < DAY; ++k)
+		{
+			temp_var += pow((_d3[0][k][i] - _mean_transfer_majorcustomer[i]), 2);
+		}
+		_std_transfer_majorcustomer[i] = pow((temp_var / DAY), 0.5);
+		//std::cout << i << " " << _sum_transfer_majorcustomer[i] << std::endl;
+		//std::cout << _sum_transfer_majorcustomer[i] << std::endl;
+		//std::cout << i << " " << _mean_transfer_majorcustomer[i] << std::endl;
+		//std::cout << i << " " << _std_transfer_majorcustomer[i] << std::endl;
+	}
+}
+void Demand::_generate_stochastic_demand()
+{
+	double r1, r2;
+	for (int s = 1; s < SCENARIO; ++s)
+	{ //第二組需求開始
+		for (int t = 0; t < DAY; ++t)
+		{
+			for (int j = 0; j < DISTRICT; ++j)
+			{
+				for (int k = 0; k < TASK; ++k)
+				{
+					r1 = rand() / (double)RAND_MAX;
+					r2 = rand() / (double)RAND_MAX;
+					_d1[s][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
+					//std::cout <<"scenario" <<i << " " << j << " " << k << " " << l << " " << _d1[i][j][k][l] << std::endl;
+				}
+			}
+		}
+	}
+
+	for (int s = 1; s < SCENARIO; ++s)
+	{//第二組需求開始
+		for (int t = 0; t < DAY; ++t)
+		{
+			for (int k = 0; k < TASK; ++k)
+			{
+				r1 = rand() / (double)RAND_MAX;
+				r2 = rand() / (double)RAND_MAX;
+				_d3[s][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
+				//std::cout <<"scenario" <<i << " " << j << " " << k  << " " << _d3[i][j][k] << std::endl;
+			}
+		}
+	}
+
+	for (int s = 1; s < SCENARIO; ++s)
+	{
+		for (int t = 0; t < DAY; ++t)
+		{
+			for (int m = 0; m < STATION; ++m)
+			{
+				r1 = rand() / (double)RAND_MAX;
+				r2 = rand() / (double)RAND_MAX;
+				_d2[s][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
+				//std::cout <<"scenario" <<i << " " << j << " " << k  << " " << _d2[i][j][k] << std::endl;
+			}
+		}
+	}
+
 }

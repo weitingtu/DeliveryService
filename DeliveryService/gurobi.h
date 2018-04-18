@@ -1,5 +1,6 @@
 #pragma once
 #include "defines.h"
+#include "demand.h"
 #include <array>
 #include <vector>
 #include <string>
@@ -15,7 +16,11 @@ public:
 	void start();
 	void test() const;
 
+	void monthly_trips(const Demand& demand);
+
 private:
+	void _run_monthly_trips(size_t scenerio);
+
 	bool _is_file_exist(const std::string& file_name) const;
 	bool _delere_file(const std::string& file_name) const;
 	bool _delere_files() const;
@@ -97,5 +102,7 @@ private:
 	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _num_v1;                    // (file:V1)
 	std::array<std::array<std::array<std::array<int, CAR_TYPE>, STATION>, DAY>, SCENARIO> _num_v2;                 // (file:v2)
 	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _num_v3;                                         // (file:v3)
+
+	Demand _demand;
 
 };

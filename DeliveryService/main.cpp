@@ -1,9 +1,15 @@
-#include "Gurobi.h"
+#include "gurobi.h"
+#include "demand.h"
+
 int main()
 {
-	Gurobi gurobi;
+	/*Gurobi gurobi;
 	gurobi.read();
-	gurobi.start();
+	gurobi.start(); */
+
 	//gurobi.test();
+	Demand demand;
+	demand.read();
+
 	return 0;
 }
