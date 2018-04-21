@@ -14,6 +14,10 @@ public:
 
 	void start();
 private:
+	int _get_p1() const;
+	int _get_p2() const;
+	int _get_p3() const;
+
 	double p1; // 自有車駕駛對臨時營業所任務出車之機率。
 	double p2; // 自有車駕駛對臨時轉運任務出車之機率。
 	double p3; // 自有車駕駛對臨時大客戶任務出車之機率。
