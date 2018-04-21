@@ -124,13 +124,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="demand.cpp" />
+    <ClCompile Include="feasibleStochasticDemand.cpp" />
     <ClCompile Include="gurobi.cpp" />
+    <ClCompile Include="lowCostPriority.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="trips.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
     <ClInclude Include="demand.h" />
+    <ClInclude Include="feasibleStochasticDemand.h" />
     <ClInclude Include="gurobi.h" />
+    <ClInclude Include="lowCostPriority.h" />
+    <ClInclude Include="trips.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input_cost_outsourcing17.txt" />

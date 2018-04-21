@@ -24,6 +24,15 @@
     <ClCompile Include="demand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="trips.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lowCostPriority.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="feasibleStochasticDemand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gurobi.h">
@@ -33,6 +42,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="demand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trips.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lowCostPriority.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="feasibleStochasticDemand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
