@@ -68,6 +68,8 @@ int FeasibleStochasticDemand::_get_p1() const
 		}
 	}
 
+	n1 += x1;
+
 	return _nChoosek(n1, x1);
 }
 
@@ -103,6 +105,8 @@ int FeasibleStochasticDemand::_get_p2() const
 		}
 	}
 
+	n2 += x2;
+
 	return _nChoosek(n2, x2);
 }
 
@@ -137,6 +141,8 @@ int FeasibleStochasticDemand::_get_p3() const
 			}
 		}
 	}
+
+	n3 += x3;
 
 	return _nChoosek(n3, x3);
 }
