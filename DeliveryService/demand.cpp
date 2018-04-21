@@ -7,35 +7,35 @@
 #include <gurobi_c++.h>
 #include <vector>
 
-Demand::Demand():
-_c1(),
-_c2(),
-_b1(),
-_b2(),
-_a1(),
-_c3({ { 27500, 51500 } }),
-_b3({ { 11000, 20600 } }),
-_c4({ { 21500, 21500 } }),
-_b4({ { 8600, 8600 } }),
-_a2({ { 8000, 15000 } }),
-_a3({ { 6200, 6200 } }),
-_load({ { 14, 20 } }),
-_u1(),
-_u2({ { 2, 4 } }),
-_u3({ { 1.11, 1.11 } }),
-_d1(),
-_d2(),
-_d3(),
-_sum_task_demand(),
-_mean_task_demand(),
-_std_task_demand(),
-_sum_transfer_majorcustomer(),
-_mean_transfer_majorcustomer(),
-_std_transfer_majorcustomer(),
-_sum_transfer_demand(),
-_mean_transfer_demand(),
-_std_transfer_demand(),
-_pro({ { 1.0 / SCENARIO } })
+Demand::Demand() :
+	_c1(),
+	_c2(),
+	_b1(),
+	_b2(),
+	_a1(),
+	_c3({ { 27500, 51500 } }),
+	_b3({ { 11000, 20600 } }),
+	_c4({ { 10750, 10750 } }),
+	_b4({ { 8600, 8600 } }),
+	_a2({ { 8000, 15000 } }),
+	_a3({ { 6200, 6200 } }),
+	_load({ { 14, 20 } }),
+	_u1(),
+	_u2({ { 2, 4 } }),
+	_u3({ { 1.11, 1.11 } }),
+	_d1(),
+	_d2(),
+	_d3(),
+	_sum_task_demand(),
+	_mean_task_demand(),
+	_std_task_demand(),
+	_sum_transfer_majorcustomer(),
+	_mean_transfer_majorcustomer(),
+	_std_transfer_majorcustomer(),
+	_sum_transfer_demand(),
+	_mean_transfer_demand(),
+	_std_transfer_demand(),
+	_pro({ { 1.0 / SCENARIO } })
 
 {
 }
@@ -71,7 +71,7 @@ void Demand::read()
 	{
 		return;
 	}
-	
+
 	_generate_stochastic_parameter();
 	_generate_stochastic_demand();
 }
@@ -90,14 +90,16 @@ bool Demand::_read_var_cost(const std::string& input_cost_varcost)
 		{
 			ifile >> _c1[j][k];
 			_c2[j][k] = _c1[j][k] * COST_TEMPORARY_17; //2.5
-													   //std::cout << i << " " << j << " " << _c1[i][j] << std::endl;
-													   //std::cout << i << " " << j << " " << _c2[i][j] << std::endl;
+		//ok  std::cout << j << " " <<k << " " << _c1[j][k] << std::endl;
+		//ok std::cout << j << " " << k << " " << _c2[j][k] << std::endl;
 		}
 	}
 	ifile.close();
 
 	return true;
+
 }
+
 bool Demand::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
 {
 	std::ifstream ifile(input_cost_outsourcing17); //outsoucing truck and container (b1&b2&a1)
@@ -113,9 +115,9 @@ bool Demand::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
 			ifile >> _b1[j][k];
 			_b2[j][k] = _b1[j][k] * COST_TEMPORARY_OUTSOURCING17; //2
 			_a1[j][k] = _b1[j][k] * COST_OUTSOURCING_CONTAINER; //1.45
-																//std::cout << i << " " << j << " " << _b1[i][j] << std::endl;
-																//std::cout << i << " " << j << " " << _b2[i][j] << std::endl;
-																//std::cout << i << " " << j << " " << _a1[i][j] << std::endl;
+			//ok std::cout << j << " " << k << " " << _b1[j][k] << std::endl;
+			//ok std::cout << j << " " << k << " " << _b2[j][k] << std::endl;
+			//ok std::cout << j << " " << k << " " << _a1[j][k] << std::endl;
 		}
 	}
 	ifile.close();
@@ -135,7 +137,7 @@ bool Demand::_read_traveltime(const std::string& input_traveltime)
 		for (int k = 0; k < TASK; ++k)
 		{
 			ifile >> _u1[j][k];
-			//std::cout << i << " " << j << " " << _u1[i][j] << std::endl;
+			//ok std::cout << j<< " " << k << " " << _u1[j][k] << std::endl;
 
 		}
 	}
@@ -166,7 +168,7 @@ bool Demand::_read_d1(const std::string& input_demand_task_collection, const std
 				for (int t = 0; t < DAY; ++t)
 				{
 					ifile1 >> _d1[0][t][j][k];//第一組需求		stjk
-											  //std::cout << k << " " <<j<< " "<<i<<" " << _d1[0][k][j][i] << std::endl;
+					//ok std::cout << t << " " <<j<< " "<<k<<" " << _d1[0][t][j][k] << std::endl;
 				}
 			}
 		}
@@ -177,7 +179,7 @@ bool Demand::_read_d1(const std::string& input_demand_task_collection, const std
 				for (int t = 0; t < DAY; ++t)
 				{
 					ifile2 >> _d1[0][t][j][k];//第一組需求	
-											  //std::cout << k << " " <<j<< " "<<i<<" " << _d1[0][k][j][i] << std::endl;
+					//ok  std::cout << t << " " <<j<< " "<<k<<" " << _d1[0][t][j][k] << std::endl;
 				}
 			}
 		}
@@ -201,7 +203,7 @@ bool Demand::_read_d2(const std::string& input_demand_transfer)
 		for (int t = 0; t < DAY; ++t)
 		{
 			ifile >> _d2[0][t][m];//第一組需求
-								  //std::cout << j << " " << i << " " << _d2[0][j][i] << std::endl;
+				//ok std::cout << t << " " << m << " " << _d2[0][t][m] << std::endl;
 		}
 	}
 
@@ -222,7 +224,7 @@ bool Demand::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
 		for (int t = 0; t < DAY; ++t)
 		{
 			ifile >> _d3[0][t][k];//第一組需求
-								  //std::cout << j << " " << i << " " << _d3[0][j][i] << std::endl;
+			 //ok std::cout << t << " " << k << " " << _d3[0][t][k] << std::endl;
 
 		}
 
@@ -256,10 +258,9 @@ void Demand::_generate_stochastic_parameter() //sum, mean, std
 			}
 
 			_std_task_demand[j][k] = pow((temp_var / DAY), 0.5);
-			//std::cout << j << " " << i << " " << _sum_task_demand[j][i] << std::endl;
-			//std::cout << _sum_task_demand[j][i] << std::endl;
-			//std::cout << j << " " << i << " " << _mean_task_demand[j][i] << std::endl;
-			//std::cout << j << " " << i << " " << _std_task_demand[j][i] << std::endl;
+			//ok std::cout << j << " " << k << " " << _sum_task_demand[j][k] << std::endl;
+			//ok std::cout << j << " " << k << " " << _mean_task_demand[j][k] << std::endl;
+			//ok std::cout << j << " " << k << " " << _std_task_demand[j][k] << std::endl;
 
 		}
 	}
@@ -283,10 +284,9 @@ void Demand::_generate_stochastic_parameter() //sum, mean, std
 			temp_var += pow((_d2[0][k][i] - _mean_transfer_demand[i]), 2);
 		}
 		_std_transfer_demand[i] = pow((temp_var / DAY), 0.5);
-		//std::cout << i << " " << _sum_transfer_demand[i] << std::endl;
-		//std::cout << _sum_transfer_demand[i] << std::endl;
-		//std::cout << i << " " << _mean_transfer_demand[i] << std::endl;
-		//std::cout << i << " " << _std_transfer_demand[i] << std::endl;
+		//ok std::cout << i << " " << _sum_transfer_demand[i] << std::endl;
+		//ok std::cout << i << " " << _mean_transfer_demand[i] << std::endl;
+		//ok std::cout << i << " " << _std_transfer_demand[i] << std::endl;
 	}
 
 	//major customer
@@ -308,11 +308,11 @@ void Demand::_generate_stochastic_parameter() //sum, mean, std
 			temp_var += pow((_d3[0][k][i] - _mean_transfer_majorcustomer[i]), 2);
 		}
 		_std_transfer_majorcustomer[i] = pow((temp_var / DAY), 0.5);
-		//std::cout << i << " " << _sum_transfer_majorcustomer[i] << std::endl;
-		//std::cout << _sum_transfer_majorcustomer[i] << std::endl;
-		//std::cout << i << " " << _mean_transfer_majorcustomer[i] << std::endl;
+		//ok std::cout << i << " " << _sum_transfer_majorcustomer[i] << std::endl;
+		//ok std::cout << i << " " << _mean_transfer_majorcustomer[i] << std::endl;
 		//std::cout << i << " " << _std_transfer_majorcustomer[i] << std::endl;
 	}
+
 }
 void Demand::_generate_stochastic_demand()
 {
@@ -328,7 +328,7 @@ void Demand::_generate_stochastic_demand()
 					r1 = rand() / (double)RAND_MAX;
 					r2 = rand() / (double)RAND_MAX;
 					_d1[s][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
-					//std::cout <<"scenario" <<i << " " << j << " " << k << " " << l << " " << _d1[i][j][k][l] << std::endl;
+					//std::cout <<"scenario" <<s << " " <<t << " " << j << " " << k<< " " << _d1[s][t][j][k] << std::endl;
 				}
 			}
 		}
@@ -343,7 +343,7 @@ void Demand::_generate_stochastic_demand()
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
 				_d3[s][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
-				//std::cout <<"scenario" <<i << " " << j << " " << k  << " " << _d3[i][j][k] << std::endl;
+				//std::cout <<"scenario" <<s << " " << t << " " << k  << " " << _d3[s][t][k] << std::endl;
 			}
 		}
 	}
@@ -357,7 +357,7 @@ void Demand::_generate_stochastic_demand()
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
 				_d2[s][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
-				//std::cout <<"scenario" <<i << " " << j << " " << k  << " " << _d2[i][j][k] << std::endl;
+				//std::cout <<"scenario" <<s << " " <<t << " " << m  << " " << _d2[s][t][m] << std::endl;
 			}
 		}
 	}

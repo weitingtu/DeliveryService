@@ -15,7 +15,7 @@ Gurobi::Gurobi() :
 	_a1(),
 	_c3({ { 27500, 51500 } }),
 	_b3({ { 11000, 20600 } }),
-	_c4({ { 21500, 21500 } }),
+	_c4({ { 10750, 10750 } }),
 	_b4({ { 8600, 8600 } }),
 	_a2({ { 8000, 15000 } }),
 	_a3({ { 6200, 6200 } }),
@@ -76,9 +76,132 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 		GRBModel model = GRBModel(env);
 
 		// Create variables
+		std::vector<std::vector<std::vector<std::vector<GRBVar>>>> x1(DAY);//tijk
+		std::vector<std::vector<std::vector<GRBVar>>> y1(DAY);//tjk
+		std::vector<std::vector<std::vector<GRBVar>>> v1(DAY);//tjk
+		std::vector<std::vector<std::vector<GRBVar>>> v2(DAY);//tnm
+		std::vector<std::vector<GRBVar>> v3(DAY);//tk
 
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			x1[t].resize(DISTRICT);
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				x1[t][j].resize(FLEET);
+				for (size_t i = 0; i < FLEET; ++i)
+				{
+					x1[t][j][i].resize(TASK);
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						x1[t][j][i][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x1", { t, j, i, k }));
+					}
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			y1[t].resize(DISTRICT);
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				y1[t][j].resize(TASK);
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					y1[t][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y1", { t, j, k }));
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			v1[t].resize(DISTRICT);
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				v1[t][j].resize(TASK);
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					v1[t][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("v1", { t, j, k }));
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			v2[t].resize(STATION);
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				v2[t][m].resize(CAR_TYPE);
+				for (size_t n = 0; n < CAR_TYPE; ++n)
+				{
+					v2[t][m][n] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("v2", { t, m, n }));
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			v3[t].resize(TASK);
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				v3[t][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("v3", { t, k }));
+			}
+		}
+		model.update();
 		// Set objective: 
-
+		model.set(GRB_IntAttr_ModelSense, 1);
+		GRBLinExpr obj = 0.0;
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t i = 0; i < FLEET; ++i)
+				{
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						double c1 = _c1[j][k];
+						obj += c1 * x1[t][j][i][k];
+					}
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					double b1 = _b1[j][k];
+					obj += b1 * y1[t][j][k];
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					double a1 = _a1[j][k];
+					obj += a1 * v1[t][j][k];
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				for (size_t n = 0; n < CAR_TYPE; ++n)
+				{
+					double a2 = _a2[m];
+					obj += a2 * v2[t][m][n];
+				}
+			}
+		}
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				double a3 = _a3[k];
+				obj += a3 * v3[t][k];
+			}
+		}
+		model.setObjective(obj, GRB_MINIMIZE);
 		// Add constraint: 
 
 		// Optimize model
