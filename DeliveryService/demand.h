@@ -18,7 +18,7 @@ public:
 	const std::array<std::array<double, TASK>, DISTRICT>& c2() const { return _c2; } // c2=c1*2.5 (stochastic cost)
 	const std::array<std::array<double, TASK>, DISTRICT>& b1() const { return _b1; } // monthlycost of outsourcing 17 truck   (file: input_cost_outsourcing17)
 	const std::array<std::array<double, TASK>, DISTRICT>& b2() const { return _b2; } // b1*2 (stochastic cost)
-	const std::array<std::array<double, TASK>, DISTRICT>& s1() const { return _a1; } // monthly cost of outsourcing container truck   (b1*1.45)
+	const std::array<std::array<double, TASK>, DISTRICT>& a1() const { return _a1; } // monthly cost of outsourcing container truck   (b1*1.45)
 
 	/* stochastic cost */
 	const std::array<double, STATION>& c3() const { return _c3; }

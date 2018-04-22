@@ -97,16 +97,16 @@ private:
 
 	/*50組隨機需求下，月趟次(x1,y1,v1,v2,v3) use other model to generate(totally have 50 set)*/
 
-	std::array<std::array<std::array<std::array<std::array<int, TASK>, FLEET>, DISTRICT>, DAY>, SCENARIO> _num_x1; // (file:X1)
+	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, SCENARIO> _num_x1; // (file:X1)
 	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _num_y1;                    // (file:Y1)
 	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _num_v1;                    // (file:V1)
-	std::array<std::array<std::array<std::array<int, CAR_TYPE>, STATION>, DAY>, SCENARIO> _num_v2;                 // (file:v2)
+	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, SCENARIO> _num_v2;                 // (file:v2)
 	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _num_v3;                                         // (file:v3)
 
-	std::array<std::array<std::array<std::array<std::array<int, TASK>, FLEET>, DISTRICT>, DAY>, SCENARIO> _x1; 
+	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, SCENARIO> _x1;
 	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _y1;                   
 	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _v1;                   
-	std::array<std::array<std::array<std::array<int, CAR_TYPE>, STATION>, DAY>, SCENARIO> _v2;                
+	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, SCENARIO> _v2;
 	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _v3;                                        
 
 	Demand _demand;

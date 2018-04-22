@@ -84,16 +84,16 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			x1[t].resize(DISTRICT);
-			for (size_t j = 0; j < DISTRICT; ++j)
+			x1[t].resize(FLEET);
+			for (size_t i = 0; i < FLEET; ++i)
 			{
-				x1[t][j].resize(FLEET);
-				for (size_t i = 0; i < FLEET; ++i)
+				x1[t][i].resize(DISTRICT);
+				for (size_t j = 0; j < DISTRICT; ++j)
 				{
-					x1[t][j][i].resize(TASK);
+					x1[t][i][j].resize(TASK);
 					for (size_t k = 0; k < TASK; ++k)
 					{
-						x1[t][j][i][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x1", { t, j, i, k }));
+						x1[t][i][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x1", { t, i, j, k }));
 					}
 				}
 			}
@@ -124,13 +124,13 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 		}
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			v2[t].resize(STATION);
-			for (size_t m = 0; m < STATION; ++m)
+			v2[t].resize(CAR_TYPE);
+			for (size_t n = 0; n < CAR_TYPE; ++n)
 			{
-				v2[t][m].resize(CAR_TYPE);
-				for (size_t n = 0; n < CAR_TYPE; ++n)
+				v2[t][n].resize(STATION);
+				for (size_t m = 0; m < STATION; ++m)
 				{
-					v2[t][m][n] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("v2", { t, m, n }));
+					v2[t][n][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("v2", { t, n, m }));
 				}
 			}
 		}
@@ -148,14 +148,14 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 		GRBLinExpr obj = 0.0;
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			for (size_t j = 0; j < DISTRICT; ++j)
+			for (size_t i = 0; i < FLEET; ++i)
 			{
-				for (size_t i = 0; i < FLEET; ++i)
+				for (size_t j = 0; j < DISTRICT; ++j)
 				{
 					for (size_t k = 0; k < TASK; ++k)
 					{
 						double c1 = _c1[j][k];
-						obj += c1 * x1[t][j][i][k];
+						obj += c1 * x1[t][i][j][k];
 					}
 				}
 			}
@@ -184,12 +184,12 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 		}
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			for (size_t m = 0; m < STATION; ++m)
+			for (size_t n = 0; n < CAR_TYPE; ++n)
 			{
-				for (size_t n = 0; n < CAR_TYPE; ++n)
+				for (size_t m = 0; m < STATION; ++m)
 				{
 					double a2 = _a2[m];
-					obj += a2 * v2[t][m][n];
+					obj += a2 * v2[t][n][m];
 				}
 			}
 		}
@@ -356,12 +356,12 @@ void Gurobi::_run(size_t scenerio)
 
 		// Create variables
 
-		std::vector<std::vector<std::vector<std::vector<GRBVar> > > > x2(DAY);
-		std::vector<std::vector<std::vector<GRBVar> > > x3(DAY);
-		std::vector<std::vector<std::vector<GRBVar> > > x4(DAY);
-		std::vector<std::vector<std::vector<GRBVar> > > y2(DAY);
-		std::vector<std::vector<GRBVar> > y3(DAY);
-		std::vector<std::vector<GRBVar> > y4(DAY);
+		std::vector<std::vector<std::vector<std::vector<GRBVar> > > > x2(DAY);//tijk
+		std::vector<std::vector<std::vector<GRBVar> > > x3(DAY);//tim
+		std::vector<std::vector<std::vector<GRBVar> > > x4(DAY);//tik
+		std::vector<std::vector<std::vector<GRBVar> > > y2(DAY);//tjk
+		std::vector<std::vector<GRBVar> > y3(DAY);//tm
+		std::vector<std::vector<GRBVar> > y4(DAY);//tk
 
 		for (size_t t = 0; t < DAY; ++t)
 		{
@@ -531,7 +531,7 @@ void Gurobi::_run(size_t scenerio)
 					int sum_x1 = 0;
 					for (size_t i = 0; i < FLEET; ++i)
 					{
-						sum_x1 += _num_x1[scenerio][t][j][i][k];
+						sum_x1 += _num_x1[scenerio][t][i][j][k];
 					}
 					int y1 = _num_y1[scenerio][t][j][k];
 					int v1 = _num_v1[scenerio][t][j][k];
@@ -563,7 +563,7 @@ void Gurobi::_run(size_t scenerio)
 				int sum_v2 = 0;
 				for (size_t n = 0; n < CAR_TYPE; ++n)
 				{
-					sum_v2 += _num_v2[scenerio][t][m][n];
+					sum_v2 += _num_v2[scenerio][t][n][m];
 				}
 				for (size_t i = 0; i < FLEET; ++i)
 				{
@@ -611,7 +611,7 @@ void Gurobi::_run(size_t scenerio)
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
 						double u1 = _u1[j][k];
-						int x1 = _num_x1[scenerio][t][j][i][k];
+						int x1 = _num_x1[scenerio][t][i][j][k];
 						constr += u1 * x1;
 						constr += u1 * x2[t][i][j][k];
 
@@ -1123,15 +1123,15 @@ bool Gurobi::_read_num_x1(const std::string& x1)
 	}
 	for (int k = 0; k < TASK; ++k)
 	{
-		for (int i = 0; i < FLEET; ++i)
+		for (int j = 0; j < DISTRICT; ++j)
 		{
-			for (int j = 0; j < DISTRICT; ++j)
+			for (int i = 0; i < FLEET; ++i)
 			{
 				for (int t = 0; t < DAY; ++t)
 				{
 					for (int s = 0; s < SCENARIO; ++s)
 					{
-						ifile >> _num_x1[s][t][j][i][k];
+						ifile >> _num_x1[s][t][i][j][k];
 						//std::cout << m << " " << l << " " << k << " " << j << " " << i << " " << _num_x1[m][l][k][j][i] << std::endl;
 					}
 				}
@@ -1205,15 +1205,15 @@ bool Gurobi::_read_num_v2(const std::string& v2)
 		printf("Unable to open%s\n", v2.c_str());
 		return false;
 	}
-	for (int n = 0; n < CAR_TYPE; ++n)
+	for (int m = 0; m < STATION; ++m)
 	{
-		for (int m = 0; m < STATION; ++m)
+		for (int n = 0; n < CAR_TYPE; ++n)
 		{
 			for (int t = 0; t < DAY; ++t)
 			{
 				for (int s = 0; s < SCENARIO; ++s)
 				{
-					ifile >> _num_v2[s][t][m][n];
+					ifile >> _num_v2[s][t][n][m];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_v2[l][k][j][i] << std::endl;
 				}
 			}

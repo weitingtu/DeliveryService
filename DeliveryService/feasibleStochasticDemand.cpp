@@ -37,13 +37,13 @@ int FeasibleStochasticDemand::_get_p1() const
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			for (size_t j = 0; j < DISTRICT; ++j)
+			for (size_t i = 0; i < FLEET; ++i)
 			{
-				for (size_t i = 0; i < FLEET; ++i)
+				for (size_t j = 0; j < DISTRICT; ++j)
 				{
 					for (size_t k = 0; k < TASK; ++k)
 					{
-						x1 += _trips.x2()[s][t][j][i][k];
+						x1 += _trips.x2()[s][t][i][j][k];
 					}
 				}
 			}
@@ -57,12 +57,9 @@ int FeasibleStochasticDemand::_get_p1() const
 		{
 			for (size_t j = 0; j < DISTRICT; ++j)
 			{
-				for (size_t i = 0; i < FLEET; ++i)
+				for (size_t k = 0; k < TASK; ++k)
 				{
-					for (size_t k = 0; k < TASK; ++k)
-					{
-						n1 += _trips.y2()[s][t][j][i][k];
-					}
+						n1 += _trips.y2()[s][t][j][k];
 				}
 			}
 		}
@@ -95,13 +92,11 @@ int FeasibleStochasticDemand::_get_p2() const
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			for (size_t i = 0; i < FLEET; ++i)
+			for (size_t m = 0; m < STATION; ++m)
 			{
-				for (size_t m = 0; m < STATION; ++m)
-				{
-					n2 += _trips.y3()[s][t][i][m];
-				}
+					n2 += _trips.y3()[s][t][m];
 			}
+			
 		}
 	}
 
@@ -132,13 +127,11 @@ int FeasibleStochasticDemand::_get_p3() const
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			for (size_t i = 0; i < FLEET; ++i)
+			for (size_t k = 0; k < TASK; ++k)
 			{
-				for (size_t k = 0; k < TASK; ++k)
-				{
-					n3 += _trips.y4()[s][t][i][k];
-				}
+					n3 += _trips.y4()[s][t][k];
 			}
+			
 		}
 	}
 
