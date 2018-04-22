@@ -62,12 +62,12 @@ void Gurobi::monthly_trips(const Demand& demand)
 	//for (size_t s = 0; s < SCENARIO; ++s)
 	{
 		size_t s = 0;
-		printf("Run scenerio %zu\n", s);
+		printf("Run population %zu\n", s);
 		_run_monthly_trips(s);
 	}
 }
 
-void Gurobi::_run_monthly_trips(size_t scenerio)
+void Gurobi::_run_monthly_trips(size_t population)
 {
 	// add gurobi to solve lp here
 	try {
@@ -212,7 +212,7 @@ void Gurobi::_run_monthly_trips(size_t scenerio)
 
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
-		// save result in _x1[scenerio], _y1[scenerio], _v1[scenerio] _v2[scenerio] _v3[scenerio]
+		// save result in _x1[population], _y1[population], _v1[population] _v2[population] _v3[population]
 	}
 	catch (GRBException e) {
 		std::cout << "Error code = " << e.getErrorCode() << std::endl;
@@ -340,12 +340,12 @@ void Gurobi::start()
 	}
 	for (size_t s = 0; s < POPULATION; ++s)
 	{
-		printf("Run scenerio %zu\n", s);
+		printf("Run population %zu\n", s);
 		_run(s);
 	}
 }
 
-void Gurobi::_run(size_t scenerio)
+void Gurobi::_run(size_t population)
 {
 	// add gurobi to solve lp here
 	try {
@@ -531,10 +531,10 @@ void Gurobi::_run(size_t scenerio)
 					int sum_x1 = 0;
 					for (size_t i = 0; i < FLEET; ++i)
 					{
-						sum_x1 += _num_x1[scenerio][t][i][j][k];
+						sum_x1 += _num_x1[population][t][i][j][k];
 					}
-					int y1 = _num_y1[scenerio][t][j][k];
-					int v1 = _num_v1[scenerio][t][j][k];
+					int y1 = _num_y1[population][t][j][k];
+					int v1 = _num_v1[population][t][j][k];
 
 					constr += sum_x1;
 					constr += y1;
@@ -547,7 +547,7 @@ void Gurobi::_run(size_t scenerio)
 					constr *= _load[0];
 					constr += _load[1] * v1;
 
-					double d1 = _d1[scenerio][t][j][k];
+					double d1 = _d1[population][t][j][k];
 					model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
 				}
 			}
@@ -563,7 +563,7 @@ void Gurobi::_run(size_t scenerio)
 				int sum_v2 = 0;
 				for (size_t n = 0; n < CAR_TYPE; ++n)
 				{
-					sum_v2 += _num_v2[scenerio][t][n][m];
+					sum_v2 += _num_v2[population][t][n][m];
 				}
 				for (size_t i = 0; i < FLEET; ++i)
 				{
@@ -573,7 +573,7 @@ void Gurobi::_run(size_t scenerio)
 				constr *= _load[0];
 				constr += _load[1] * sum_v2;
 
-				double d2 = _d2[scenerio][t][m];
+				double d2 = _d2[population][t][m];
 				model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
 			}
 		}
@@ -585,7 +585,7 @@ void Gurobi::_run(size_t scenerio)
 			{
 				constr.clear();
 
-				int v3 = _num_v3[scenerio][t][k];
+				int v3 = _num_v3[population][t][k];
 				for (size_t i = 0; i < FLEET; ++i)
 				{
 					constr += x4[t][i][k];
@@ -594,7 +594,7 @@ void Gurobi::_run(size_t scenerio)
 				constr *= _load[0];
 				constr += _load[1] * v3;
 
-				double d3 = _d3[scenerio][t][k];
+				double d3 = _d3[population][t][k];
 				model.addConstr(constr >= d3, "c" + std::to_string(constr_count++));
 			}
 		}
@@ -611,7 +611,7 @@ void Gurobi::_run(size_t scenerio)
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
 						double u1 = _u1[j][k];
-						int x1 = _num_x1[scenerio][t][i][j][k];
+						int x1 = _num_x1[population][t][i][j][k];
 						constr += u1 * x1;
 						constr += u1 * x2[t][i][j][k];
 
