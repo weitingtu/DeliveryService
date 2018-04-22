@@ -14,9 +14,9 @@ public:
 
 	void start();
 private:
-	int _get_p1() const;
-	int _get_p2() const;
-	int _get_p3() const;
+	int _get_p1(size_t p) const;
+	int _get_p2(size_t p) const;
+	int _get_p3(size_t p) const;
 
 	double p1; // 自有車駕駛對臨時營業所任務出車之機率。
 	double p2; // 自有車駕駛對臨時轉運任務出車之機率。
