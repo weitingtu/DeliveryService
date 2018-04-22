@@ -33,7 +33,7 @@ void FeasibleStochasticDemand::start()
 int FeasibleStochasticDemand::_get_p1() const
 {
 	int x1 = 0;
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
@@ -43,7 +43,7 @@ int FeasibleStochasticDemand::_get_p1() const
 				{
 					for (size_t k = 0; k < TASK; ++k)
 					{
-						x1 += _trips.x2()[s][t][i][j][k];
+						x1 += _trips.x2()[p][t][i][j][k];
 					}
 				}
 			}
@@ -51,7 +51,7 @@ int FeasibleStochasticDemand::_get_p1() const
 	}
 
 	int n1 = 0;
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
@@ -59,7 +59,7 @@ int FeasibleStochasticDemand::_get_p1() const
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-						n1 += _trips.y2()[s][t][j][k];
+						n1 += _trips.y2()[p][t][j][k];
 				}
 			}
 		}
@@ -73,7 +73,7 @@ int FeasibleStochasticDemand::_get_p1() const
 int FeasibleStochasticDemand::_get_p2() const
 {
 	int x2 = 0;
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
@@ -81,20 +81,20 @@ int FeasibleStochasticDemand::_get_p2() const
 			{
 				for (size_t m = 0; m < STATION; ++m)
 				{
-					x2 += _trips.x3()[s][t][i][m];
+					x2 += _trips.x3()[p][t][i][m];
 				}
 			}
 		}
 	}
 
 	int n2 = 0;
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-					n2 += _trips.y3()[s][t][m];
+					n2 += _trips.y3()[p][t][m];
 			}
 			
 		}
@@ -108,7 +108,7 @@ int FeasibleStochasticDemand::_get_p2() const
 int FeasibleStochasticDemand::_get_p3() const
 {
 	int x3 = 0;
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
@@ -116,20 +116,20 @@ int FeasibleStochasticDemand::_get_p3() const
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					x3 += _trips.x4()[s][t][i][k];
+					x3 += _trips.x4()[p][t][i][k];
 				}
 			}
 		}
 	}
 
 	int n3 = 0;
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-					n3 += _trips.y4()[s][t][k];
+					n3 += _trips.y4()[p][t][k];
 			}
 			
 		}

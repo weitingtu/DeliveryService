@@ -35,7 +35,7 @@ Demand::Demand() :
 	_sum_transfer_demand(),
 	_mean_transfer_demand(),
 	_std_transfer_demand(),
-	_pro({ { 1.0 / SCENARIO } })
+	_pro({ { 1.0 / POPULATION } })
 
 {
 }
@@ -317,7 +317,7 @@ void Demand::_generate_stochastic_parameter() //sum, mean, std
 void Demand::_generate_stochastic_demand()
 {
 	double r1, r2;
-	for (int s = 1; s < SCENARIO; ++s)
+	for (int p = 1; p < POPULATION; ++p)
 	{ //第二組需求開始
 		for (int t = 0; t < DAY; ++t)
 		{
@@ -327,14 +327,14 @@ void Demand::_generate_stochastic_demand()
 				{
 					r1 = rand() / (double)RAND_MAX;
 					r2 = rand() / (double)RAND_MAX;
-					_d1[s][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
+					_d1[p][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
 					//std::cout <<"scenario" <<s << " " <<t << " " << j << " " << k<< " " << _d1[s][t][j][k] << std::endl;
 				}
 			}
 		}
 	}
 
-	for (int s = 1; s < SCENARIO; ++s)
+	for (int p = 1; p < POPULATION; ++p)
 	{//第二組需求開始
 		for (int t = 0; t < DAY; ++t)
 		{
@@ -342,13 +342,13 @@ void Demand::_generate_stochastic_demand()
 			{
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d3[s][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
+				_d3[p][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
 				//std::cout <<"scenario" <<s << " " << t << " " << k  << " " << _d3[s][t][k] << std::endl;
 			}
 		}
 	}
 
-	for (int s = 1; s < SCENARIO; ++s)
+	for (int p = 1; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
 		{
@@ -356,7 +356,7 @@ void Demand::_generate_stochastic_demand()
 			{
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d2[s][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
+				_d2[p][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
 				//std::cout <<"scenario" <<s << " " <<t << " " << m  << " " << _d2[s][t][m] << std::endl;
 			}
 		}

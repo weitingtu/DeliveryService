@@ -7,8 +7,8 @@
 #define CAR_TYPE 3     // n 套次1.2.3 
 #define STATION 2      // m 其他轉運中心數  
 
-#define SCENARIO 50    // s 隨機情況 
-#define POLULATION 50
+#define POPULATION 50  // s 隨機情況 
+#define STOCHASTIC_DEMAND 50
 #define TRUCK 2        // 車型17ton truck & container truck
 
 #define MAXWORKTIME 12 // 最大可工作時間 

@@ -35,7 +35,7 @@ Gurobi::Gurobi() :
 	_sum_transfer_demand(),
 	_mean_transfer_demand(),
 	_std_transfer_demand(),
-	_pro({ { 1.0 / SCENARIO } }),
+	_pro({ { 1.0 / POPULATION } }),
 	_num_x1(),
 	_num_y1(),
 	_num_v1(),
@@ -338,7 +338,7 @@ void Gurobi::start()
 	{
 		return;
 	}
-	for (size_t s = 0; s < SCENARIO; ++s)
+	for (size_t s = 0; s < POPULATION; ++s)
 	{
 		printf("Run scenerio %zu\n", s);
 		_run(s);
@@ -1066,7 +1066,7 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 void Gurobi::_generate_stochastic_demand()
 {
 	double r1, r2;
-	for (int s = 1; s < SCENARIO; ++s)
+	for (int s = 1; s < POPULATION; ++s)
 	{ //第二組需求開始
 		for (int t = 0; t < DAY; ++t)
 		{
@@ -1083,7 +1083,7 @@ void Gurobi::_generate_stochastic_demand()
 		}
 	}
 
-	for (int s = 1; s < SCENARIO; ++s)
+	for (int s = 1; s < POPULATION; ++s)
 	{//第二組需求開始
 		for (int t = 0; t < DAY; ++t)
 		{
@@ -1097,7 +1097,7 @@ void Gurobi::_generate_stochastic_demand()
 		}
 	}
 
-	for (int s = 1; s < SCENARIO; ++s)
+	for (int s = 1; s < POPULATION; ++s)
 	{
 		for (int t = 0; t < DAY; ++t)
 		{
@@ -1129,9 +1129,9 @@ bool Gurobi::_read_num_x1(const std::string& x1)
 			{
 				for (int t = 0; t < DAY; ++t)
 				{
-					for (int s = 0; s < SCENARIO; ++s)
+					for (int p = 0; p < POPULATION; ++p)
 					{
-						ifile >> _num_x1[s][t][i][j][k];
+						ifile >> _num_x1[p][t][i][j][k];
 						//std::cout << m << " " << l << " " << k << " " << j << " " << i << " " << _num_x1[m][l][k][j][i] << std::endl;
 					}
 				}
@@ -1157,9 +1157,9 @@ bool Gurobi::_read_num_y1(const std::string& y1)
 		{
 			for (int t = 0; t < DAY; ++t)
 			{
-				for (int s = 0; s < SCENARIO; ++s)
+				for (int p = 0; p < POPULATION; ++p)
 				{
-					ifile >> _num_y1[s][t][j][k];
+					ifile >> _num_y1[p][t][j][k];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_y1[l][k][j][i] << std::endl;
 				}
 			}
@@ -1184,9 +1184,9 @@ bool Gurobi::_read_num_v1(const std::string& v1)
 		{
 			for (int t = 0; t < DAY; ++t)
 			{
-				for (int s = 0; s < SCENARIO; ++s)
+				for (int p = 0; p < POPULATION; ++p)
 				{
-					ifile >> _num_v1[s][t][j][k];
+					ifile >> _num_v1[p][t][j][k];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_v1[l][k][j][i] << std::endl;
 				}
 			}
@@ -1211,9 +1211,9 @@ bool Gurobi::_read_num_v2(const std::string& v2)
 		{
 			for (int t = 0; t < DAY; ++t)
 			{
-				for (int s = 0; s < SCENARIO; ++s)
+				for (int p = 0; p < POPULATION; ++p)
 				{
-					ifile >> _num_v2[s][t][n][m];
+					ifile >> _num_v2[p][t][n][m];
 					//std::cout <<  l << " " << k << " " << j << " " << i << " " << _num_v2[l][k][j][i] << std::endl;
 				}
 			}
@@ -1236,9 +1236,9 @@ bool Gurobi::_read_num_v3(const std::string& v3)
 	{
 		for (int t = 0; t < DAY; ++t)
 		{
-			for (int s = 0; s < SCENARIO; ++s)
+			for (int p = 0; p < POPULATION; ++p)
 			{
-				ifile >> _num_v3[s][t][k];
+				ifile >> _num_v3[p][t][k];
 				//std::cout <<k << " " << j << " " << i << " " << _num_v3[k][j][i] << std::endl;
 			}
 		}

@@ -75,9 +75,9 @@ private:
 
 
 	/* 運量*/
-	std::array<std::array<std::array<std::array<double, TASK>, DISTRICT>, DAY>, SCENARIO> _d1; //在scenerio s下,第 t day, 區域j中,任務k的配送量 
-	std::array<std::array<std::array<double, STATION>, DAY>, SCENARIO> _d2; // 在scenerio s下,第 t day,與其他轉運中心m的配送量
-	std::array<std::array<std::array<double, TASK>, DAY>, SCENARIO> _d3;    // 在scenerio s下,第 t day,大客戶任務k的配送量
+	std::array<std::array<std::array<std::array<double, TASK>, DISTRICT>, DAY>, POPULATION> _d1; //在scenerio s下,第 t day, 區域j中,任務k的配送量 
+	std::array<std::array<std::array<double, STATION>, DAY>, POPULATION> _d2; // 在scenerio s下,第 t day,與其他轉運中心m的配送量
+	std::array<std::array<std::array<double, TASK>, DAY>, POPULATION> _d3;    // 在scenerio s下,第 t day,大客戶任務k的配送量
 
 	/*產生隨機需求*/
 	std::array<std::array<double, TASK>, DISTRICT> _sum_task_demand;  //district task
@@ -97,17 +97,17 @@ private:
 
 	/*50組隨機需求下，月趟次(x1,y1,v1,v2,v3) use other model to generate(totally have 50 set)*/
 
-	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, SCENARIO> _num_x1; // (file:X1)
-	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _num_y1;                    // (file:Y1)
-	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _num_v1;                    // (file:V1)
-	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, SCENARIO> _num_v2;                 // (file:v2)
-	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _num_v3;                                         // (file:v3)
+	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, POPULATION> _num_x1; // (file:X1)
+	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, POPULATION> _num_y1;                    // (file:Y1)
+	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, POPULATION> _num_v1;                    // (file:V1)
+	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, POPULATION> _num_v2;                 // (file:v2)
+	std::array<std::array<std::array<int, TASK>, DAY >, POPULATION> _num_v3;                                         // (file:v3)
 
-	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, SCENARIO> _x1;
-	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _y1;                   
-	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, SCENARIO> _v1;                   
-	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, SCENARIO> _v2;
-	std::array<std::array<std::array<int, TASK>, DAY >, SCENARIO> _v3;                                        
+	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, POPULATION> _x1;
+	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, POPULATION> _y1;                   
+	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, POPULATION> _v1;                   
+	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, POPULATION> _v2;
+	std::array<std::array<std::array<int, TASK>, DAY >, POPULATION> _v3;                                        
 
 	Demand _demand;
 
