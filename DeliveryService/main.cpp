@@ -11,5 +11,8 @@ int main()
 	Demand demand;
 	demand.read();
 
+	Gurobi gurobi;
+	gurobi.monthly_trips(demand);
+
 	return 0;
 }
