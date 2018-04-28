@@ -1,6 +1,6 @@
 #pragma once
 #include "defines.h"
-#include "demand.h"
+#include "demands.h"
 #include <array>
 #include <vector>
 #include <string>
@@ -16,7 +16,7 @@ public:
 	void start();
 	void test() const;
 
-	void monthly_trips(const Demand& demand);
+	void monthly_trips(const Demands& demand);
 
 private:
 	void _run_monthly_trips(size_t scenerio);
@@ -116,6 +116,6 @@ private:
 	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, POPULATION> _v2;
 	std::array<std::array<std::array<int, TASK>, DAY >, POPULATION> _v3;                                        
 
-	Demand _demand;
+	Demands _demand;
 
 };

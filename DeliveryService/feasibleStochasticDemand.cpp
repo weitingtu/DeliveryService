@@ -2,7 +2,7 @@
 
 
 
-FeasibleStochasticDemand::FeasibleStochasticDemand(const Demand & d, const Trips & t)
+FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trips & t)
 {
 }
 

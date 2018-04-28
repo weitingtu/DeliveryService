@@ -1,5 +1,5 @@
 #include "gurobi.h"
-#include "demand.h"
+#include "demands.h"
 
 int main()
 {
@@ -8,7 +8,7 @@ int main()
 	gurobi.start(); */
 
 	//gurobi.test();
-	Demand demand;
+	Demands demand;
 	demand.read();
 
 	Gurobi gurobi;

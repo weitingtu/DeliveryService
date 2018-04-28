@@ -123,7 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="demand.cpp" />
+    <ClCompile Include="demands.cpp" />
     <ClCompile Include="feasibleStochasticDemand.cpp" />
     <ClCompile Include="gurobi.cpp" />
     <ClCompile Include="lowCostPriority.cpp" />
@@ -132,7 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
-    <ClInclude Include="demand.h" />
+    <ClInclude Include="demands.h" />
     <ClInclude Include="feasibleStochasticDemand.h" />
     <ClInclude Include="gurobi.h" />
     <ClInclude Include="lowCostPriority.h" />

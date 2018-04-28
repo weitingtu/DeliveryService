@@ -55,7 +55,7 @@ Gurobi::~Gurobi()
 {
 }
 
-void Gurobi::monthly_trips(const Demand& demand)
+void Gurobi::monthly_trips(const Demands& demand)
 {
 	_demand = demand;
 
@@ -509,7 +509,7 @@ bool Gurobi::_delere_file(const std::string& file_name) const
 	}
 	if (remove(file_name.c_str()) != 0)
 	{
-		printf("Error deleting file %s\n", file_name);
+		printf("Error deleting file %s\n", file_name.c_str());
 		return false;
 	}
 	return true;

@@ -1,6 +1,6 @@
 #pragma once
 #include "defines.h"
-#include "demand.h"
+#include "demands.h"
 #include "trips.h"
 #include <array>
 #include <vector>
@@ -13,11 +13,11 @@ public:
 	LowCostPriority();
 	~LowCostPriority();
 
-	void start(const Demand& demand);
+	void start(const Demands& demand);
 
 private:
 
-	Demand _demand;
+	Demands _demand;
 	Trips  _trips;
 };
 

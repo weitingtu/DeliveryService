@@ -1,6 +1,6 @@
 #pragma once
 #include "defines.h"
-#include "demand.h"
+#include "demands.h"
 #include "trips.h"
 #include <array>
 #include <vector>
@@ -9,7 +9,7 @@
 class FeasibleStochasticDemand
 {
 public:
-	FeasibleStochasticDemand(const Demand& d, const Trips& t);
+	FeasibleStochasticDemand(const Demands& d, const Trips& t);
 	~FeasibleStochasticDemand();
 
 	void start();
@@ -23,7 +23,7 @@ private:
 	double p3; // 自有車駕駛對臨時大客戶任務出車之機率。
 	double pf; // 宅配業者對臨時趟次欲達到的可行機率。
 
-	const Demand _demand;
+	const Demands _demand;
 	Trips _trips;
 
 };

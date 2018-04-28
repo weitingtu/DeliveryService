@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES //產生隨機需求
-#include "demand.h"
+#include "demands.h"
 #include <iostream>
 #include <fstream>
 #include <cmath> 
@@ -7,7 +7,7 @@
 #include <gurobi_c++.h>
 #include <vector>
 
-Demand::Demand() :
+Demands::Demands() :
 	_c1(),
 	_c2(),
 	_b1(),
@@ -41,11 +41,11 @@ Demand::Demand() :
 }
 
 
-Demand::~Demand()
+Demands::~Demands()
 {
 }
 
-void Demand::read()
+void Demands::read()
 {
 	if (!_read_var_cost("input_cost_varcost.txt"))
 	{
@@ -76,7 +76,7 @@ void Demand::read()
 	_generate_stochastic_demand();
 }
 
-bool Demand::_read_var_cost(const std::string& input_cost_varcost)
+bool Demands::_read_var_cost(const std::string& input_cost_varcost)
 {
 	std::ifstream ifile(input_cost_varcost);   // self truck (c1&c2)
 	if (ifile.fail())
@@ -100,7 +100,7 @@ bool Demand::_read_var_cost(const std::string& input_cost_varcost)
 
 }
 
-bool Demand::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
+bool Demands::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
 {
 	std::ifstream ifile(input_cost_outsourcing17); //outsoucing truck and container (b1&b2&a1)
 	if (ifile.fail())
@@ -124,7 +124,7 @@ bool Demand::_read_outsourcing_cost(const std::string& input_cost_outsourcing17)
 
 	return true;
 }
-bool Demand::_read_traveltime(const std::string& input_traveltime)
+bool Demands::_read_traveltime(const std::string& input_traveltime)
 {
 	std::ifstream ifile(input_traveltime);
 	if (ifile.fail())
@@ -145,7 +145,7 @@ bool Demand::_read_traveltime(const std::string& input_traveltime)
 
 	return true;
 }
-bool Demand::_read_d1(const std::string& input_demand_task_collection, const std::string& input_demand_task_sending)
+bool Demands::_read_d1(const std::string& input_demand_task_collection, const std::string& input_demand_task_sending)
 {
 	std::ifstream ifile1(input_demand_task_collection);
 	std::ifstream ifile2(input_demand_task_sending);
@@ -190,7 +190,7 @@ bool Demand::_read_d1(const std::string& input_demand_task_collection, const std
 
 	return true;
 }
-bool Demand::_read_d2(const std::string& input_demand_transfer)
+bool Demands::_read_d2(const std::string& input_demand_transfer)
 {
 	std::ifstream ifile(input_demand_transfer);
 	if (ifile.fail())
@@ -211,7 +211,7 @@ bool Demand::_read_d2(const std::string& input_demand_transfer)
 
 	return true;
 }
-bool Demand::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
+bool Demands::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
 {
 	std::ifstream ifile(input_demand_transfer_majorcoutomer);
 	if (ifile.fail())
@@ -234,7 +234,7 @@ bool Demand::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
 
 	return true;
 }
-void Demand::_generate_stochastic_parameter() //sum, mean, std
+void Demands::_generate_stochastic_parameter() //sum, mean, std
 {    //district task
 	for (int k = 0; k < TASK; ++k)
 	{
@@ -314,7 +314,7 @@ void Demand::_generate_stochastic_parameter() //sum, mean, std
 	}
 
 }
-void Demand::_generate_stochastic_demand()
+void Demands::_generate_stochastic_demand()
 {
 	double r1, r2;
 	for (int p = 1; p < POPULATION; ++p)

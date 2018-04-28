@@ -4,11 +4,11 @@
 #include <vector>
 #include <string>
 
-class Demand
+class Demands
 {
 public:
-	Demand();
-	~Demand();
+	Demands();
+	~Demands();
 
 
 	void read();

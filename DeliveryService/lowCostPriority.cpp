@@ -13,7 +13,7 @@ LowCostPriority::~LowCostPriority()
 {
 }
 
-void LowCostPriority::start(const Demand& demand)
+void LowCostPriority::start(const Demands& demand)
 {
 	_demand = demand;
 }
