@@ -1,6 +1,5 @@
 #include "feasibleStochasticDemand.h"
-
-
+#include "defines.h"
 
 FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trips & t) :
 	_p1(0.99),
@@ -11,7 +10,6 @@ FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trip
 	_trips(t)
 {
 }
-
 
 FeasibleStochasticDemand::~FeasibleStochasticDemand()
 {
@@ -34,9 +32,21 @@ static int _nChoosek(int n, int k)
 
 void FeasibleStochasticDemand::start()
 {
+	for (size_t p = 0; p < POPULATION; ++p)
+	{
+		_start(p);
+	}
 }
 
-int FeasibleStochasticDemand::_get_p1(size_t p) const
+void FeasibleStochasticDemand::_start(size_t p)
+{
+	while ( _get_p1(p) * _get_p2(p) * _get_p3(p) < _pf)
+	{
+		// change x2, y2, x3, y3, x4, y4 to satisfy
+	}
+}
+
+double FeasibleStochasticDemand::_get_p1(size_t p) const
 {
 	int x1 = 0;
 	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
@@ -76,7 +86,7 @@ int FeasibleStochasticDemand::_get_p1(size_t p) const
 	return ((double)_nChoosek(n1, x1)) * std::pow(_p1, x1) * std::pow(1 - _p1, n1 - x1);
 }
 
-int FeasibleStochasticDemand::_get_p2(size_t p) const
+double FeasibleStochasticDemand::_get_p2(size_t p) const
 {
 	int x2 = 0;
 	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
@@ -110,7 +120,7 @@ int FeasibleStochasticDemand::_get_p2(size_t p) const
 	return ((double)_nChoosek(n2, x2)) * std::pow(_p2, x2) * std::pow(1 - _p2, n2 - x2);
 }
 
-int FeasibleStochasticDemand::_get_p3(size_t p) const
+double FeasibleStochasticDemand::_get_p3(size_t p) const
 {
 	int x3 = 0;
 	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
