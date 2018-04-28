@@ -4,6 +4,28 @@
 #include <vector>
 #include <string>
 
+class Demand
+{
+public:
+	Demand();
+	~Demand();
+
+	/* 運量*/
+	const std::array<std::array<double, TASK>, DISTRICT>& d1() const { return _d1; } // 在scenerio s下,第 t day, 區域j中,任務k的配送量 
+	const std::array<double, STATION>& d2() const { return _d2; }                     // 在scenerio s下,第 t day,與其他轉運中心m的配送量
+	const std::array<double, TASK>& d3() const { return _d3; }                       // 在scenerio s下,第 t day,大客戶任務k的配送量
+	std::array<std::array<double, TASK>, DISTRICT>& d1() { return _d1; }       // 在scenerio s下,第 t day, 區域j中,任務k的配送量 
+	std::array<double, STATION>& d2() { return _d2; }                           // 在scenerio s下,第 t day,與其他轉運中心m的配送量
+	std::array<double, TASK>& d3() { return _d3; }                             // 在scenerio s下,第 t day,大客戶任務k的配送量
+
+	friend class Demands;
+private:
+	/* 運量*/
+	std::array<std::array<double, TASK>, DISTRICT> _d1; // 在scenerio s下,第 t day, 區域j中,任務k的配送量 
+	std::array<double, STATION> _d2;                    // 在scenerio s下,第 t day,與其他轉運中心m的配送量
+	std::array<double, TASK> _d3;                       // 在scenerio s下,第 t day,大客戶任務k的配送量
+};
+
 class Demands
 {
 public:
@@ -115,6 +137,5 @@ private:
 
 
 	std::array<double, 1> _pro;
-	
 };
 

@@ -7,6 +7,18 @@
 #include <gurobi_c++.h>
 #include <vector>
 
+Demand::Demand() :
+	_d1(),
+	_d2(),
+	_d3()
+{
+}
+
+
+Demand::~Demand()
+{
+}
+
 Demands::Demands() :
 	_c1(),
 	_c2(),
@@ -36,7 +48,6 @@ Demands::Demands() :
 	_mean_transfer_demand(),
 	_std_transfer_demand(),
 	_pro({ { 1.0 / POPULATION } })
-
 {
 }
 
