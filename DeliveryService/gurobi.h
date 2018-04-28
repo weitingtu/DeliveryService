@@ -1,6 +1,7 @@
 #pragma once
 #include "defines.h"
 #include "demands.h"
+#include "trips.h"
 #include <array>
 #include <vector>
 #include <string>
@@ -116,6 +117,7 @@ private:
 	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, POPULATION> _v2;
 	std::array<std::array<std::array<int, TASK>, DAY >, POPULATION> _v3;                                        
 
-	Demands _demand;
+	Demands _demands;
+	Trips   _trips;
 
 };

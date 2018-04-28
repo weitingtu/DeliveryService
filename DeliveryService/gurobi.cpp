@@ -46,7 +46,8 @@ Gurobi::Gurobi() :
 	_v1(),
 	_v2(),
 	_v3(),
-	_demand()
+	_demands(),
+	_trips()
 {
 }
 
@@ -57,7 +58,7 @@ Gurobi::~Gurobi()
 
 void Gurobi::monthly_trips(const Demands& demand)
 {
-	_demand = demand;
+	_demands = demand;
 
 	//for (size_t p = 0; p < POPULATION; ++p)
 	{
@@ -154,7 +155,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				{
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
-						double c1 = _demand.c1()[j][k];
+						double c1 = _demands.c1()[j][k];
 						//std::cout << c1 << std::endl;
 						obj += c1 * x1[t][i][j][k];
 					}
@@ -167,7 +168,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					double b1 = _demand.b1()[j][k];
+					double b1 = _demands.b1()[j][k];
 					obj += b1 * y1[t][j][k];
 				}
 			}
@@ -178,7 +179,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					double a1 = _demand.a1()[j][k];
+					double a1 = _demands.a1()[j][k];
 					obj += a1 * v1[t][j][k];
 				}
 			}
@@ -223,7 +224,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 					constr *= _load[0];
 					constr += _load[1] * v1[t][j][k];
 
-					double d1 = _demand.d1()[population][t][j][k];
+					double d1 = _demands.d1()[population][t][j][k];
 					model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
 				}
 			}
@@ -242,7 +243,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 
 				constr *= _load[1];
 
-				double d2 = _demand.d2()[population][t][m];
+				double d2 = _demands.d2()[population][t][m];
 				model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
 			}
 		}
@@ -255,7 +256,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				constr += v3[t][k];
 				constr *= _load[1];
 
-				double d3 = _demand.d3()[population][t][k];
+				double d3 = _demands.d3()[population][t][k];
 				model.addConstr(constr >= d3, "c" + std::to_string(constr_count++));
 			}
 		}
@@ -269,7 +270,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 					constr.clear();
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
-						double u1 = _demand.u1()[j][k];
+						double u1 = _demands.u1()[j][k];
 
 						constr += ((u1 * 2) + WORKTIME)*x1[t][i][j][k];
 					}
