@@ -38,6 +38,7 @@ Demands::Demands() :
 	_d1(),
 	_d2(),
 	_d3(),
+	_demands(),
 	_sum_task_demand(),
 	_mean_task_demand(),
 	_std_task_demand(),

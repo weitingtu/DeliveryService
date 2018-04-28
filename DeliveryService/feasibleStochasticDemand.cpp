@@ -18,7 +18,7 @@ static unsigned _nChoosek(int n, int k)
 	if (k == 0) return 1;
 
 	int result = n;
-	for (int i = 2; i <= k; ++i) 
+	for (int i = 2; i <= k; ++i)
 	{
 		result *= (n - i + 1);
 		result /= i;
@@ -43,7 +43,7 @@ int FeasibleStochasticDemand::_get_p1(size_t p) const
 				{
 					for (size_t k = 0; k < TASK; ++k)
 					{
-						x1 += _trips.x2()[p][s][t][i][j][k];
+						x1 += _trips.trips()[p][t].x2()[s][i][j][k];
 					}
 				}
 			}
@@ -59,7 +59,7 @@ int FeasibleStochasticDemand::_get_p1(size_t p) const
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-						n1 += _trips.y2()[p][s][t][j][k];
+					n1 += _trips.trips()[p][t].y2()[s][j][k];
 				}
 			}
 		}
@@ -81,7 +81,7 @@ int FeasibleStochasticDemand::_get_p2(size_t p) const
 			{
 				for (size_t m = 0; m < STATION; ++m)
 				{
-					x2 += _trips.x3()[p][s][t][i][m];
+					x2 += _trips.trips()[p][t].x3()[s][i][m];
 				}
 			}
 		}
@@ -94,9 +94,8 @@ int FeasibleStochasticDemand::_get_p2(size_t p) const
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-					n2 += _trips.y3()[p][s][t][m];
+				n2 += _trips.trips()[p][t].y3()[s][m];
 			}
-			
 		}
 	}
 
@@ -116,7 +115,7 @@ int FeasibleStochasticDemand::_get_p3(size_t p) const
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					x3 += _trips.x4()[p][s][t][i][k];
+					x3 += _trips.trips()[p][t].x4()[s][i][k];
 				}
 			}
 		}
@@ -129,9 +128,8 @@ int FeasibleStochasticDemand::_get_p3(size_t p) const
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-					n3 += _trips.y4()[p][s][t][k];
+				n3 += _trips.trips()[p][t].y4()[s][k];
 			}
-			
 		}
 	}
 

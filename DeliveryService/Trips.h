@@ -85,6 +85,9 @@ public:
 	std::array<std::array<std::array<std::array<std::array<int, TASK>, FLEET>, DAY>, STOCHASTIC_DEMAND>, POPULATION>& x4() { return _x4; }
 	std::array<std::array<std::array<std::array<int, TASK>,  DAY>, STOCHASTIC_DEMAND>, POPULATION>& y4() { return _y4; }
 
+	const std::array<std::array<Trip, DAY>, POPULATION>& trips() const { return _trips; }
+	std::array<std::array<Trip, DAY>, POPULATION>& trips() { return _trips; }
+
 private:
 	/*50組隨機需求下，月趟次(x1,y1,v1,v2,v3) use other model to generate(totally have 50 set)*/
 
@@ -100,4 +103,6 @@ private:
 	std::array<std::array<std::array<std::array<int, STATION>, DAY>, STOCHASTIC_DEMAND>, POPULATION> _y3;
 	std::array<std::array<std::array<std::array<std::array<int, TASK>, FLEET>, DAY>, STOCHASTIC_DEMAND>, POPULATION> _x4;
 	std::array<std::array<std::array<std::array<int, TASK>, DAY>, STOCHASTIC_DEMAND>, POPULATION> _y4;
+
+	std::array<std::array<Trip, DAY>, POPULATION> _trips;
 };
