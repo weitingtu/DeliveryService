@@ -2,7 +2,13 @@
 
 
 
-FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trips & t)
+FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trips & t) :
+	_p1(0.99),
+	_p2(0.99),
+	_p3(0.99),
+	_pf(0.99),
+	_demand(d),
+	_trips(t)
 {
 }
 
@@ -11,7 +17,7 @@ FeasibleStochasticDemand::~FeasibleStochasticDemand()
 {
 }
 
-static unsigned _nChoosek(int n, int k)
+static int _nChoosek(int n, int k)
 {
 	if (k > n) return 0;
 	if (k * 2 > n) k = n - k;
@@ -67,7 +73,7 @@ int FeasibleStochasticDemand::_get_p1(size_t p) const
 
 	n1 += x1;
 
-	return _nChoosek(n1, x1);
+	return ((double)_nChoosek(n1, x1)) * std::pow(_p1, x1) * std::pow(1 - _p1, n1 - x1);
 }
 
 int FeasibleStochasticDemand::_get_p2(size_t p) const
@@ -101,7 +107,7 @@ int FeasibleStochasticDemand::_get_p2(size_t p) const
 
 	n2 += x2;
 
-	return _nChoosek(n2, x2);
+	return ((double)_nChoosek(n2, x2)) * std::pow(_p2, x2) * std::pow(1 - _p2, n2 - x2);
 }
 
 int FeasibleStochasticDemand::_get_p3(size_t p) const
@@ -135,6 +141,6 @@ int FeasibleStochasticDemand::_get_p3(size_t p) const
 
 	n3 += x3;
 
-	return _nChoosek(n3, x3);
+	return ((double)_nChoosek(n3, x3)) * std::pow(_p3, x3) * std::pow(1 - _p3, n3 - x3);
 }
 
