@@ -90,7 +90,7 @@ bool Demand::_read_var_cost(const std::string& input_cost_varcost)
 		{
 			ifile >> _c1[j][k];
 			_c2[j][k] = _c1[j][k] * COST_TEMPORARY_17; //2.5
-		//ok  std::cout << j << " " <<k << " " << _c1[j][k] << std::endl;
+		// std::cout << j << " " <<k << " " << _c1[j][k] << std::endl;
 		//ok std::cout << j << " " << k << " " << _c2[j][k] << std::endl;
 		}
 	}
@@ -137,7 +137,7 @@ bool Demand::_read_traveltime(const std::string& input_traveltime)
 		for (int k = 0; k < TASK; ++k)
 		{
 			ifile >> _u1[j][k];
-			//ok std::cout << j<< " " << k << " " << _u1[j][k] << std::endl;
+			// std::cout << j<< " " << k << " " << _u1[j][k] << std::endl;
 
 		}
 	}
