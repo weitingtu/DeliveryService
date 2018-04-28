@@ -40,11 +40,11 @@ private:
 	void _generate_stochastic_demand();
 	std::string _var_name(std::string str, const std::vector<size_t>& idx) const;
 
-	bool _write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1) const;
-	bool _write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > > & y1) const;
-	bool _write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > > & v1) const;
-	bool _write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > > & v2) const;
-	bool _write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3) const;
+	bool _write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t population);
+	bool _write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > > & y1, size_t population);
+	bool _write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > > & v1, size_t population);
+	bool _write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > > & v2, size_t population);
+	bool _write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3, size_t population);
 
 	bool _write_x2(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x2) const;
 	bool _write_x3(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& x3) const;

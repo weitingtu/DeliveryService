@@ -214,14 +214,14 @@ void Gurobi::_run_monthly_trips(size_t population)
 				for (size_t k = 0; k < TASK; ++k)
 				{
 					constr.clear();
-					
+
 					for (size_t i = 0; i < FLEET; ++i)
 					{
 						constr += x1[t][i][j][k];
 					}
 					constr += y1[t][j][k];
 					constr *= _load[0];
-					constr += _load[1]* v1[t][j][k];
+					constr += _load[1] * v1[t][j][k];
 
 					double d1 = _demand.d1()[population][t][j][k];
 					model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
@@ -238,7 +238,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				{
 					constr += v2[t][n][m];
 				}
-				
+
 
 				constr *= _load[1];
 
@@ -270,13 +270,13 @@ void Gurobi::_run_monthly_trips(size_t population)
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
 						double u1 = _demand.u1()[j][k];
-						
-						constr += ((u1*2)+WORKTIME)*x1[t][i][j][k];
+
+						constr += ((u1 * 2) + WORKTIME)*x1[t][i][j][k];
 					}
 					model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
-				
+
 				}
-				
+
 			}
 		}
 		// Optimize model
@@ -289,27 +289,27 @@ void Gurobi::_run_monthly_trips(size_t population)
 
 		// save result in _x1[population], _y1[population], _v1[population] _v2[population] _v3[population]
 
-		if (!_write_x1("x1.txt", x1))
+		if (!_write_x1("x1.txt", x1, population))
 		{
 			return;
 		}
-		if (!_write_y1("y1.txt", y1))
+		if (!_write_y1("y1.txt", y1, population))
 		{
 			return;
 		}
-		if (!_write_v1("v1.txt", v1))
+		if (!_write_v1("v1.txt", v1, population))
 		{
 			return;
 		}
-		if (!_write_v2("v2.txt", v2))
+		if (!_write_v2("v2.txt", v2, population))
 		{
 			return;
 		}
-		if (!_write_v3("y3.txt", v3))
+		if (!_write_v3("y3.txt", v3, population))
 		{
 			return;
 		}
-		
+
 	}
 	catch (GRBException e) {
 		std::cout << "Error code = " << e.getErrorCode() << std::endl;
@@ -320,7 +320,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 	}
 	system("pause");
 }
-bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1) const
+bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t population)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -328,26 +328,26 @@ bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vect
 		printf("Unable to open %s\n", file_name.c_str());
 		return false;
 	}
-	
-		for (size_t t = 0; t < DAY; ++t)
+
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
 		{
-			for (size_t i = 0; i < FLEET; ++i)
+			for (size_t j = 0; j < DISTRICT; ++j)
 			{
-				for (size_t j = 0; j < DISTRICT; ++j)
+				for (size_t k = 0; k < TASK; ++k)
 				{
-					for (size_t k = 0; k < TASK; ++k)
-					{
 					ofile << x1[t][i][j][k].get(GRB_DoubleAttr_X) << std::endl;
-					
-					}
+					_x1[population][t][i][j][k] = x1[t][i][j][k].get(GRB_DoubleAttr_X);
 				}
 			}
 		}
-	
+	}
+
 	ofile.close();
 	return true;
 }
-bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y1) const
+bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t population)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -357,18 +357,19 @@ bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vect
 	}
 	for (size_t t = 0; t < DAY; ++t)
 	{
-		for (size_t j = 0;j < DISTRICT; ++j)
+		for (size_t j = 0; j < DISTRICT; ++j)
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
 				ofile << y1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
+				_y1[population][t][j][k] = y1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
 	ofile.close();
 	return true;
 }
-bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& v1) const
+bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& v1, size_t population)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -383,13 +384,15 @@ bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vect
 			for (size_t k = 0; k < TASK; ++k)
 			{
 				ofile << v1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
+				_v1[population][t][j][k] = v1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
 	ofile.close();
 	return true;
 }
-bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> >>& v2) const
+
+bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> >>& v2, size_t population)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -399,18 +402,20 @@ bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vect
 	}
 	for (size_t t = 0; t < DAY; ++t)
 	{
-		for(size_t n = 0; n < CAR_TYPE; ++n)
+		for (size_t n = 0; n < CAR_TYPE; ++n)
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-			ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
+				ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
+				_v2[population][t][n][m] = v2[t][n][m].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
 	ofile.close();
 	return true;
 }
-bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3) const
+
+bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3, size_t population)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -423,6 +428,7 @@ bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vect
 		for (size_t k = 0; k < TASK; ++k)
 		{
 			ofile << v3[t][k].get(GRB_DoubleAttr_X) << std::endl;
+			_v3[population][t][k] = v3[t][k].get(GRB_DoubleAttr_X);
 		}
 	}
 	ofile.close();
@@ -510,7 +516,7 @@ bool Gurobi::_delere_file(const std::string& file_name) const
 }
 
 bool Gurobi::_delere_files() const
-{	
+{
 	if (!_delere_file("x1.txt"))
 	{
 		return false;
