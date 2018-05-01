@@ -275,9 +275,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 						constr += ((u1 * 2) + WORKTIME)*x1[t][i][j][k];
 					}
 					model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
-
 				}
-
 			}
 		}
 		// Optimize model

@@ -344,3 +344,74 @@ bool Verify::_verify_x3(size_t p, size_t t, size_t i, size_t s) const
 
 	return sum <= MAXWORKTIME;
 }
+
+// verify (10), (11), (12), (13), (14)
+bool Verify::_verify_x2_x3_x_4_y2_y3_y4(size_t p, size_t t, size_t s) const
+{
+	const Trip& trip = _trips.trips().at(p).at(t);
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				if (trip.x2().at(s).at(i).at(j).at(k) < 0)
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			if (trip.x3().at(s).at(i).at(m) < 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (trip.x4().at(s).at(i).at(k) < 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (trip.y2().at(s).at(j).at(k) < 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		if (trip.y3().at(s).at(m) < 0)
+		{
+			return false;
+		}
+	}
+
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		if (trip.y4().at(s).at(k) < 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
