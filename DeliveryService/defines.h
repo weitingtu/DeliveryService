@@ -11,8 +11,8 @@
 #define STOCHASTIC_DEMAND 50
 #define TRUCK 2        // 車型17ton truck & container truck
 
-#define MAXWORKTIME 12 // 最大可工作時間 
-#define WORKTIME 0.5   // 站所取送貨時間  hr
+#define MAXWORKTIME 12.0 // 最大可工作時間 
+#define WORKTIME 0.5     // 站所取送貨時間  hr
 
 #define COST_TEMPORARY_OUTSOURCING17 2   // 外包17噸貨車臨時配送成本倍率
 #define COST_TEMPORARY_17 2.5            // 自有車輛臨時配送成本倍率

@@ -51,7 +51,7 @@ public:
 	const std::array<double, TASK>   & a3() const { return _a3; } // 外包貨櫃車配送大型客戶 之任務 k 一趟次之費用
 
 	/* capacity*/
-	const std::array<double, TRUCK>& laod() { return _load; } // 17ton&container的容量
+	const std::array<double, TRUCK>& load() const { return _load; } // 17ton&container的容量
 
 
 	/*travel time*/
@@ -64,6 +64,8 @@ public:
 	const std::array<std::array<std::array<std::array<double, TASK>, DISTRICT>, DAY>, POPULATION>& d1() const { return _d1; }//在scenerio s下,第 t day, 區域j中,任務k的配送量 
 	const std::array<std::array<std::array<double, STATION>, DAY>, POPULATION>& d2()const { return _d2; } // 在scenerio s下,第 t day,與其他轉運中心m的配送量
 	const std::array<std::array<std::array<double, TASK>, DAY>, POPULATION>& d3() const { return _d3; }   // 在scenerio s下,第 t day,大客戶任務k的配送量
+
+	const std::array<std::array<Demand, DAY>, POPULATION> demands() const { return _demands; }
 
 	/*產生隨機需求*/
 	const std::array<std::array<double, TASK>, DISTRICT>& sum_task_demand()  const { return _sum_task_demand; } //district task

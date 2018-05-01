@@ -33,6 +33,9 @@
     <ClCompile Include="demands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="verify.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gurobi.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="demands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="verify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

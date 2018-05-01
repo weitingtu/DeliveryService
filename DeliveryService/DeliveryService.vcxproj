@@ -129,6 +129,7 @@
     <ClCompile Include="lowCostPriority.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="trips.cpp" />
+    <ClCompile Include="verify.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="gurobi.h" />
     <ClInclude Include="lowCostPriority.h" />
     <ClInclude Include="trips.h" />
+    <ClInclude Include="verify.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input_cost_outsourcing17.txt" />
