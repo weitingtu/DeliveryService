@@ -13,9 +13,30 @@ Verify::~Verify()
 {
 }
 
-bool Verify::verify(size_t p) const
+bool Verify::verify_momthly(size_t p) const
 {
-	return false;
+	double cost = 0.0;
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (!_verify_v1_v2(p, t, k))
+			{
+				return false;
+			}
+			if (!_verify_v3_v2(p, t, k))
+			{
+				return false;
+			}
+		}
+		if (!_verify_x1_y1_v1_v2_v3(p, t))
+		{
+			return false;
+		}
+		cost += _cost_1(p, t);
+	}
+	printf("cost = %f\n", cost);
+	return true;
 }
 
 // (7)

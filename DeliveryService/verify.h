@@ -13,7 +13,7 @@ public:
 	Verify(const Demands& d, const Trips& t);
 	~Verify();
 
-	bool verify(size_t p) const;
+	bool verify_momthly(size_t p) const;
 
 private:
 	double _cost_1(size_t p, size_t t) const;

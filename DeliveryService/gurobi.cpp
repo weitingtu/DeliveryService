@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES //產生隨機需求
 #include "gurobi.h"
+#include "verify.h"
 #include <iostream>
 #include <fstream>
 #include <cmath> 
@@ -65,6 +66,8 @@ void Gurobi::monthly_trips(const Demands& demand)
 		size_t p = 0;
 		printf("Run population %zu\n", p);
 		_run_monthly_trips(p);
+		Verify v(_demands, _trips);
+//		v.verify_momthly(p);
 	}
 }
 
