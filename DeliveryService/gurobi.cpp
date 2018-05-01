@@ -337,7 +337,8 @@ bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vect
 				for (size_t k = 0; k < TASK; ++k)
 				{
 					ofile << x1[t][i][j][k].get(GRB_DoubleAttr_X) << std::endl;
-					_x1[population][t][i][j][k] = x1[t][i][j][k].get(GRB_DoubleAttr_X);
+					_x1[population][t][i][j][k] = (int) x1[t][i][j][k].get(GRB_DoubleAttr_X);
+					_trips.x1()[population][t][i][j][k] = (int) x1[t][i][j][k].get(GRB_DoubleAttr_X);
 				}
 			}
 		}
@@ -361,7 +362,8 @@ bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vect
 			for (size_t k = 0; k < TASK; ++k)
 			{
 				ofile << y1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
-				_y1[population][t][j][k] = y1[t][j][k].get(GRB_DoubleAttr_X);
+				_y1[population][t][j][k] = (int) y1[t][j][k].get(GRB_DoubleAttr_X);
+				_trips.y1()[population][t][j][k] = (int) y1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
@@ -383,7 +385,8 @@ bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vect
 			for (size_t k = 0; k < TASK; ++k)
 			{
 				ofile << v1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
-				_v1[population][t][j][k] = v1[t][j][k].get(GRB_DoubleAttr_X);
+				_v1[population][t][j][k] = (int) v1[t][j][k].get(GRB_DoubleAttr_X);
+				_trips.v1()[population][t][j][k] = (int) v1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
@@ -406,7 +409,8 @@ bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vect
 			for (size_t m = 0; m < STATION; ++m)
 			{
 				ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
-				_v2[population][t][n][m] = v2[t][n][m].get(GRB_DoubleAttr_X);
+				_v2[population][t][n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
+				_trips.v2()[population][t][n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
@@ -427,7 +431,8 @@ bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vect
 		for (size_t k = 0; k < TASK; ++k)
 		{
 			ofile << v3[t][k].get(GRB_DoubleAttr_X) << std::endl;
-			_v3[population][t][k] = v3[t][k].get(GRB_DoubleAttr_X);
+			_v3[population][t][k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
+			_trips.v3()[population][t][k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
 		}
 	}
 	ofile.close();
@@ -1220,7 +1225,7 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 			_sum_task_demand[j][k] = 0;
 			_mean_task_demand[j][k] = 0;
 			_std_task_demand[j][k] = 0;
-			int temp_var = 0;
+			double temp_var = 0;
 
 			for (int t = 0; t < DAY; ++t)
 			{
@@ -1248,7 +1253,7 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 		_sum_transfer_demand[i] = 0;
 		_mean_transfer_demand[i] = 0;
 		_std_transfer_demand[i] = 0;
-		int temp_var = 0;
+		double temp_var = 0;
 
 		for (int j = 0; j < DAY; ++j)
 		{
@@ -1274,7 +1279,7 @@ void Gurobi::_generate_stochastic_parameter() //sum, mean, std
 		_sum_transfer_majorcustomer[i] = 0;
 		_mean_transfer_majorcustomer[i] = 0;
 		_std_transfer_majorcustomer[i] = 0;
-		int temp_var = 0;
+		double temp_var = 0;
 
 		for (int j = 0; j < DAY; ++j)
 		{
