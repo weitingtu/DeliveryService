@@ -13,6 +13,7 @@ int main()
 
 	Gurobi gurobi;
 	gurobi.monthly_trips(demand);
+	gurobi.daily_trips();
 
 	return 0;
 }

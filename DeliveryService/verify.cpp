@@ -41,6 +41,66 @@ bool Verify::verify_momthly(size_t p) const
 	return true;
 }
 
+bool Verify::verify_daily(size_t p, size_t s) const
+{
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				if (!_verify_x1_y1_x2_y2(p, t, j, k, s))
+				{
+					printf("failed to verify x1 y1 x2 y2\n");
+					return false;
+				}
+			}
+		}
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			if (!_verify_x3_y3(p, t, m, s))
+			{
+				printf("failed to verify x3 y3\n");
+				return false;
+			}
+		}
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (!_verify_x4_y4(p, t, k, s))
+			{
+				printf("failed to verify x4 y4\n");
+				return false;
+			}
+		}
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				if (!_verify_x1_x2_x4(p, t, i, k, s))
+				{
+					printf("failed to verify x1 x2 x4\n");
+					return false;
+				}
+			}
+		}
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			if (!_verify_x3(p, t, i, s))
+			{
+				printf("failed to verify x3\n");
+				return false;
+			}
+		}
+		if (!_verify_x2_x3_x4_y2_y3_y4(p, t, s))
+		{
+			printf("failed to verify x2 x3 x4 y2 y3 y4\n");
+			return false;
+		}
+	}
+	printf("verify daily successfully\n");
+	return true;
+}
+
 // (7)
 double Verify::_cost_1(size_t p, size_t t) const
 {
@@ -378,8 +438,8 @@ bool Verify::_verify_x3(size_t p, size_t t, size_t i, size_t s) const
 	return sum <= MAXWORKTIME;
 }
 
-// verify (10), (11), (12), (13), (14)
-bool Verify::_verify_x2_x3_x_4_y2_y3_y4(size_t p, size_t t, size_t s) const
+// verify (21), (22), (23), (24), (25)
+bool Verify::_verify_x2_x3_x4_y2_y3_y4(size_t p, size_t t, size_t s) const
 {
 	const Trip& trip = _trips.trips().at(p).at(t);
 

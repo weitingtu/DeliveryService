@@ -18,9 +18,11 @@ public:
 	void test() const;
 
 	void monthly_trips(const Demands& demand);
+	void daily_trips();
 
 private:
 	void _run_monthly_trips(size_t scenerio);
+	void _run_daily_trips(size_t population);
 
 	bool _is_file_exist(const std::string& file_name) const;
 	bool _delere_file(const std::string& file_name) const;
@@ -53,6 +55,13 @@ private:
 	bool _write_y2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y2) const;
 	bool _write_y3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y3) const;
 	bool _write_y4(const std::string& file_name, const std::vector<std::vector<GRBVar> >& y4) const;
+
+	void _write_x2(size_t p, size_t s, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x2);
+	void _write_x3(size_t p, size_t s, const std::vector<std::vector<std::vector<GRBVar> > >& x3);
+	void _write_x4(size_t p, size_t s, const std::vector<std::vector<std::vector<GRBVar> > >& x4);
+	void _write_y2(size_t p, size_t s, const std::vector<std::vector<std::vector<GRBVar> > >& y2);
+	void _write_y3(size_t p, size_t s, const std::vector<std::vector<GRBVar> >& y3);
+	void _write_y4(size_t p, size_t s, const std::vector<std::vector<GRBVar> >& y4);
 
 
 	/*cost*/
