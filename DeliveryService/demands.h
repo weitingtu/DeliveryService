@@ -61,11 +61,7 @@ public:
 
 
 	/* 運量*/
-	const std::array<std::array<std::array<std::array<double, TASK>, DISTRICT>, DAY>, POPULATION>& d1() const { return _d1; }//在scenerio s下,第 t day, 區域j中,任務k的配送量 
-	const std::array<std::array<std::array<double, STATION>, DAY>, POPULATION>& d2()const { return _d2; } // 在scenerio s下,第 t day,與其他轉運中心m的配送量
-	const std::array<std::array<std::array<double, TASK>, DAY>, POPULATION>& d3() const { return _d3; }   // 在scenerio s下,第 t day,大客戶任務k的配送量
-
-	const std::array<std::array<Demand, DAY>, POPULATION> demands() const { return _demands; }
+	const std::vector<std::vector<Demand> > demands() const { return _demands; }
 
 	/*產生隨機需求*/
 	const std::array<std::array<double, TASK>, DISTRICT>& sum_task_demand()  const { return _sum_task_demand; } //district task
@@ -120,11 +116,7 @@ private:
 
 
 	/* 運量*/
-	std::array<std::array<std::array<std::array<double, TASK>, DISTRICT>, DAY>, POPULATION> _d1; //在scenerio s下,第 t day, 區域j中,任務k的配送量 
-	std::array<std::array<std::array<double, STATION>, DAY>, POPULATION> _d2; // 在scenerio s下,第 t day,與其他轉運中心m的配送量
-	std::array<std::array<std::array<double, TASK>, DAY>, POPULATION> _d3;    // 在scenerio s下,第 t day,大客戶任務k的配送量
-
-	std::array<std::array<Demand, DAY>, POPULATION> _demands; 
+	std::vector<std::vector<Demand> > _demands; 
 																			/*產生隨機需求*/
 	std::array<std::array<double, TASK>, DISTRICT> _sum_task_demand;  //district task
 	std::array<std::array<double, TASK>, DISTRICT> _mean_task_demand;

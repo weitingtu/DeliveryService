@@ -35,9 +35,6 @@ Demands::Demands() :
 	_u1(),
 	_u2({ { 2, 4 } }),
 	_u3({ { 1.11, 1.11 } }),
-	_d1(),
-	_d2(),
-	_d3(),
 	_demands(),
 	_sum_task_demand(),
 	_mean_task_demand(),
@@ -50,6 +47,11 @@ Demands::Demands() :
 	_std_transfer_demand(),
 	_pro({ { 1.0 / POPULATION } })
 {
+	_demands.resize(POPULATION);
+	for (size_t p = 0; p < POPULATION; ++p)
+	{
+		_demands[p].resize(DAY);
+	}
 }
 
 
@@ -179,7 +181,7 @@ bool Demands::_read_d1(const std::string& input_demand_task_collection, const st
 			{
 				for (int t = 0; t < DAY; ++t)
 				{
-					ifile1 >> _d1[0][t][j][k]; //第一組需求		stjk
+					//ifile1 >> _d1[0][t][j][k]; //第一組需求		stjk
 					//ok std::cout << t << " " <<j<< " "<<k<<" " << _d1[0][t][j][k] << std::endl;
 					ifile1 >> _demands[0][t].d1()[j][k];
 				}
@@ -191,7 +193,7 @@ bool Demands::_read_d1(const std::string& input_demand_task_collection, const st
 			{
 				for (int t = 0; t < DAY; ++t)
 				{
-					ifile2 >> _d1[0][t][j][k]; //第一組需求	
+					//ifile2 >> _d1[0][t][j][k]; //第一組需求	
 					//ok  std::cout << t << " " <<j<< " "<<k<<" " << _d1[0][t][j][k] << std::endl;
 					ifile2 >> _demands[0][t].d1()[j][k];
 				}
@@ -216,7 +218,7 @@ bool Demands::_read_d2(const std::string& input_demand_transfer)
 	{
 		for (int t = 0; t < DAY; ++t)
 		{
-			ifile >> _d2[0][t][m]; //第一組需求
+			//ifile >> _d2[0][t][m]; //第一組需求
 			//ok std::cout << t << " " << m << " " << _d2[0][t][m] << std::endl;
 			ifile >> _demands[0][t].d2()[m];//第一組需求
 		}
@@ -238,7 +240,7 @@ bool Demands::_read_d3(const std::string& input_demand_transfer_majorcoutomer)
 	{
 		for (int t = 0; t < DAY; ++t)
 		{
-			ifile >> _d3[0][t][k]; //第一組需求
+			//ifile >> _d3[0][t][k]; //第一組需求
 			 //ok std::cout << t << " " << k << " " << _d3[0][t][k] << std::endl;
 			ifile >> _demands[0][t].d3()[k]; //第一組需求
 		}
@@ -257,18 +259,20 @@ void Demands::_generate_stochastic_parameter() //sum, mean, std
 			_sum_task_demand[j][k] = 0;
 			_mean_task_demand[j][k] = 0;
 			_std_task_demand[j][k] = 0;
-			int temp_var = 0;
+			double temp_var = 0;
 
 			for (int t = 0; t < DAY; ++t)
 			{
-				_sum_task_demand[j][k] += _d1[0][t][j][k];
+				//_sum_task_demand[j][k] += _d1[0][t][j][k];
+				_sum_task_demand[j][k] += _demands[0][t].d1()[j][k];
 			}
 
 			_mean_task_demand[j][k] = (_sum_task_demand[j][k] / DAY);
 
 			for (int t = 0; t < DAY; ++t)
 			{
-				temp_var += pow((_d1[0][t][j][k] - _mean_task_demand[j][k]), 2);
+				//temp_var += pow((_d1[0][t][j][k] - _mean_task_demand[j][k]), 2);
+				temp_var += pow((_demands[0][t].d1()[j][k] - _mean_task_demand[j][k]), 2);
 			}
 
 			_std_task_demand[j][k] = pow((temp_var / DAY), 0.5);
@@ -279,54 +283,58 @@ void Demands::_generate_stochastic_parameter() //sum, mean, std
 	}
 
 	//transshipment task
-	for (int i = 0; i < STATION; ++i) {
-		_sum_transfer_demand[i] = 0;
-		_mean_transfer_demand[i] = 0;
-		_std_transfer_demand[i] = 0;
-		int temp_var = 0;
+	for (int m = 0; m < STATION; ++m) {
+		_sum_transfer_demand[m] = 0;
+		_mean_transfer_demand[m] = 0;
+		_std_transfer_demand[m] = 0;
+		double temp_var = 0;
 
-		for (int j = 0; j < DAY; ++j)
+		for (int t = 0; t < DAY; ++t)
 		{
-			_sum_transfer_demand[i] += _d2[0][j][i];
+			//_sum_transfer_demand[i] += _d2[0][j][i];
+			_sum_transfer_demand[m] += _demands[0][t].d2()[m];
 		}
 
-		_mean_transfer_demand[i] = (_sum_transfer_demand[i] / DAY);
+		_mean_transfer_demand[m] = (_sum_transfer_demand[m] / DAY);
 
-		for (int k = 0; k < DAY; ++k)
+		for (int t = 0; t < DAY; ++t)
 		{
-			temp_var += pow((_d2[0][k][i] - _mean_transfer_demand[i]), 2);
+			//temp_var += pow((_d2[0][t][m] - _mean_transfer_demand[m]), 2);
+			temp_var += pow((_demands[0][t].d2()[m] - _mean_transfer_demand[m]), 2);
 		}
-		_std_transfer_demand[i] = pow((temp_var / DAY), 0.5);
+		_std_transfer_demand[m] = pow((temp_var / DAY), 0.5);
 		//ok std::cout << i << " " << _sum_transfer_demand[i] << std::endl;
 		//ok std::cout << i << " " << _mean_transfer_demand[i] << std::endl;
 		//ok std::cout << i << " " << _std_transfer_demand[i] << std::endl;
 	}
 
 	//major customer
-	for (int i = 0; i < TASK; ++i)
+	for (int k = 0; k < TASK; ++k)
 	{
-		_sum_transfer_majorcustomer[i] = 0;
-		_mean_transfer_majorcustomer[i] = 0;
-		_std_transfer_majorcustomer[i] = 0;
-		int temp_var = 0;
+		_sum_transfer_majorcustomer[k] = 0;
+		_mean_transfer_majorcustomer[k] = 0;
+		_std_transfer_majorcustomer[k] = 0;
+		double temp_var = 0;
 
-		for (int j = 0; j < DAY; ++j)
+		for (int t = 0; t < DAY; ++t)
 		{
-			_sum_transfer_majorcustomer[i] += _d3[0][j][i];
+			//_sum_transfer_majorcustomer[k] += _d3[0][t][k];
+			_sum_transfer_majorcustomer[k] += _demands[0][t].d3()[k];
 		}
-		_mean_transfer_majorcustomer[i] = (_sum_transfer_majorcustomer[i] / DAY);
+		_mean_transfer_majorcustomer[k] = (_sum_transfer_majorcustomer[k] / DAY);
 
-		for (int k = 0; k < DAY; ++k)
+		for (int t = 0; t < DAY; ++t)
 		{
-			temp_var += pow((_d3[0][k][i] - _mean_transfer_majorcustomer[i]), 2);
+			//temp_var += pow((_d3[0][t][k] - _mean_transfer_majorcustomer[k]), 2);
+			temp_var += pow((_demands[0][t].d3()[k] - _mean_transfer_majorcustomer[k]), 2);
 		}
-		_std_transfer_majorcustomer[i] = pow((temp_var / DAY), 0.5);
+		_std_transfer_majorcustomer[k] = pow((temp_var / DAY), 0.5);
 		//ok std::cout << i << " " << _sum_transfer_majorcustomer[i] << std::endl;
 		//ok std::cout << i << " " << _mean_transfer_majorcustomer[i] << std::endl;
 		//std::cout << i << " " << _std_transfer_majorcustomer[i] << std::endl;
 	}
-
 }
+
 void Demands::_generate_stochastic_demand()
 {
 	double r1, r2;
@@ -340,7 +348,7 @@ void Demands::_generate_stochastic_demand()
 				{
 					r1 = rand() / (double)RAND_MAX;
 					r2 = rand() / (double)RAND_MAX;
-					_d1[p][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
+					//_d1[p][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
 					//std::cout <<"scenario" <<s << " " <<t << " " << j << " " << k<< " " << _d1[s][t][j][k] << std::endl;
 					_demands[p][t].d1()[j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
 				}
@@ -356,7 +364,7 @@ void Demands::_generate_stochastic_demand()
 			{
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d3[p][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
+				//_d3[p][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
 				//std::cout <<"scenario" <<s << " " << t << " " << k  << " " << _d3[s][t][k] << std::endl;
 				_demands[p][t].d3()[k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
 			}
@@ -371,7 +379,7 @@ void Demands::_generate_stochastic_demand()
 			{
 				r1 = rand() / (double)RAND_MAX;
 				r2 = rand() / (double)RAND_MAX;
-				_d2[p][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
+				//_d2[p][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
 				//std::cout <<"scenario" <<s << " " <<t << " " << m  << " " << _d2[s][t][m] << std::endl;
 				_demands[p][t].d2()[m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
 			}

@@ -26,11 +26,13 @@ bool Verify::verify_momthly(size_t p) const
 			}
 			if (!_verify_v3_v2(p, t, k))
 			{
+				printf("failed to verify v3 v2\n");
 				return false;
 			}
 		}
 		if (!_verify_x1_y1_v1_v2_v3(p, t))
 		{
+			printf("failed to verify x1 y1 v1 v2 v3\n");
 			return false;
 		}
 		cost += _cost_1(p, t);
@@ -106,11 +108,16 @@ bool Verify::_verify_v1_v2(size_t p, size_t t, size_t k) const
 	{
 		for (size_t m = 0; m < STATION; ++m)
 		{
-			sum_v2 += trip.v1().at(n).at(m);
+			sum_v2 += trip.v2().at(n).at(m);
 		}
 	}
 
-	return sum_v1 >= sum_v2;
+	if (sum_v1 < sum_v2)
+	{
+		printf("failed to verify v1 v2 p:%zu t:%zu k:%zu sum v1 %d < sum v2 %d\n", p, t, k, sum_v1, sum_v2);
+		return false;
+	}
+	return true;
 }
 
 // verify (9)
@@ -125,11 +132,16 @@ bool Verify::_verify_v3_v2(size_t p, size_t t, size_t k) const
 	{
 		for (size_t m = 0; m < STATION; ++m)
 		{
-			sum_v2 += trip.v1().at(n).at(m);
+			sum_v2 += trip.v2().at(n).at(m);
 		}
 	}
 
-	return v3 >= sum_v2;
+	if (v3 < sum_v2)
+	{
+		printf("failed to verify v3 v2 p:%zu t:%zu k:%zu v3 %d < sum v2 %d\n", p, t, k, v3, sum_v2);
+		return false;
+	}
+	return true;
 }
 
 // verify (10), (11), (12), (13), (14)

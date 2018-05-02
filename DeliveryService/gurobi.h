@@ -111,12 +111,6 @@ private:
 	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, POPULATION> _num_v2;                 // (file:v2)
 	std::array<std::array<std::array<int, TASK>, DAY >, POPULATION> _num_v3;                                         // (file:v3)
 
-	std::array<std::array<std::array<std::array<std::array<int, TASK>, DISTRICT >, FLEET>, DAY>, POPULATION> _x1;
-	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, POPULATION> _y1;                   
-	std::array<std::array<std::array<std::array<int, TASK>, DISTRICT>, DAY>, POPULATION> _v1;                   
-	std::array<std::array<std::array<std::array<int, STATION>, CAR_TYPE >, DAY>, POPULATION> _v2;
-	std::array<std::array<std::array<int, TASK>, DAY >, POPULATION> _v3;                                        
-
 	Demands _demands;
 	Trips   _trips;
 

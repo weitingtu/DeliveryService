@@ -42,11 +42,6 @@ Gurobi::Gurobi() :
 	_num_v1(),
 	_num_v2(),
 	_num_v3(),
-	_x1(),
-	_y1(),
-	_v1(),
-	_v2(),
-	_v3(),
 	_demands(),
 	_trips()
 {
@@ -67,11 +62,11 @@ void Gurobi::monthly_trips(const Demands& demand)
 		printf("Run population %zu\n", p);
 		_run_monthly_trips(p);
 		Verify v(_demands, _trips);
-//		v.verify_momthly(p);
+		v.verify_momthly(p);
 	}
 }
 
-void Gurobi::_run_monthly_trips(size_t population)
+void Gurobi::_run_monthly_trips(size_t p)
 {
 	// add gurobi to solve lp here
 	try {
@@ -102,6 +97,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				}
 			}
 		}
+
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			y1[t].resize(DISTRICT);
@@ -114,6 +110,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				}
 			}
 		}
+
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			v1[t].resize(DISTRICT);
@@ -126,6 +123,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				}
 			}
 		}
+
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			v2[t].resize(CAR_TYPE);
@@ -138,6 +136,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				}
 			}
 		}
+
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			v3[t].resize(TASK);
@@ -146,6 +145,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				v3[t][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("v3", { t, k }));
 			}
 		}
+
 		model.update();
 		// Set objective: 
 		model.set(GRB_IntAttr_ModelSense, 1);
@@ -210,7 +210,119 @@ void Gurobi::_run_monthly_trips(size_t population)
 		// Add constraint: 
 		int constr_count = 0;
 		GRBLinExpr constr = 0.0;
-		//(16)without daily trips
+
+		// (8)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				constr.clear();
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					constr += v1[t][j][k];
+				}
+
+				for (size_t n = 0; n < CAR_TYPE; ++n)
+				{
+					for (size_t m = 0; m < STATION; ++m)
+					{
+						constr -= v2[t][n][m];
+					}
+				}
+				model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+			}
+		}
+
+		// (9)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				constr.clear();
+				constr += v3[t][k];
+
+				for (size_t n = 0; n < CAR_TYPE; ++n)
+				{
+					for (size_t m = 0; m < STATION; ++m)
+					{
+						constr -= v2[t][n][m];
+					}
+				}
+				model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+			}
+		}
+
+		// (10)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						constr.clear();
+						constr += x1[t][i][j][k];
+						model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+					}
+				}
+			}
+		}
+
+		// (11)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					constr.clear();
+					constr += y1[t][j][k];
+					model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+				}
+			}
+		}
+
+		// (12)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					constr.clear();
+					constr += v1[t][j][k];
+					model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+				}
+			}
+		}
+
+		// (13)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t n = 0; n < CAR_TYPE; ++n)
+			{
+				for (size_t m = 0; m < STATION; ++m)
+				{
+					constr.clear();
+					constr += v2[t][n][m];
+					model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+				}
+			}
+		}
+
+		// (14)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				constr.clear();
+				constr += v3[t][k];
+				model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
+			}
+		}
+
+		// (16) without daily trips
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			for (size_t j = 0; j < DISTRICT; ++j)
@@ -227,7 +339,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 					constr *= _load[0];
 					constr += _load[1] * v1[t][j][k];
 
-					double d1 = _demands.d1()[population][t][j][k];
+					double d1 = _demands.demands()[p][t].d1()[j][k];
 					model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
 				}
 			}
@@ -246,7 +358,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 
 				constr *= _load[1];
 
-				double d2 = _demands.d2()[population][t][m];
+				double d2 = _demands.demands()[p][t].d2()[m];
 				model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
 			}
 		}
@@ -259,7 +371,7 @@ void Gurobi::_run_monthly_trips(size_t population)
 				constr += v3[t][k];
 				constr *= _load[1];
 
-				double d3 = _demands.d3()[population][t][k];
+				double d3 = _demands.demands()[p][t].d3()[k];
 				model.addConstr(constr >= d3, "c" + std::to_string(constr_count++));
 			}
 		}
@@ -291,23 +403,23 @@ void Gurobi::_run_monthly_trips(size_t population)
 
 		// save result in _x1[population], _y1[population], _v1[population] _v2[population] _v3[population]
 
-		if (!_write_x1("x1.txt", x1, population))
+		if (!_write_x1("x1.txt", x1, p))
 		{
 			return;
 		}
-		if (!_write_y1("y1.txt", y1, population))
+		if (!_write_y1("y1.txt", y1, p))
 		{
 			return;
 		}
-		if (!_write_v1("v1.txt", v1, population))
+		if (!_write_v1("v1.txt", v1, p))
 		{
 			return;
 		}
-		if (!_write_v2("v2.txt", v2, population))
+		if (!_write_v2("v2.txt", v2, p))
 		{
 			return;
 		}
-		if (!_write_v3("y3.txt", v3, population))
+		if (!_write_v3("y3.txt", v3, p))
 		{
 			return;
 		}
@@ -320,9 +432,8 @@ void Gurobi::_run_monthly_trips(size_t population)
 	catch (...) {
 		std::cout << "Exception during optimization" << std::endl;
 	}
-	system("pause");
 }
-bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t population)
+bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t p)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -340,8 +451,7 @@ bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vect
 				for (size_t k = 0; k < TASK; ++k)
 				{
 					ofile << x1[t][i][j][k].get(GRB_DoubleAttr_X) << std::endl;
-					_x1[population][t][i][j][k] = (int) x1[t][i][j][k].get(GRB_DoubleAttr_X);
-					_trips.x1()[population][t][i][j][k] = (int) x1[t][i][j][k].get(GRB_DoubleAttr_X);
+					_trips.trips()[p][t].x1()[i][j][k] = (int)x1[t][i][j][k].get(GRB_DoubleAttr_X);
 				}
 			}
 		}
@@ -350,7 +460,7 @@ bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vect
 	ofile.close();
 	return true;
 }
-bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t population)
+bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t p)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -365,15 +475,14 @@ bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vect
 			for (size_t k = 0; k < TASK; ++k)
 			{
 				ofile << y1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
-				_y1[population][t][j][k] = (int) y1[t][j][k].get(GRB_DoubleAttr_X);
-				_trips.y1()[population][t][j][k] = (int) y1[t][j][k].get(GRB_DoubleAttr_X);
+				_trips.trips()[p][t].y1()[j][k] = (int)y1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
 	ofile.close();
 	return true;
 }
-bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& v1, size_t population)
+bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& v1, size_t p)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -388,8 +497,7 @@ bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vect
 			for (size_t k = 0; k < TASK; ++k)
 			{
 				ofile << v1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
-				_v1[population][t][j][k] = (int) v1[t][j][k].get(GRB_DoubleAttr_X);
-				_trips.v1()[population][t][j][k] = (int) v1[t][j][k].get(GRB_DoubleAttr_X);
+				_trips.trips()[p][t].v1()[j][k] = (int)v1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
@@ -397,7 +505,7 @@ bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vect
 	return true;
 }
 
-bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> >>& v2, size_t population)
+bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> >>& v2, size_t p)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -412,8 +520,7 @@ bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vect
 			for (size_t m = 0; m < STATION; ++m)
 			{
 				ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
-				_v2[population][t][n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
-				_trips.v2()[population][t][n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
+				_trips.trips()[p][t].v2()[n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
@@ -421,7 +528,7 @@ bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vect
 	return true;
 }
 
-bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3, size_t population)
+bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3, size_t p)
 {
 	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
 	if (ofile.fail())
@@ -434,8 +541,7 @@ bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vect
 		for (size_t k = 0; k < TASK; ++k)
 		{
 			ofile << v3[t][k].get(GRB_DoubleAttr_X) << std::endl;
-			_v3[population][t][k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
-			_trips.v3()[population][t][k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
+			_trips.trips()[p][t].v3()[k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
 		}
 	}
 	ofile.close();
