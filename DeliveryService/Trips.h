@@ -62,6 +62,14 @@ public:
 	const std::vector<std::vector<Trip> >& trips() const { return _trips; }
 	std::vector<std::vector<Trip> >& trips() { return _trips; }
 
+	bool read_monthly_trips();
+
 private:
+	bool _read_num_x1(const std::string& x1);
+	bool _read_num_y1(const std::string& y1);
+	bool _read_num_v1(const std::string& v1);
+	bool _read_num_v2(const std::string& v2);
+	bool _read_num_v3(const std::string& v3);
+
 	std::vector<std::vector<Trip> > _trips;
 };

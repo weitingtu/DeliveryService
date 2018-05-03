@@ -3,10 +3,6 @@
 
 int main()
 {
-	/*Gurobi gurobi;
-	gurobi.read();
-	gurobi.start(); */
-
 	//gurobi.test();
 	Demands demand;
 	demand.read();
