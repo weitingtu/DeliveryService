@@ -252,76 +252,6 @@ void Gurobi::_run_monthly_trips(size_t p)
 			}
 		}
 
-		// (10)
-		//for (size_t t = 0; t < DAY; ++t)
-		//{
-		//	for (size_t i = 0; i < FLEET; ++i)
-		//	{
-		//		for (size_t j = 0; j < DISTRICT; ++j)
-		//		{
-		//			for (size_t k = 0; k < TASK; ++k)
-		//			{
-		//				constr.clear();
-		//				constr += x1[t][i][j][k];
-		//				model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
-		//			}
-		//		}
-		//	}
-		//}
-
-		// (11)
-		//for (size_t t = 0; t < DAY; ++t)
-		//{
-		//	for (size_t j = 0; j < DISTRICT; ++j)
-		//	{
-		//		for (size_t k = 0; k < TASK; ++k)
-		//		{
-		//			constr.clear();
-		//			constr += y1[t][j][k];
-		//			model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
-		//		}
-		//	}
-		//}
-
-		// (12)
-		//for (size_t t = 0; t < DAY; ++t)
-		//{
-		//	for (size_t j = 0; j < DISTRICT; ++j)
-		//	{
-		//		for (size_t k = 0; k < TASK; ++k)
-		//		{
-		//			constr.clear();
-		//			constr += v1[t][j][k];
-		//			model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
-		//		}
-		//	}
-		//}
-
-		// (13)
-		//for (size_t t = 0; t < DAY; ++t)
-		//{
-		//	for (size_t n = 0; n < CAR_TYPE; ++n)
-		//	{
-		//		for (size_t m = 0; m < STATION; ++m)
-		//		{
-		//			constr.clear();
-		//			constr += v2[t][n][m];
-		//			model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
-		//		}
-		//	}
-		//}
-
-		// (14)
-		//for (size_t t = 0; t < DAY; ++t)
-		//{
-		//	for (size_t k = 0; k < TASK; ++k)
-		//	{
-		//		constr.clear();
-		//		constr += v3[t][k];
-		//		model.addConstr(constr >= 0, "c" + std::to_string(constr_count++));
-		//	}
-		//}
-
 		// (16) without daily trips
 		for (size_t t = 0; t < DAY; ++t)
 		{
@@ -551,17 +481,19 @@ bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vect
 
 void Gurobi::daily_trips()
 {
-	//for (size_t s = 0; s < POPULATION; ++s)
+	//for (size_t p = 0; p < POPULATION; ++p)
+	//for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
+		size_t p = 0;
 		size_t s = 0;
-		printf("Run population %zu\n", s);
-		_run_daily_trips(s);
+		printf("Run population %zu stochastic demand %zu\n", p, s);
+		_run_daily_trips(p, s);
 		Verify v(_demands, _trips);
-		v.verify_daily (s, s);
+		v.verify_daily (p, s);
 	}
 }
 
-void Gurobi::_run_daily_trips(size_t p)
+void Gurobi::_run_daily_trips(size_t p, size_t s)
 {
 	// add gurobi to solve lp here
 	try {
@@ -668,7 +600,6 @@ void Gurobi::_run_daily_trips(size_t p)
 				{
 					for (size_t k = 0; k < TASK; ++k)
 					{
-						//double c2 = _c2[j][k];
 						double c2 = _demands.c2()[j][k];
 						obj += c2 * x2[t][i][j][k];
 					}
@@ -682,7 +613,6 @@ void Gurobi::_run_daily_trips(size_t p)
 			{
 				for (size_t m = 0; m < STATION; ++m)
 				{
-					//double c3 = _c3[m];
 					double c3 = _demands.c3()[m];
 					obj += c3 * x3[t][i][m];
 				}
@@ -746,7 +676,7 @@ void Gurobi::_run_daily_trips(size_t p)
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			const Trip& trip = _trips.trips()[p][t];
-			const Demand& demand = _demands.demands()[p][t];
+			const Demand& demand = _demands.demands()[s][t];
 
 			for (size_t j = 0; j < DISTRICT; ++j)
 			{
@@ -782,7 +712,7 @@ void Gurobi::_run_daily_trips(size_t p)
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			const Trip& trip = _trips.trips()[p][t];
-			const Demand& demand = _demands.demands()[p][t];
+			const Demand& demand = _demands.demands()[s][t];
 
 			for (size_t m = 0; m < STATION; ++m)
 			{
@@ -810,7 +740,7 @@ void Gurobi::_run_daily_trips(size_t p)
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			const Trip& trip = _trips.trips()[p][t];
-			const Demand& demand = _demands.demands()[p][t];
+			const Demand& demand = _demands.demands()[s][t];
 
 			for (size_t k = 0; k < TASK; ++k)
 			{
@@ -834,7 +764,7 @@ void Gurobi::_run_daily_trips(size_t p)
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			const Trip& trip = _trips.trips()[p][t];
-			const Demand& demand = _demands.demands()[p][t];
+			const Demand& demand = _demands.demands()[s][t];
 
 			for (size_t i = 0; i < FLEET; ++i)
 			{
@@ -869,7 +799,7 @@ void Gurobi::_run_daily_trips(size_t p)
 		for (size_t t = 0; t < DAY; ++t)
 		{
 			const Trip& trip = _trips.trips()[p][t];
-			const Demand& demand = _demands.demands()[p][t];
+			const Demand& demand = _demands.demands()[s][t];
 
 			for (size_t i = 0; i < FLEET; ++i)
 			{
@@ -892,12 +822,12 @@ void Gurobi::_run_daily_trips(size_t p)
 
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
-		_write_x2(p, p, x2);
-		_write_x3(p, p, x3);
-		_write_x4(p, p, x4);
-		_write_y2(p, p, y2);
-		_write_y3(p, p, y3);
-		_write_y4(p, p, y4);
+		_write_x2(p, s, x2);
+		_write_x3(p, s, x3);
+		_write_x4(p, s, x4);
+		_write_y2(p, s, y2);
+		_write_y3(p, s, y3);
+		_write_y4(p, s, y4);
 	}
 	catch (GRBException e) {
 		std::cout << "Error code = " << e.getErrorCode() << std::endl;

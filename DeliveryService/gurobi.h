@@ -22,7 +22,7 @@ public:
 
 private:
 	void _run_monthly_trips(size_t scenerio);
-	void _run_daily_trips(size_t population);
+	void _run_daily_trips(size_t population, size_t s);
 
 	bool _is_file_exist(const std::string& file_name) const;
 	bool _delere_file(const std::string& file_name) const;
