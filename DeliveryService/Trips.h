@@ -63,13 +63,23 @@ public:
 	std::vector<std::vector<Trip> >& trips() { return _trips; }
 
 	bool read_monthly_trips();
+	bool read_daily_trips();
+	bool write_monthly_trips() const;
+	bool write_daily_trips() const;
 
 private:
-	bool _read_num_x1(const std::string& x1);
-	bool _read_num_y1(const std::string& y1);
-	bool _read_num_v1(const std::string& v1);
-	bool _read_num_v2(const std::string& v2);
-	bool _read_num_v3(const std::string& v3);
+	bool _read_x1(const std::string& x1);
+	bool _read_y1(const std::string& y1);
+	bool _read_v1(const std::string& v1);
+	bool _read_v2(const std::string& v2);
+	bool _read_v3(const std::string& v3);
+
+	bool _write_x1(const std::string& file_name) const;
+	bool _write_y1(const std::string& file_name) const;
+	bool _write_v1(const std::string& file_name) const;
+	bool _write_v2(const std::string& file_name) const;
+	bool _write_v3(const std::string& file_name) const;
+
 
 	std::vector<std::vector<Trip> > _trips;
 };
