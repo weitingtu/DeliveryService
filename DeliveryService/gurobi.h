@@ -10,12 +10,12 @@
 class Gurobi
 {
 public:
-	Gurobi();
+	Gurobi(const Demands& d, Trips& t);
 	~Gurobi();
 
 	void test() const;
 
-	void monthly_trips(const Demands& demand);
+	void monthly_trips();
 	void daily_trips();
 
 private:
@@ -40,7 +40,7 @@ private:
 	void _write_y3(size_t p, size_t s, const std::vector<std::vector<GRBVar> >& y3);
 	void _write_y4(size_t p, size_t s, const std::vector<std::vector<GRBVar> >& y4);
 
-	Demands _demands;
-	Trips   _trips;
+	const Demands& _demands;
+	Trips&         _trips;
 
 };

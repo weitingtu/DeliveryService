@@ -8,24 +8,21 @@
 #include <gurobi_c++.h>
 #include <vector>
 
-Gurobi::Gurobi() :
-	_demands(),
-	_trips()
+Gurobi::Gurobi(const Demands& d, Trips& t) :
+	_demands(d),
+	_trips(t)
 {
 }
-
 
 Gurobi::~Gurobi()
 {
 }
 
-void Gurobi::monthly_trips(const Demands& demand)
+void Gurobi::monthly_trips()
 {
-	_demands = demand;
-
-	//for (size_t p = 0; p < POPULATION; ++p)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
-		size_t p = 0;
+		//size_t p = 0;
 		printf("Run population %zu\n", p);
 		_run_monthly_trips(p);
 		Verify v(_demands, _trips);
@@ -333,116 +330,81 @@ void Gurobi::_run_monthly_trips(size_t p)
 
 bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t p)
 {
-	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
-	if (ofile.fail())
-	{
-		printf("Unable to open %s\n", file_name.c_str());
-		return false;
-	}
-
 	for (size_t t = 0; t < DAY; ++t)
 	{
+		Trip& trip = _trips.trips()[p][t];
 		for (size_t i = 0; i < FLEET; ++i)
 		{
 			for (size_t j = 0; j < DISTRICT; ++j)
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					ofile << x1[t][i][j][k].get(GRB_DoubleAttr_X) << std::endl;
-					_trips.trips()[p][t].x1()[i][j][k] = (int)x1[t][i][j][k].get(GRB_DoubleAttr_X);
+					trip.x1()[i][j][k] = (int)x1[t][i][j][k].get(GRB_DoubleAttr_X);
 				}
 			}
 		}
 	}
-
-	ofile.close();
 	return true;
 }
+
 bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t p)
 {
-	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
-	if (ofile.fail())
-	{
-		printf("Unable to open %s\n", file_name.c_str());
-		return false;
-	}
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t j = 0; j < DISTRICT; ++j)
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				ofile << y1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
+				//ofile << y1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
 				_trips.trips()[p][t].y1()[j][k] = (int)y1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
-	ofile.close();
 	return true;
 }
+
 bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& v1, size_t p)
 {
-	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
-	if (ofile.fail())
-	{
-		printf("Unable to open %s\n", file_name.c_str());
-		return false;
-	}
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t j = 0; j < DISTRICT; ++j)
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				ofile << v1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
+				//ofile << v1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
 				_trips.trips()[p][t].v1()[j][k] = (int)v1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
-	ofile.close();
 	return true;
 }
 
 bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> >>& v2, size_t p)
 {
-	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
-	if (ofile.fail())
-	{
-		printf("Unable to open %s\n", file_name.c_str());
-		return false;
-	}
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t n = 0; n < CAR_TYPE; ++n)
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-				ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
+				//ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
 				_trips.trips()[p][t].v2()[n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
 			}
 		}
 	}
-	ofile.close();
 	return true;
 }
 
 bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3, size_t p)
 {
-	std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::app);
-	if (ofile.fail())
-	{
-		printf("Unable to open %s\n", file_name.c_str());
-		return false;
-	}
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t k = 0; k < TASK; ++k)
 		{
-			ofile << v3[t][k].get(GRB_DoubleAttr_X) << std::endl;
+			//ofile << v3[t][k].get(GRB_DoubleAttr_X) << std::endl;
 			_trips.trips()[p][t].v3()[k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
 		}
 	}
-	ofile.close();
 	return true;
 }
 
@@ -456,7 +418,7 @@ void Gurobi::daily_trips()
 		printf("Run population %zu stochastic demand %zu\n", p, s);
 		_run_daily_trips(p, s);
 		Verify v(_demands, _trips);
-		v.verify_daily (p, s);
+		v.verify_daily(p, s);
 	}
 }
 

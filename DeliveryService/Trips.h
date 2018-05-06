@@ -74,12 +74,27 @@ private:
 	bool _read_v2(const std::string& v2);
 	bool _read_v3(const std::string& v3);
 
-	bool _write_x1(const std::string& file_name) const;
-	bool _write_y1(const std::string& file_name) const;
-	bool _write_v1(const std::string& file_name) const;
-	bool _write_v2(const std::string& file_name) const;
-	bool _write_v3(const std::string& file_name) const;
+	bool _read_x2(const std::string& x2);
+	bool _read_x3(const std::string& x2);
+	bool _read_x4(const std::string& x2);
+	bool _read_y2(const std::string& x2);
+	bool _read_y3(const std::string& x2);
+	bool _read_y4(const std::string& x2);
 
 
+	bool _write_x1(const std::string& file_name)const;
+	bool _write_y1(const std::string& file_name)const;
+	bool _write_v1(const std::string& file_name)const;
+	bool _write_v2(const std::string& file_name)const;
+	bool _write_v3(const std::string& file_name)const;
+
+	bool _write_x2(const std::string& file_name) const;
+	bool _write_x3(const std::string& file_name) const;
+	bool _write_x4(const std::string& file_name) const;
+	bool _write_y2(const std::string& file_name) const;
+	bool _write_y3(const std::string& file_name) const;
+	bool _write_y4(const std::string& file_name) const;
+
+	
 	std::vector<std::vector<Trip> > _trips;
 };
