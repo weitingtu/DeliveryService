@@ -154,22 +154,6 @@ bool Trips::_read_x1(const std::string& x1)
 		printf("Unable to open%s\n", x1.c_str());
 		return false;
 	}
-	//for (int k = 0; k < TASK; ++k)
-	//{
-	//	for (int j = 0; j < DISTRICT; ++j)
-	//	{
-	//		for (int i = 0; i < FLEET; ++i)
-	//		{
-	//			for (int t = 0; t < DAY; ++t)
-	//			{
-	//				for (int p = 0; p < POPULATION; ++p)
-	//				{
-	//					ifile >> _trips[p][t].x1()[i][j][k];
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
@@ -199,19 +183,6 @@ bool Trips::_read_y1(const std::string& y1)
 		printf("Unable to open%s\n", y1.c_str());
 		return false;
 	}
-	//for (int k = 0; k < TASK; ++k)
-	//{
-	//	for (int j = 0; j < DISTRICT; ++j)
-	//	{
-	//		for (int t = 0; t < DAY; ++t)
-	//		{
-	//			for (int p = 0; p < POPULATION; ++p)
-	//			{
-	//				ifile >> _trips[p][t].y1()[j][k];
-	//			}
-	//		}
-	//	}
-	//}
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
@@ -238,19 +209,6 @@ bool Trips::_read_v1(const std::string& v1)
 		printf("Unable to open%s\n", v1.c_str());
 		return false;
 	}
-	//for (int k = 0; k < TASK; ++k)
-	//{
-	//	for (int j = 0; j < DISTRICT; ++j)
-	//	{
-	//		for (int t = 0; t < DAY; ++t)
-	//		{
-	//			for (int p = 0; p < POPULATION; ++p)
-	//			{
-	//				ifile >> _trips[p][t].v1()[j][k];
-	//			}
-	//		}
-	//	}
-	//}
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
@@ -277,19 +235,6 @@ bool Trips::_read_v2(const std::string& v2)
 		printf("Unable to open%s\n", v2.c_str());
 		return false;
 	}
-	//for (int m = 0; m < STATION; ++m)
-	//{
-	//	for (int n = 0; n < CAR_TYPE; ++n)
-	//	{
-	//		for (int t = 0; t < DAY; ++t)
-	//		{
-	//			for (int p = 0; p < POPULATION; ++p)
-	//			{
-	//				ifile >> _trips[p][t].v2()[n][m];
-	//			}
-	//		}
-	//	}
-	//}
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
@@ -316,16 +261,6 @@ bool Trips::_read_v3(const std::string& v3)
 		printf("Unable to open%s\n", v3.c_str());
 		return false;
 	}
-	//for (int k = 0; k < TASK; ++k)
-	//{
-	//	for (int t = 0; t < DAY; ++t)
-	//	{
-	//		for (int p = 0; p < POPULATION; ++p)
-	//		{
-	//			ifile >> _trips[p][t].v3()[k];
-	//		}
-	//	}
-	//}
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
