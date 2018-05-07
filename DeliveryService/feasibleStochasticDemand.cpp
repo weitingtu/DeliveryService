@@ -2,10 +2,10 @@
 #include "defines.h"
 
 FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trips & t) :
-	_p1(0.99),
-	_p2(0.99),
-	_p3(0.99),
-	_pf(0.99),
+	_p1(0.8),
+	_p2(0.1),
+	_p3(0.7),
+	_pf(0.5),
 	_demand(d),
 	_trips(t)
 {
