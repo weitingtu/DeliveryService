@@ -61,7 +61,7 @@ public:
 
 
 	/* 運量*/
-	const std::vector<std::vector<Demand> > demands() const { return _demands; }
+	const std::vector<std::vector<Demand> >& demands() const { return _demands; }
 
 	/*產生隨機需求*/
 	const std::array<std::array<double, TASK>, DISTRICT>& sum_task_demand()  const { return _sum_task_demand; } //district task

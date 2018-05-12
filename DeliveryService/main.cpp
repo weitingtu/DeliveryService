@@ -1,6 +1,7 @@
 #include "gurobi.h"
 #include "demands.h"
 #include "verify.h"
+#include "feasibleStochasticDemand.h"
 
 int main()
 {
@@ -16,14 +17,18 @@ int main()
 
 	Trips t;
 	t.read_monthly_trips();
-	for (size_t p = 0; p < POPULATION; ++p)
-	{
-		printf("Verify population %zu\n", p);
-		Verify v(demands, t);
-		v.verify_momthly(p);
-	}
+	//for (size_t p = 0; p < POPULATION; ++p)
+	//{
+	//	printf("Verify population %zu\n", p);
+	//	Verify v(demands, t);
+	//	v.verify_momthly(p);
+	//}
 
-	//gurobi.daily_trips();
+	Gurobi gurobi(demands, t);
+	gurobi.daily_trips();
+
+	FeasibleStochasticDemand f(demands, t);
+	f.start();
 
 	return 0;
 }

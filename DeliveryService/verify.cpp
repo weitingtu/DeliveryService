@@ -101,6 +101,81 @@ bool Verify::verify_daily(size_t p, size_t s) const
 	return true;
 }
 
+bool Verify::verify_x2(size_t p, size_t t, size_t s, size_t i, size_t j, size_t k) const
+{
+	// (16)
+	if (!_verify_x1_y1_x2_y2(p, t, j, k, s))
+	{
+		//printf("failed to verify x1 y1 x2 y2\n");
+		return false;
+	}
+	// (19)
+	if (!_verify_x1_x2_x4(p, t, i, k, s))
+	{
+		//printf("failed to verify x1 x2 x4\n");
+		return false;
+	}
+
+	// (21)
+	const Trip& trip = _trips.trips().at(p).at(t);
+	if (trip.x2().at(s).at(i).at(j).at(k) < 0)
+	{
+		return false;
+	}
+
+	//printf("verify x2 successfully\n");
+	return true;
+}
+
+bool Verify::verify_x3(size_t p, size_t t, size_t s, size_t i, size_t m) const
+{
+	// (17)
+	if (!_verify_x3_y3(p, t, m, s))
+	{
+		//printf("failed to verify x3 y3\n");
+		return false;
+	}
+	// (20)
+	if (!_verify_x3(p, t, i, s))
+	{
+		//printf("failed to verify x3\n");
+		return false;
+	}
+	// (22)
+	const Trip& trip = _trips.trips().at(p).at(t);
+	if (trip.x3().at(s).at(i).at(m) < 0)
+	{
+		return false;
+	}
+
+	//printf("verify x3 successfully\n");
+	return true;
+}
+
+bool Verify::verify_x4(size_t p, size_t t, size_t s, size_t i, size_t k) const
+{
+	// (18)
+	if (!_verify_x4_y4(p, t, k, s))
+	{
+		//printf("failed to verify x4 y4\n");
+		return false;
+	}
+	// (19)
+	if (!_verify_x1_x2_x4(p, t, i, k, s))
+	{
+		//printf("failed to verify x1 x2 x4\n");
+		return false;
+	}
+	// (23)
+	const Trip& trip = _trips.trips().at(p).at(t);
+	if (trip.x4().at(s).at(i).at(k) < 0)
+	{
+		return false;
+	}
+
+	//printf("verify x4 successfully\n");
+	return true;
+}
 // (7)
 double Verify::_cost_1(size_t p, size_t t) const
 {

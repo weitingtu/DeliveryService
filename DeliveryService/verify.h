@@ -15,6 +15,9 @@ public:
 
 	bool verify_momthly(size_t p) const;
 	bool verify_daily(size_t p, size_t s) const;
+	bool verify_x2(size_t p, size_t t, size_t s, size_t i, size_t j, size_t k) const;
+	bool verify_x3(size_t p, size_t t, size_t s, size_t i, size_t m) const;
+	bool verify_x4(size_t p, size_t t, size_t s, size_t i, size_t k) const;
 
 private:
 	double _cost_1(size_t p, size_t t) const;
@@ -30,8 +33,8 @@ private:
 	bool _verify_x3(size_t p, size_t t, size_t i, size_t s) const;
 	bool _verify_x2_x3_x4_y2_y3_y4(size_t p, size_t t, size_t s) const;
 
-	Demands _demands;
-	Trips   _trips;
+	const Demands& _demands;
+	const Trips&   _trips;
 
 };
 

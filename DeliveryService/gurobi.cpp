@@ -411,14 +411,16 @@ bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vect
 void Gurobi::daily_trips()
 {
 	//for (size_t p = 0; p < POPULATION; ++p)
-	//for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
-		size_t p = 0;
-		size_t s = 0;
-		printf("Run population %zu stochastic demand %zu\n", p, s);
-		_run_daily_trips(p, s);
-		Verify v(_demands, _trips);
-		v.verify_daily(p, s);
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			size_t p = 0;
+			//size_t s = 0;
+			printf("Run population %zu stochastic demand %zu\n", p, s);
+			_run_daily_trips(p, s);
+			Verify v(_demands, _trips);
+			v.verify_daily(p, s);
+		}
 	}
 }
 
@@ -554,7 +556,6 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					//double c4 = _c4[k];
 					double c4 = _demands.c4()[k];
 					obj += c4 * x4[t][i][k];
 				}
@@ -567,7 +568,6 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					//double b2 = _b2[j][k];
 					double b2 = _demands.b2()[j][k];
 					obj += b2 * y2[t][j][k];
 				}
@@ -578,7 +578,6 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-				//double b3 = _b3[m];
 				double b3 = _demands.b3()[m];
 				obj += b3 * y3[t][m];
 			}
@@ -588,7 +587,6 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				//double b4 = _b4[k];
 				double b4 = _demands.b4()[k];
 				obj += b4 * y4[t][k];
 			}

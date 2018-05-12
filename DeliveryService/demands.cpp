@@ -12,6 +12,21 @@ Demand::Demand() :
 	_d2(),
 	_d3()
 {
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			_d1[j][k] = 0.0;
+		}
+	}
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		_d2[m] = 0.0;
+	}
+	for(size_t k = 0; k < TASK; ++k)
+	{
+		_d3[k] = 0.0;
+	}
 }
 
 
