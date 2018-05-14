@@ -420,11 +420,11 @@ bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vect
 
 void Gurobi::daily_trips()
 {
-	//for (size_t p = 0; p < POPULATION; ++p)
+	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 		{
-			size_t p = 0;
+			//size_t p = 0;
 			//size_t s = 0;
 			printf("Run population %zu stochastic demand %zu\n", p, s);
 			_run_daily_trips(p, s);
@@ -754,6 +754,7 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 
 		// Optimize model
 
+		model.getEnv().set(GRB_DoubleParam_MIPGap, 0.03);
 		model.optimize();
 		model.write("out.lp");
 		printf("finish optimization\n");

@@ -97,5 +97,23 @@
     <Text Include="y1.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="x2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="x3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="x4.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="y2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="y3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="y4.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

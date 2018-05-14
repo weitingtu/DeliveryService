@@ -176,6 +176,24 @@ bool Verify::verify_x4(size_t p, size_t t, size_t s, size_t i, size_t k) const
 	//printf("verify x4 successfully\n");
 	return true;
 }
+
+double Verify::cost(size_t p) const
+{
+	double cost = 0.0;
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		cost += _cost_1(p, t);
+	}
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			cost += _cost_2(p, t, s) / STOCHASTIC_DEMAND;
+		}
+	}
+	return 0.0;
+}
+
 // (7)
 double Verify::_cost_1(size_t p, size_t t) const
 {
@@ -357,7 +375,6 @@ bool Verify::_verify_x1_y1_v1_v2_v3(size_t p, size_t t) const
 double Verify::_cost_2(size_t p, size_t t, size_t s) const
 {
 	const Trip& trip = _trips.trips().at(p).at(t);
-	//	const Demand& demand = _demands.demands().at(p).at(t);
 
 	double cost = 0;
 

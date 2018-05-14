@@ -153,7 +153,13 @@
     <Text Include="v2.txt" />
     <Text Include="v3.txt" />
     <Text Include="x1.txt" />
+    <Text Include="x2.txt" />
+    <Text Include="x3.txt" />
+    <Text Include="x4.txt" />
     <Text Include="y1.txt" />
+    <Text Include="y2.txt" />
+    <Text Include="y3.txt" />
+    <Text Include="y4.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

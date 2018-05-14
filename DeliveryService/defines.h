@@ -8,8 +8,7 @@
 #define STATION 2      // m 其他轉運中心數  
 
 #define POPULATION 50  // s 隨機情況 
-//#define STOCHASTIC_DEMAND 50
-#define STOCHASTIC_DEMAND 2
+#define STOCHASTIC_DEMAND 50
 #define TRUCK 2        // 車型17ton truck & container truck
 
 #define MAXWORKTIME 12.0 // 最大可工作時間 

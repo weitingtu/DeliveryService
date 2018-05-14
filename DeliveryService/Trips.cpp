@@ -282,17 +282,17 @@ bool Trips::_read_x2(const std::string& x2)
 		printf("Unable to open%s\n", x2.c_str());
 		return false;
 	}
-	for (int k = 0; k < TASK; ++k)
+	for (int p = 0; p < POPULATION; ++p)
 	{
-		for (int j = 0; j < DISTRICT; ++j) {
-
-			for (int i = 0; i < FLEET; ++i) {
-
-				for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
+		for (int t = 0; t < DAY; ++t)
+		{
+			for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
+			{
+				for (int i = 0; i < FLEET; ++i)
 				{
-					for (int t = 0; t < DAY; ++t)
+					for (int j = 0; j < DISTRICT; ++j)
 					{
-						for (int p = 0; p < POPULATION; ++p)
+						for (int k = 0; k < TASK; ++k)
 						{
 							ifile >> _trips[p][t].x2()[s][i][j][k];
 						}
@@ -313,15 +313,15 @@ bool Trips::_read_x3(const std::string& x3)
 		printf("Unable to open%s\n", x3.c_str());
 		return false;
 	}
-	for (int m = 0; m < STATION; ++m) {
-
-		for (int i = 0; i < FLEET; ++i) {
-
+	for (int p = 0; p < POPULATION; ++p)
+	{
+		for (int t = 0; t < DAY; ++t)
+		{
 			for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
 			{
-				for (int t = 0; t < DAY; ++t)
+				for (int i = 0; i < FLEET; ++i)
 				{
-					for (int p = 0; p < POPULATION; ++p)
+					for (int m = 0; m < STATION; ++m)
 					{
 						ifile >> _trips[p][t].x3()[s][i][m];
 					}
@@ -340,15 +340,15 @@ bool Trips::_read_x4(const std::string& x4)
 		printf("Unable to open%s\n", x4.c_str());
 		return false;
 	}
-	for (int k = 0; k < TASK; ++k) {
-
-		for (int i = 0; i < FLEET; ++i) {
-
+	for (int p = 0; p < POPULATION; ++p)
+	{
+		for (int t = 0; t < DAY; ++t)
+		{
 			for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
 			{
-				for (int t = 0; t < DAY; ++t)
+				for (int i = 0; i < FLEET; ++i)
 				{
-					for (int p = 0; p < POPULATION; ++p)
+					for (int k = 0; k < TASK; ++k)
 					{
 						ifile >> _trips[p][t].x4()[s][i][k];
 					}
@@ -367,15 +367,15 @@ bool Trips::_read_y2(const std::string& y2)
 		printf("Unable to open%s\n", y2.c_str());
 		return false;
 	}
-	for (int k = 0; k < TASK; ++k)
+	for (int p = 0; p < POPULATION; ++p)
 	{
-		for (int j = 0; j < DISTRICT; ++j)
+		for (int t = 0; t < DAY; ++t)
 		{
 			for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
 			{
-				for (int t = 0; t < DAY; ++t)
+				for (int j = 0; j < DISTRICT; ++j)
 				{
-					for (int p = 0; p < POPULATION; ++p)
+					for (int k = 0; k < TASK; ++k)
 					{
 						ifile >> _trips[p][t].y2()[s][j][k];
 					}
@@ -394,13 +394,13 @@ bool Trips::_read_y3(const std::string& y3)
 		printf("Unable to open%s\n", y3.c_str());
 		return false;
 	}
-	for (int m = 0; m < STATION; ++m)
+	for (int p = 0; p < POPULATION; ++p)
 	{
-		for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
+		for (int t = 0; t < DAY; ++t)
 		{
-			for (int t = 0; t < DAY; ++t)
+			for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
 			{
-				for (int p = 0; p < POPULATION; ++p)
+				for (int m = 0; m < STATION; ++m)
 				{
 					ifile >> _trips[p][t].y3()[s][m];
 				}
@@ -418,13 +418,13 @@ bool Trips::_read_y4(const std::string& y4)
 		printf("Unable to open%s\n", y4.c_str());
 		return false;
 	}
-	for (int k = 0; k < TASK; ++k)
+	for (int p = 0; p < POPULATION; ++p)
 	{
-		for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
+		for (int t = 0; t < DAY; ++t)
 		{
-			for (int t = 0; t < DAY; ++t)
+			for (int s = 0; s < STOCHASTIC_DEMAND; ++s)
 			{
-				for (int p = 0; p < POPULATION; ++p)
+				for (int k = 0; k < TASK; ++k)
 				{
 					ifile >> _trips[p][t].y4()[s][k];
 				}
@@ -586,10 +586,8 @@ bool Trips::_write_x2(const std::string& file_name) const
 					{
 						for (int k = 0; k < TASK; ++k)
 						{
-							ofile << _trips[p][t].x2()[s][i][j][k];
-
+							ofile << _trips[p][t].x2()[s][i][j][k] << std::endl;
 						}
-
 					}
 				}
 			}
@@ -607,7 +605,6 @@ bool Trips::_write_x3(const std::string& file_name) const
 		printf("Unable to open %s\n", file_name.c_str());
 		return false;
 	}
-
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
@@ -618,7 +615,7 @@ bool Trips::_write_x3(const std::string& file_name) const
 				{
 					for (int m = 0; m < STATION; ++m)
 					{
-						ofile << _trips[p][t].x3()[s][i][m];
+						ofile << _trips[p][t].x3()[s][i][m] << std::endl;
 					}
 				}
 			}
@@ -636,7 +633,6 @@ bool Trips::_write_x4(const std::string& file_name) const
 		printf("Unable to open %s\n", file_name.c_str());
 		return false;
 	}
-
 	for (int p = 0; p < POPULATION; ++p)
 	{
 		for (int t = 0; t < DAY; ++t)
@@ -647,7 +643,7 @@ bool Trips::_write_x4(const std::string& file_name) const
 				{
 					for (int k = 0; k < TASK; ++k)
 					{
-						ofile << _trips[p][t].x4()[s][i][k];
+						ofile << _trips[p][t].x4()[s][i][k] << std::endl;
 					}
 				}
 			}
@@ -675,7 +671,7 @@ bool Trips::_write_y2(const std::string& file_name) const
 				{
 					for (int k = 0; k < TASK; ++k)
 					{
-						ofile << _trips[p][t].y2()[s][j][k];
+						ofile << _trips[p][t].y2()[s][j][k] << std::endl;
 					}
 				}
 			}
@@ -701,9 +697,7 @@ bool Trips::_write_y3(const std::string& file_name) const
 			{
 				for (int m = 0; m < STATION; ++m)
 				{
-
-					ofile << _trips[p][t].y3()[s][m];
-
+					ofile << _trips[p][t].y3()[s][m] << std::endl;
 				}
 			}
 		}
@@ -728,9 +722,7 @@ bool Trips::_write_y4(const std::string& file_name) const
 			{
 				for (int k = 0; k < TASK; ++k)
 				{
-
-					ofile << _trips[p][t].y4()[s][k];
-
+					ofile << _trips[p][t].y4()[s][k] << std::endl;
 				}
 			}
 		}

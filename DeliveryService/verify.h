@@ -18,6 +18,7 @@ public:
 	bool verify_x2(size_t p, size_t t, size_t s, size_t i, size_t j, size_t k) const;
 	bool verify_x3(size_t p, size_t t, size_t s, size_t i, size_t m) const;
 	bool verify_x4(size_t p, size_t t, size_t s, size_t i, size_t k) const;
+	double cost(size_t p) const;
 
 private:
 	double _cost_1(size_t p, size_t t) const;
