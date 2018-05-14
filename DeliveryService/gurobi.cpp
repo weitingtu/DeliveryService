@@ -22,7 +22,6 @@ void Gurobi::monthly_trips()
 {
 	for (size_t p = 0; p < POPULATION; ++p)
 	{
-		//size_t p = 0;
 		printf("Run population %zu\n", p);
 		_run_monthly_trips(p);
 		Verify v(_demands, _trips);
@@ -123,7 +122,6 @@ void Gurobi::_run_monthly_trips(size_t p)
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
 						double c1 = _demands.c1()[j][k];
-						//std::cout << c1 << std::endl;
 						obj += c1 * x1[t][i][j][k];
 					}
 				}
@@ -186,8 +184,17 @@ void Gurobi::_run_monthly_trips(size_t p)
 					constr += v1[t][j][k];
 				}
 
+				// Nk: N1 = {1, 3}, N2 = {1, 2}
 				for (size_t n = 0; n < CAR_TYPE; ++n)
 				{
+					if (0 == k && 1 == n)
+					{
+						continue;
+					}
+					else if (1 == k && 2 == n)
+					{
+						continue;
+					}
 					for (size_t m = 0; m < STATION; ++m)
 					{
 						constr -= v2[t][n][m];
@@ -205,7 +212,9 @@ void Gurobi::_run_monthly_trips(size_t p)
 				constr.clear();
 				constr += v3[t][k];
 
-				for (size_t n = 0; n < CAR_TYPE; ++n)
+				// Nk: N1 = {2}, N2 = {3}
+				size_t n = k == 0 ? 1 : 2;
+				//for (size_t n = 0; n < CAR_TYPE; ++n)
 				{
 					for (size_t m = 0; m < STATION; ++m)
 					{
@@ -289,6 +298,7 @@ void Gurobi::_run_monthly_trips(size_t p)
 		}
 		// Optimize model
 
+		model.getEnv().set(GRB_DoubleParam_MIPGap, 0.03);
 		model.optimize();
 		model.write("out.lp");
 		printf("finish optimization\n");
@@ -702,6 +712,8 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 					for (size_t j = 0; j < DISTRICT; ++j)
 					{
 						double u1 = _demands.u1()[j][k];
+						u1 *= 2;
+						u1 += 0.5;
 						int x1 = trip.x1()[i][j][k];
 						constr += u1 * x1;
 						constr += u1 * x2[t][i][j][k];
@@ -710,14 +722,11 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 					}
 
 					double u3 = _demands.u3()[k];
+					u3 *= 2;
+					u3 += 0.5;
 
-					double worktime = MAXWORKTIME;
 					constr += u3 * x4[t][i][k];
-					if (sum_u1_x1 >= MAXWORKTIME)
-					{
-						worktime = sum_u1_x1;
-					}
-					model.addConstr(constr <= worktime, "c" + std::to_string(constr_count++));
+					model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
 				}
 			}
 		}
@@ -734,6 +743,8 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 				for (size_t m = 0; m < STATION; ++m)
 				{
 					double u2 = _demands.u2()[m];
+					u2 *= 2;
+					u2 += 0.5;
 					constr += u2 * x3[t][i][m];
 				}
 				// ??? t''

@@ -239,8 +239,17 @@ bool Verify::_verify_v1_v2(size_t p, size_t t, size_t k) const
 	}
 
 	int sum_v2 = 0;
+	// Nk: N1 = {1, 3}, N2 = {1, 2}
 	for (size_t n = 0; n < CAR_TYPE; ++n)
 	{
+		if (0 == k && 1 == n)
+		{
+			continue;
+		}
+		else if (1 == k && 2 == n)
+		{
+			continue;
+		}
 		for (size_t m = 0; m < STATION; ++m)
 		{
 			sum_v2 += trip.v2().at(n).at(m);
@@ -263,7 +272,9 @@ bool Verify::_verify_v3_v2(size_t p, size_t t, size_t k) const
 	int v3 = trip.v3().at(k);
 
 	int sum_v2 = 0;
-	for (size_t n = 0; n < CAR_TYPE; ++n)
+	// Nk: N1 = {2}, N2 = {3}
+	size_t n = k == 0 ? 1 : 2;
+	//for (size_t n = 0; n < CAR_TYPE; ++n)
 	{
 		for (size_t m = 0; m < STATION; ++m)
 		{
@@ -485,13 +496,18 @@ bool Verify::_verify_x1_x2_x4(size_t p, size_t t, size_t i, size_t k, size_t s) 
 	double sum_1 = 0;
 	for (size_t j = 0; j < DISTRICT; ++j)
 	{
+		double u1 = _demands.u1().at(j).at(k);
+		u1 *= 2;
+		u1 += 0.5;
 		int x1 = trip.x1().at(i).at(j).at(k);
 		int x2 = trip.x2().at(s).at(i).at(j).at(k);
-		sum_1 += _demands.u1().at(j).at(k) * (double)(x1 + x2);
+		sum_1 += u1 * (double)(x1 + x2);
 	}
 
 	int x4 = trip.x4().at(s).at(i).at(k);
 	double u3 = _demands.u3().at(k);
+	u3 *= 2;
+	u3 += 0.5;
 
 	return sum_1 + u3 * (double)x4 <= MAXWORKTIME;
 }
@@ -506,6 +522,8 @@ bool Verify::_verify_x3(size_t p, size_t t, size_t i, size_t s) const
 	for (size_t m = 0; m < STATION; ++m)
 	{
 		double u2 = _demands.u2().at(m);
+		u2 *= 2;
+		u2 += 0.5;
 		int x3 = trip.x3().at(s).at(i).at(m);
 		sum += u2 * (double)x3;
 	}
