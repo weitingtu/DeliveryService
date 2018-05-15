@@ -31,14 +31,20 @@ int main()
 	Trips t;
 	t.read_monthly_trips();
 	t.read_daily_trips();
+	//for (size_t p = 0; p < POPULATION; ++p)
+	//{
+	//	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	//	{
+	//		printf("Verify population %zu stochastic demand %zu\n", p, s);
+	//		Verify v(demands, t);
+	//		v.verify_daily(p, s);
+	//	}
+	//}
 	for (size_t p = 0; p < POPULATION; ++p)
 	{
-		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
-		{
-			printf("Verify population %zu stochastic demand %zu\n", p, s);
-			Verify v(demands, t);
-			v.verify_daily(p, s);
-		}
+		Verify v(demands, t);
+		double cost = v.cost(p);
+		printf("Population %zu average cost %f\n", p, cost);
 	}
 
 	//FeasibleStochasticDemand f(demands, t);

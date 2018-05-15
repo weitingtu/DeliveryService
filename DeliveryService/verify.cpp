@@ -191,7 +191,7 @@ double Verify::cost(size_t p) const
 			cost += _cost_2(p, t, s) / STOCHASTIC_DEMAND;
 		}
 	}
-	return 0.0;
+	return cost;
 }
 
 // (7)
