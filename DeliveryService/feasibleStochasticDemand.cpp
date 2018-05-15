@@ -53,8 +53,8 @@ void FeasibleStochasticDemand::_start(size_t p, size_t s)
 	int N1 = _get_sum_y2(p, s) + X1;
 	int X2 = _get_sum_x3(p, s);
 	int N2 = _get_sum_y3(p, s) + X2;
-	int X3 = _get_sum_x3(p, s);
-	int N3 = _get_sum_y3(p, s) + X3;
+	int X3 = _get_sum_x4(p, s);
+	int N3 = _get_sum_y4(p, s) + X3;
 	printf("%d %d %d %d %d %d\n", X1, N1, X2, N2, X3, N3);
 
 	double p1 = _get_p1(X1, N1);
@@ -81,7 +81,6 @@ void FeasibleStochasticDemand::_start(size_t p, size_t s)
 	size_t count = 0;
 	while (p1 * p2 * p3 < _pf)
 	{
-
 		printf("%zu: %f * %f * %f = %f < %f\n", count, p1, p2, p3, p1*p2*p3, _pf);
 		++count;
 		if ((x2_t < DAY) && (X1 != A1))
@@ -268,6 +267,7 @@ int FeasibleStochasticDemand::_update_X3(int X3, int A3, size_t p, size_t s, siz
 	}
 	return X3;
 }
+
 int FeasibleStochasticDemand::_get_a(int N, double p) const
 {
 	// (88)
