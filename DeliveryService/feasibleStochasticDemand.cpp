@@ -34,10 +34,10 @@ static double _nChoosek(double n, double k)
 void FeasibleStochasticDemand::start()
 {
 	//for (size_t p = 0; p < POPULATION; ++p)
-	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	//for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
 		size_t p = 0;
-		//size_t s = 0;
+		size_t s = 1;
 		printf("Start feasible stochastic demand %zu %zu\n", p, s);
 		_start(p, s);
 	}

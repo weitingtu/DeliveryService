@@ -307,23 +307,23 @@ void Gurobi::_run_monthly_trips(size_t p)
 
 		// save result in _x1[population], _y1[population], _v1[population] _v2[population] _v3[population]
 
-		if (!_write_x1("x1.txt", x1, p))
+		if (!_write_x1( x1, p))
 		{
 			return;
 		}
-		if (!_write_y1("y1.txt", y1, p))
+		if (!_write_y1( y1, p))
 		{
 			return;
 		}
-		if (!_write_v1("v1.txt", v1, p))
+		if (!_write_v1( v1, p))
 		{
 			return;
 		}
-		if (!_write_v2("v2.txt", v2, p))
+		if (!_write_v2( v2, p))
 		{
 			return;
 		}
-		if (!_write_v3("y3.txt", v3, p))
+		if (!_write_v3( v3, p))
 		{
 			return;
 		}
@@ -338,7 +338,7 @@ void Gurobi::_run_monthly_trips(size_t p)
 	}
 }
 
-bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t p)
+bool Gurobi::_write_x1(const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t p)
 {
 	for (size_t t = 0; t < DAY; ++t)
 	{
@@ -357,7 +357,7 @@ bool Gurobi::_write_x1(const std::string& file_name, const std::vector<std::vect
 	return true;
 }
 
-bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t p)
+bool Gurobi::_write_y1( const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t p)
 {
 	for (size_t t = 0; t < DAY; ++t)
 	{
@@ -365,7 +365,6 @@ bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vect
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				//ofile << y1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
 				_trips.trips()[p][t].y1()[j][k] = (int)y1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
@@ -373,7 +372,7 @@ bool Gurobi::_write_y1(const std::string& file_name, const std::vector<std::vect
 	return true;
 }
 
-bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> > >& v1, size_t p)
+bool Gurobi::_write_v1(const std::vector<std::vector<std::vector<GRBVar> > >& v1, size_t p)
 {
 	for (size_t t = 0; t < DAY; ++t)
 	{
@@ -381,7 +380,6 @@ bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vect
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				//ofile << v1[t][j][k].get(GRB_DoubleAttr_X) << std::endl;
 				_trips.trips()[p][t].v1()[j][k] = (int)v1[t][j][k].get(GRB_DoubleAttr_X);
 			}
 		}
@@ -389,7 +387,7 @@ bool Gurobi::_write_v1(const std::string& file_name, const std::vector<std::vect
 	return true;
 }
 
-bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vector<std::vector<GRBVar> >>& v2, size_t p)
+bool Gurobi::_write_v2(const std::vector<std::vector<std::vector<GRBVar> >>& v2, size_t p)
 {
 	for (size_t t = 0; t < DAY; ++t)
 	{
@@ -397,7 +395,6 @@ bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vect
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-				//ofile << v2[t][n][m].get(GRB_DoubleAttr_X) << std::endl;
 				_trips.trips()[p][t].v2()[n][m] = (int)v2[t][n][m].get(GRB_DoubleAttr_X);
 			}
 		}
@@ -405,13 +402,12 @@ bool Gurobi::_write_v2(const std::string& file_name, const std::vector<std::vect
 	return true;
 }
 
-bool Gurobi::_write_v3(const std::string& file_name, const std::vector<std::vector<GRBVar> >& v3, size_t p)
+bool Gurobi::_write_v3(const std::vector<std::vector<GRBVar> >& v3, size_t p)
 {
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t k = 0; k < TASK; ++k)
 		{
-			//ofile << v3[t][k].get(GRB_DoubleAttr_X) << std::endl;
 			_trips.trips()[p][t].v3()[k] = (int)v3[t][k].get(GRB_DoubleAttr_X);
 		}
 	}

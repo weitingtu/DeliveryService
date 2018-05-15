@@ -198,7 +198,6 @@ double Verify::cost(size_t p) const
 double Verify::_cost_1(size_t p, size_t t) const
 {
 	const Trip& trip = _trips.trips().at(p).at(t);
-	//	const Demand& demand = _demands.demands().at(p).at(t);
 
 	double cost = 0;
 

@@ -40,15 +40,15 @@ int main()
 	//		v.verify_daily(p, s);
 	//	}
 	//}
-	for (size_t p = 0; p < POPULATION; ++p)
-	{
-		Verify v(demands, t);
-		double cost = v.cost(p);
-		printf("Population %zu average cost %f\n", p, cost);
-	}
+	//for (size_t p = 0; p < POPULATION; ++p)
+	//{
+	//	Verify v(demands, t);
+	//	double cost = v.cost(p);
+	//	printf("Population %zu average cost %f\n", p, cost);
+	//}
 
-	//FeasibleStochasticDemand f(demands, t);
-	//f.start();
+	FeasibleStochasticDemand f(demands, t);
+	f.start();
 
 	return 0;
 }
