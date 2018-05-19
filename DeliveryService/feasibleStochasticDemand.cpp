@@ -1,6 +1,9 @@
 #include "feasibleStochasticDemand.h"
 #include "defines.h"
 #include "verify.h"
+#include <vector>
+#include <utility>
+#include <algorithm>
 
 FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trips & t) :
 	_p1(0.8),
@@ -8,7 +11,9 @@ FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands & d, const Trip
 	_p3(0.7),
 	_pf(0.5),
 	_demand(d),
-	_trips(t)
+	_trips(t),
+	_min_max_c1(),
+	_max_min_c1()
 {
 }
 
@@ -31,8 +36,31 @@ static double _nChoosek(double n, double k)
 	return result;
 }
 
+void FeasibleStochasticDemand::_initialize_cost_array()
+{
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		std::vector<std::pair<double, size_t> > c;
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			c.push_back(std::make_pair(_demand.c1()[j][k], j));
+		}
+		std::sort(c.begin(), c.end());
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			_min_max_c1[j][k] = c[j].second;
+		}
+		std::reverse(c.begin(), c.end());
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			_max_min_c1[j][k] = c[j].second;
+		}
+	}
+}
+
 void FeasibleStochasticDemand::start()
 {
+	_initialize_cost_array();
 	//for (size_t p = 0; p < POPULATION; ++p)
 	//for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
@@ -97,7 +125,7 @@ void FeasibleStochasticDemand::_start(size_t p, size_t s)
 			printf("%d\n", X2);
 			p2 = _get_p2(X2, N2);
 		}
-		else if ((x4_t < DAY) && (X3!= A3))
+		else if ((x4_t < DAY) && (X3 != A3))
 		{
 			printf("X3 %d -> ", X3);
 			X3 = _update_X3(X3, A3, p, s, x4_t, x4_i, x4_k);
@@ -129,33 +157,34 @@ int FeasibleStochasticDemand::_update_X1(int X1, int A1, size_t p, size_t s, siz
 				for (; k < TASK; ++k)
 				{
 					bool add = X1 < A1;
+					size_t jj = add ? _min_max_c1.at(j).at(k) : _max_min_c1.at(j).at(k);
 					if (add)
 					{
-						++_trips.trips()[p][t].x2()[s][i][j][k];
-						--_trips.trips()[p][t].y2()[s][j][k];
+						++_trips.trips()[p][t].x2()[s][i][jj][k];
+						--_trips.trips()[p][t].y2()[s][jj][k];
 						++X1;
 					}
 					else
 					{
-						--_trips.trips()[p][t].x2()[s][i][j][k];
-						++_trips.trips()[p][t].y2()[s][j][k];
+						--_trips.trips()[p][t].x2()[s][i][jj][k];
+						++_trips.trips()[p][t].y2()[s][jj][k];
 						--X1;
 					}
 					Verify v(_demand, _trips);
-					if (v.verify_x2(p, t, s, i, j, k))
+					if (v.verify_x2(p, t, s, i, jj, k))
 					{
 						return X1;
 					}
 					if (add)
 					{
-						--_trips.trips()[p][t].x2()[s][i][j][k];
-						++_trips.trips()[p][t].y2()[s][j][k];
+						--_trips.trips()[p][t].x2()[s][i][jj][k];
+						++_trips.trips()[p][t].y2()[s][jj][k];
 						--X1;
 					}
 					else
 					{
-						++_trips.trips()[p][t].x2()[s][i][j][k];
-						--_trips.trips()[p][t].y2()[s][j][k];
+						++_trips.trips()[p][t].x2()[s][i][jj][k];
+						--_trips.trips()[p][t].y2()[s][jj][k];
 						++X1;
 					}
 				}

@@ -31,6 +31,7 @@ private:
 	//double _get_p1(size_t p, size_t s) const;
 	//double _get_p2(size_t p, size_t s) const;
 	//double _get_p3(size_t p, size_t s) const;
+	void _initialize_cost_array();
 
 	const double _p1; // 自有車駕駛對臨時營業所任務出車之機率。
 	const double _p2; // 自有車駕駛對臨時轉運任務出車之機率。
@@ -39,6 +40,7 @@ private:
 
 	const Demands& _demand;
 	Trips _trips;
-
+	std::array<std::array<size_t, TASK>, DISTRICT> _min_max_c1;
+	std::array<std::array<size_t, TASK>, DISTRICT> _max_min_c1;
 };
 
