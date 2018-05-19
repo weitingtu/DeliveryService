@@ -102,7 +102,7 @@ void FeasibleStochasticDemand::_start(size_t p, size_t s)
 			printf("X3 %d -> ", X3);
 			X3 = _update_X3(X3, A3, p, s, x4_t, x4_i, x4_k);
 			printf("%d\n", X3);
-			p3 = _get_p2(X3, N3);
+			p3 = _get_p3(X3, N3);
 		}
 		else
 		{
