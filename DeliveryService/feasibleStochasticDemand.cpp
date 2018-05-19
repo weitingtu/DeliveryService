@@ -109,7 +109,7 @@ void FeasibleStochasticDemand::_start(size_t p, size_t s)
 	size_t count = 0;
 	while (p1 * p2 * p3 < _pf)
 	{
-		printf("%zu: %.12f * %.12f * %.12f = %.12f < %.12f\n", count, p1, p2, p3, p1*p2*p3, _pf);
+		printf("%zu: %g * %g * %g = %g < %g\n", count, p1, p2, p3, p1*p2*p3, _pf);
 		++count;
 		if ((x2_t < DAY) && (X1 != A1))
 		{
@@ -138,7 +138,7 @@ void FeasibleStochasticDemand::_start(size_t p, size_t s)
 			break;
 		}
 	}
-	printf("final %.12f * %.12f * %.12f = %.12f < %.12f\n", p1, p2, p3, p1*p2*p3, _pf);
+	printf("final %g * %g * %g = %g < %g\n", p1, p2, p3, p1*p2*p3, _pf);
 
 }
 
