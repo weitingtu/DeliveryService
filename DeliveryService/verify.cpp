@@ -41,6 +41,31 @@ bool Verify::verify_momthly(size_t p) const
 	return true;
 }
 
+bool Verify::verify_momthly(size_t p, size_t t) const
+{
+	double cost = 0.0;
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		if (!_verify_v1_v2(p, t, k))
+		{
+			return false;
+		}
+		if (!_verify_v3_v2(p, t, k))
+		{
+			printf("failed to verify v3 v2\n");
+			return false;
+		}
+	}
+	if (!_verify_x1_y1_v1_v2_v3(p, t))
+	{
+		printf("failed to verify x1 y1 v1 v2 v3\n");
+		return false;
+	}
+	cost += _cost_1(p, t);
+	printf("cost = %f\n", cost);
+	return true;
+}
+
 bool Verify::verify_daily(size_t p, size_t s) const
 {
 	for (size_t t = 0; t < DAY; ++t)
@@ -320,6 +345,7 @@ bool Verify::_verify_x1_y1_v1_v2_v3(size_t p, size_t t) const
 			{
 				if (trip.x1().at(i).at(j).at(k) < 0)
 				{
+					printf("i %zu, j %zu, k %zu, x1 %d < 0 ", i, j, k, trip.x1().at(i).at(j).at(k));
 					return false;
 				}
 			}
@@ -332,6 +358,7 @@ bool Verify::_verify_x1_y1_v1_v2_v3(size_t p, size_t t) const
 		{
 			if (trip.y1().at(j).at(k) < 0)
 			{
+				printf("j %zu, k %zu, y1 %d < 0 ", j, k, trip.y1().at(j).at(k));
 				return false;
 			}
 		}
@@ -343,6 +370,7 @@ bool Verify::_verify_x1_y1_v1_v2_v3(size_t p, size_t t) const
 		{
 			if (trip.v1().at(j).at(k) < 0)
 			{
+				printf("j %zu, k %zu, v1 %d < 0 ", j, k, trip.v1().at(j).at(k));
 				return false;
 			}
 		}
@@ -354,6 +382,7 @@ bool Verify::_verify_x1_y1_v1_v2_v3(size_t p, size_t t) const
 		{
 			if (trip.v2().at(n).at(m) < 0)
 			{
+				printf("n %zu, m %zu, v2 %d < 0 ", n, m, trip.v2().at(n).at(m));
 				return false;
 			}
 		}
@@ -363,6 +392,7 @@ bool Verify::_verify_x1_y1_v1_v2_v3(size_t p, size_t t) const
 	{
 		if (trip.v3().at(k) < 0)
 		{
+			printf("k %zu, v3 %d < 0 ", k, trip.v3().at(k));
 			return false;
 		}
 	}

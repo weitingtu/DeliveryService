@@ -23,7 +23,7 @@ Demand::Demand() :
 	{
 		_d2[m] = 0.0;
 	}
-	for(size_t k = 0; k < TASK; ++k)
+	for (size_t k = 0; k < TASK; ++k)
 	{
 		_d3[k] = 0.0;
 	}
@@ -366,6 +366,10 @@ void Demands::_generate_stochastic_demand()
 					//_d1[p][t][j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
 					//std::cout <<"scenario" <<s << " " <<t << " " << j << " " << k<< " " << _d1[s][t][j][k] << std::endl;
 					_demands[p][t].d1()[j][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) * _std_task_demand[j][k] + _mean_task_demand[j][k];
+					if (_demands[p][t].d1()[j][k] < 0)
+					{
+						_demands[p][t].d1()[j][k] = 0;
+					}
 				}
 			}
 		}
@@ -382,6 +386,10 @@ void Demands::_generate_stochastic_demand()
 				//_d3[p][t][k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
 				//std::cout <<"scenario" <<s << " " << t << " " << k  << " " << _d3[s][t][k] << std::endl;
 				_demands[p][t].d3()[k] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_majorcustomer[k] + _mean_transfer_majorcustomer[k];
+				if (_demands[p][t].d3()[k] < 0)
+				{
+					_demands[p][t].d3()[k] = 0;
+				}
 			}
 		}
 	}
@@ -397,6 +405,10 @@ void Demands::_generate_stochastic_demand()
 				//_d2[p][t][m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
 				//std::cout <<"scenario" <<s << " " <<t << " " << m  << " " << _d2[s][t][m] << std::endl;
 				_demands[p][t].d2()[m] = sqrt(-2.5 * log(r1)) * cos(2.5 * M_PI * r2) *_std_transfer_demand[m] + _mean_transfer_demand[m];
+				if (_demands[p][t].d2()[m] < 0)
+				{
+					_demands[p][t].d2()[m] = 0;
+				}
 			}
 		}
 	}

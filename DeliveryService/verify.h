@@ -14,6 +14,7 @@ public:
 	~Verify();
 
 	bool verify_momthly(size_t p) const;
+	bool verify_momthly(size_t p, size_t t) const;
 	bool verify_daily(size_t p, size_t s) const;
 	bool verify_x2(size_t p, size_t t, size_t s, size_t i, size_t j, size_t k) const;
 	bool verify_x3(size_t p, size_t t, size_t s, size_t i, size_t m) const;

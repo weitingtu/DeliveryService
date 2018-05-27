@@ -10,14 +10,18 @@
 class LowCostPriority
 {
 public:
-	LowCostPriority();
+	LowCostPriority(const Demands& d, Trips& t);
 	~LowCostPriority();
 
-	void start(const Demands& demand);
+	void start();
 
 private:
+	void _initialize_cost_array();
+	void _start(size_t p, size_t t);
 
-	Demands _demand;
-	Trips  _trips;
+	const Demands& _demands;
+	Trips&  _trips;
+	std::array<std::array<size_t, TASK>, DISTRICT> _min_max_c1;
+	std::array<std::array<size_t, TASK>, DISTRICT> _max_min_c1;
 };
 
