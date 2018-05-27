@@ -70,8 +70,7 @@ void LowCostPriority::_start(size_t p, size_t t)
 
 	for (size_t k = 0; k < TASK; ++k)
 	{
-		trip.v3()[k] = (int)std::ceil(demand.d3()[k] / _demands.load()[1]);
-		v3[k] = trip.v3()[k];
+		v3[k] = (int)std::ceil(demand.d3()[k] / _demands.load()[1]);
 	}
 
 	int v3_total = std::accumulate(v3.begin(), v3.end(), 0);
