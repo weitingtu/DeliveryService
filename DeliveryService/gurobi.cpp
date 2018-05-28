@@ -420,8 +420,6 @@ void Gurobi::daily_trips()
 	{
 		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 		{
-			//size_t p = 0;
-			//size_t s = 0;
 			printf("Run population %zu stochastic demand %zu\n", p, s);
 			_run_daily_trips(p, s);
 			Verify v(_demands, _trips);

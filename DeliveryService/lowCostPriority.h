@@ -13,11 +13,14 @@ public:
 	LowCostPriority(const Demands& d, Trips& t);
 	~LowCostPriority();
 
-	void start();
+	void monthly_trips();
+	void daily_trips();
 
 private:
 	void _initialize_cost_array();
-	void _start(size_t p, size_t t);
+	void _monthly_trips(size_t p, size_t t);
+	void _run_daily_trips(size_t p, size_t s);
+	void _daily_trips(size_t p, size_t s, size_t t);
 
 	const Demands& _demands;
 	Trips&  _trips;

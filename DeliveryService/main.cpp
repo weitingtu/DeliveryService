@@ -12,7 +12,7 @@ int main()
 	Trips trips;
 
 	LowCostPriority l(demands, trips);
-	l.start();
+	l.monthly_trips();
 
 	//Gurobi gurobi(demands, trips);
 	//gurobi.monthly_trips();

@@ -39,20 +39,20 @@ void LowCostPriority::_initialize_cost_array()
 	}
 }
 
-void LowCostPriority::start()
+void LowCostPriority::monthly_trips()
 {
 	for (size_t p = 0; p < POPULATION; ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{
-			_start(p, t);
+			_monthly_trips(p, t);
 		}
 		Verify v(_demands, _trips);
 		v.verify_momthly(p);
 	}
 }
 
-void LowCostPriority::_start(size_t p, size_t t)
+void LowCostPriority::_monthly_trips(size_t p, size_t t)
 {
 	const Demand& demand = _demands.demands()[p][t];
 	Trip& trip = _trips.trips()[p][t];
@@ -168,11 +168,10 @@ void LowCostPriority::_start(size_t p, size_t t)
 	}
 
 	// step 4, x1
-	size_t i = 0; // FLEET
-	double total_worktime = MAXWORKTIME;
-
 	for (size_t k = 0; k < TASK; ++k)
 	{
+		size_t i = 0; // FLEET
+		double total_worktime = MAXWORKTIME;
 		if (i >= FLEET)
 		{
 			break;
@@ -219,6 +218,43 @@ void LowCostPriority::_start(size_t p, size_t t)
 		for (size_t j = 0; j < DISTRICT; ++j)
 		{
 			trip.y1()[j][k] = (int)std::ceil(d1[j][k] / _demands.load()[0]);
+		}
+	}
+}
+
+void LowCostPriority::daily_trips()
+{
+	for (size_t p = 0; p < POPULATION; ++p)
+	{
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			printf("Run population %zu stochastic demand %zu\n", p, s);
+			_run_daily_trips(p, s);
+			//Verify v(_demands, _trips);
+			//v.verify_daily(p, s);
+		}
+	}
+}
+
+void LowCostPriority::_run_daily_trips(size_t p, size_t s)
+{
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		_daily_trips(p, s, t);
+	}
+}
+
+void LowCostPriority::_daily_trips(size_t p, size_t s, size_t t)
+{
+	const Trip& trip = _trips.trips()[p][t];
+	const Demand& demand = _demands.demands()[s][t];
+	// x2
+
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			//trip.x1();
 		}
 	}
 }
