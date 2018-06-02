@@ -13,6 +13,7 @@ int main()
 
 	LowCostPriority l(demands, trips);
 	l.monthly_trips();
+	l.daily_trips();
 
 	//Gurobi gurobi(demands, trips);
 	//gurobi.monthly_trips();
