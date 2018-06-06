@@ -9,11 +9,11 @@ int main()
 	Demands demands;
 	demands.read();
 
-	Trips trips;
+	//Trips trips;
 
-	LowCostPriority l(demands, trips);
-	l.monthly_trips();
-	l.daily_trips();
+	//LowCostPriority l(demands, trips);
+	//l.monthly_trips();
+	//l.daily_trips();
 
 	//Gurobi gurobi(demands, trips);
 	//gurobi.monthly_trips();
@@ -33,9 +33,9 @@ int main()
 	//gurobi.daily_trips();
 	//trips.write_daily_trips();
 
-	//Trips t;
-	//t.read_monthly_trips();
-	//t.read_daily_trips();
+	Trips t;
+	t.read_monthly_trips();
+	t.read_daily_trips();
 	//for (size_t p = 0; p < POPULATION; ++p)
 	//{
 	//	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
@@ -52,8 +52,8 @@ int main()
 	//	printf("Population %zu average cost %f\n", p, cost);
 	//}
 
-	//FeasibleStochasticDemand f(demands, t);
-	//f.start();
+	FeasibleStochasticDemand f(demands, t);
+	f.start2();
 
 	return 0;
 }

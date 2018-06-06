@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Tools %28x86%29\gurobi752\win64\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Tools %28x86%29\boost_1_67_0;D:\Tools %28x86%29\gurobi752\win64\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Tools %28x86%29\gurobi752\win64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
