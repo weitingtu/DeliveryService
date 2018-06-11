@@ -67,6 +67,8 @@ public:
 	bool write_monthly_trips() const;
 	bool write_daily_trips() const;
 
+	bool write_trips(const std::string& file_name) const;
+
 private:
 	bool _read_x1(const std::string& x1);
 	bool _read_y1(const std::string& y1);
@@ -95,6 +97,19 @@ private:
 	bool _write_y3(const std::string& file_name) const;
 	bool _write_y4(const std::string& file_name) const;
 
+	std::string _cmd_k(size_t k) const;
+	void _write_x1(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+	void _write_y1(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+	void _write_v1(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+	void _write_v2(std::ofstream& ofile, size_t p, size_t t, size_t n) const;
+	void _write_v3(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+
+	void _write_x2(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+	void _write_x3(std::ofstream& ofile, size_t p, size_t t, size_t m) const;
+	void _write_x4(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+	void _write_y2(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
+	void _write_y3(std::ofstream& ofile, size_t p, size_t t, size_t m) const;
+	void _write_y4(std::ofstream& ofile, size_t p, size_t t, size_t k) const;
 	
 	std::vector<std::vector<Trip> > _trips;
 };

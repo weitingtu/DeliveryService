@@ -92,7 +92,7 @@ bool Trips::read_daily_trips()
 	return true;
 }
 
-bool Trips::write_monthly_trips() const//呼叫write_x*看有沒有讀
+bool Trips::write_monthly_trips() const
 {
 	if (!_write_x1("x1.txt"))
 	{
@@ -436,7 +436,6 @@ bool Trips::_read_y4(const std::string& y4)
 }
 bool Trips::_write_x1(const std::string& file_name) const
 {
-	//std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::trunc);
 	std::ofstream ofile(file_name, std::ofstream::out);
 	if (ofile.fail())
 	{
@@ -707,7 +706,6 @@ bool Trips::_write_y3(const std::string& file_name) const
 }
 bool Trips::_write_y4(const std::string& file_name) const
 {
-	//std::ofstream ofile(file_name, std::ofstream::out | std::ofstream::trunc);
 	std::ofstream ofile(file_name, std::ofstream::out);
 	if (ofile.fail())
 	{
@@ -730,3 +728,221 @@ bool Trips::_write_y4(const std::string& file_name) const
 	ofile.close();
 	return true;
 }
+
+bool Trips::write_trips(const std::string& file_name) const
+{
+	std::ofstream ofile(file_name, std::ofstream::out);
+	if (ofile.fail())
+	{
+		printf("Unable to open %s\n", file_name.c_str());
+		return false;
+	}
+	for (size_t p = 0; p < POPULATION; ++p)
+	{
+		ofile << "Population " << p << std::endl;
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			ofile << "Day " << t << std::endl;
+			_write_x1(ofile, p, t, 0);
+			_write_x1(ofile, p, t, 1);
+			_write_y1(ofile, p, t, 0);
+			_write_y1(ofile, p, t, 1);
+			_write_v1(ofile, p, t, 0);
+			_write_v1(ofile, p, t, 1);
+			_write_x2(ofile, p, t, 0);
+			_write_x2(ofile, p, t, 1);
+			_write_x3(ofile, p, t, 0);
+			_write_x3(ofile, p, t, 1);
+			_write_x4(ofile, p, t, 0);
+			_write_x4(ofile, p, t, 1);
+			_write_y2(ofile, p, t, 0);
+			_write_y2(ofile, p, t, 1);
+			_write_y3(ofile, p, t, 0);
+			_write_y3(ofile, p, t, 1);
+			_write_y4(ofile, p, t, 0);
+			_write_y4(ofile, p, t, 1);
+		}
+	}
+	return true;
+}
+
+std::string Trips::_cmd_k(size_t k) const
+{
+	if (0 == k)
+	{
+		return "collecting ";
+	}
+	return "sending ";
+}
+
+void Trips::_write_x1(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	int total = 0;
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			total += trip.x1()[i][j][k];
+		}
+	}
+	std::string cmd("x1 self-run truck ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_y1(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	int total = 0;
+	for (int j = 0; j < DISTRICT; ++j)
+	{
+		total += trip.y1()[j][k];
+	}
+
+	std::string cmd("y1 outsourcing truck ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_v1(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	int total = 0;
+	for (int j = 0; j < DISTRICT; ++j)
+	{
+		total += trip.v1()[j][k];
+	}
+
+	std::string cmd("v1 outsourcing container truck ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_v2(std::ofstream& ofile, size_t p, size_t t, size_t n) const
+{
+	const Trip& trip = trips()[p][t];
+	int total = 0;
+	for (int m = 0; m < STATION; ++m)
+	{
+		total += trip.v2()[n][m];
+	}
+
+	std::string cmd("v2 outsourcing container truck type");
+	cmd += std::to_string(n);
+	cmd += " ";
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_v3(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	int total = 0;
+	total += trip.v3()[k];
+
+	std::string cmd("v3 outsourcing container truck MC ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_x2(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	double total = 0;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				total += trip.x2()[s][i][j][k];
+			}
+		}
+	}
+	total /= STOCHASTIC_DEMAND;
+	std::string cmd("x2 self-run truck ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_x3(std::ofstream& ofile, size_t p, size_t t, size_t m) const
+{
+	const Trip& trip = trips()[p][t];
+	double total = 0;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			total += trip.x3()[s][i][m];
+		}
+	}
+	total /= STOCHASTIC_DEMAND;
+	std::string cmd("x3 self-run truck station");
+	cmd += std::to_string(m);
+	cmd += " ";
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_x4(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	double total = 0;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			total += trip.x4()[s][i][k];
+		}
+	}
+	total /= STOCHASTIC_DEMAND;
+	std::string cmd("x4 self-run truck MC ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_y2(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	double total = 0;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			total += trip.y2()[s][j][k];
+		}
+	}
+	total /= STOCHASTIC_DEMAND;
+	std::string cmd("y2 outsourcing truck ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_y3(std::ofstream& ofile, size_t p, size_t t, size_t m) const
+{
+	const Trip& trip = trips()[p][t];
+	double total = 0;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		total += trip.y3()[s][m];
+	}
+	total /= STOCHASTIC_DEMAND;
+	std::string cmd("y3 outsourcing truck station");
+	cmd += std::to_string(m);
+	cmd += " ";
+	ofile << cmd << total << std::endl;
+}
+
+void Trips::_write_y4(std::ofstream& ofile, size_t p, size_t t, size_t k) const
+{
+	const Trip& trip = trips()[p][t];
+	double total = 0;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		total += trip.y4()[s][k];
+	}
+	total /= STOCHASTIC_DEMAND;
+	std::string cmd("y4 self-run truck MC ");
+	cmd += _cmd_k(k);
+	ofile << cmd << total << std::endl;
+}
+
