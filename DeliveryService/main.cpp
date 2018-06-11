@@ -35,7 +35,7 @@ int main()
 
 	Trips t;
 	t.read_monthly_trips();
-	//t.read_daily_trips();
+	t.read_daily_trips();
 	//for (size_t p = 0; p < POPULATION; ++p)
 	//{
 	//	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
