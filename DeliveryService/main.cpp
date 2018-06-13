@@ -3,6 +3,7 @@
 #include "verify.h"
 #include "feasibleStochasticDemand.h"
 #include "lowCostPriority.h"
+#include "writer.h"
 
 int main()
 {
@@ -54,7 +55,8 @@ int main()
 
 	//FeasibleStochasticDemand f(demands, t);
 	//f.start2();
-	t.write_trips("result.txt");
+	Writer w(demands, t);
+	w.write_trips("result.txt");
 
 	return 0;
 }
