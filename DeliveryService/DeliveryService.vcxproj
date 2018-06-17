@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="demands.cpp" />
     <ClCompile Include="feasibleStochasticDemand.cpp" />
+    <ClCompile Include="geneticAlgorithm.cpp" />
     <ClCompile Include="gurobi.cpp" />
     <ClCompile Include="lowCostPriority.cpp" />
     <ClCompile Include="main.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="defines.h" />
     <ClInclude Include="demands.h" />
     <ClInclude Include="feasibleStochasticDemand.h" />
+    <ClInclude Include="geneticAlgorithm.h" />
     <ClInclude Include="gurobi.h" />
     <ClInclude Include="lowCostPriority.h" />
     <ClInclude Include="trips.h" />

@@ -17,6 +17,7 @@ public:
 
 	void monthly_trips();
 	void daily_trips();
+	void daily_trip(size_t p);
 
 private:
 	void _run_monthly_trips(size_t scenerio);

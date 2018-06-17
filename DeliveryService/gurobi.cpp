@@ -307,23 +307,23 @@ void Gurobi::_run_monthly_trips(size_t p)
 
 		// save result in _x1[population], _y1[population], _v1[population] _v2[population] _v3[population]
 
-		if (!_write_x1( x1, p))
+		if (!_write_x1(x1, p))
 		{
 			return;
 		}
-		if (!_write_y1( y1, p))
+		if (!_write_y1(y1, p))
 		{
 			return;
 		}
-		if (!_write_v1( v1, p))
+		if (!_write_v1(v1, p))
 		{
 			return;
 		}
-		if (!_write_v2( v2, p))
+		if (!_write_v2(v2, p))
 		{
 			return;
 		}
-		if (!_write_v3( v3, p))
+		if (!_write_v3(v3, p))
 		{
 			return;
 		}
@@ -357,7 +357,7 @@ bool Gurobi::_write_x1(const std::vector<std::vector<std::vector<std::vector<GRB
 	return true;
 }
 
-bool Gurobi::_write_y1( const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t p)
+bool Gurobi::_write_y1(const std::vector<std::vector<std::vector<GRBVar> > >& y1, size_t p)
 {
 	for (size_t t = 0; t < DAY; ++t)
 	{
@@ -414,6 +414,13 @@ bool Gurobi::_write_v3(const std::vector<std::vector<GRBVar> >& v3, size_t p)
 	return true;
 }
 
+void Gurobi::daily_trip(size_t p)
+{
+	_run_daily_trips(p, p);
+	Verify v(_demands, _trips);
+	v.verify_daily(p, p);
+}
+
 void Gurobi::daily_trips()
 {
 	for (size_t p = 0; p < POPULATION; ++p)
@@ -436,6 +443,8 @@ void Gurobi::_run_daily_trips(size_t p, size_t s)
 		GRBEnv env = GRBEnv();
 
 		GRBModel model = GRBModel(env);
+		// silent
+		model.getEnv().set(GRB_IntParam_OutputFlag, 0);
 
 		// Create variables
 

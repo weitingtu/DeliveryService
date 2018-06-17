@@ -4,6 +4,7 @@
 #include "feasibleStochasticDemand.h"
 #include "lowCostPriority.h"
 #include "writer.h"
+#include "geneticAlgorithm.h"
 
 int main()
 {
@@ -34,9 +35,9 @@ int main()
 	//gurobi.daily_trips();
 	//trips.write_daily_trips();
 
-	Trips t;
-	t.read_monthly_trips();
-	t.read_daily_trips();
+	//Trips t;
+	//t.read_monthly_trips();
+	//t.read_daily_trips();
 	//for (size_t p = 0; p < POPULATION; ++p)
 	//{
 	//	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
@@ -55,8 +56,23 @@ int main()
 
 	//FeasibleStochasticDemand f(demands, t);
 	//f.start2();
-	Writer w(demands, t);
-	w.write_trips("result.txt");
+	//Writer w(demands, t);
+	//w.write_trips("result.txt");
+
+	Trips gurobi_trips;
+	//Gurobi gurobi(demands, gurobi_trips);
+	//gurobi.monthly_trips();
+	//gurobi.daily_trips();
+	gurobi_trips.read_monthly_trips();
+	gurobi_trips.read_daily_trips();
+
+	Trips low_cost_trips;
+	LowCostPriority l(demands, low_cost_trips);
+	l.monthly_trips();
+	l.daily_trips();
+
+	GeneticAlgorithm ga(demands, gurobi_trips, low_cost_trips);
+	ga.start();
 
 	return 0;
 }
