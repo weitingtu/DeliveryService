@@ -74,5 +74,8 @@ int main()
 	GeneticAlgorithm ga(demands, gurobi_trips, low_cost_trips);
 	ga.start();
 
+	Writer w(demands, ga.trips());
+	w.write_trips("ga_result.txt");
+
 	return 0;
 }

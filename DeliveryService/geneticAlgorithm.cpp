@@ -25,14 +25,14 @@ void GeneticAlgorithm::_create_prob_array(std::array<double, POPULATION * 2>& pr
 	for (size_t p = 0; p < POPULATION; ++p, ++i)
 	{
 		double cost = _cost_1(_gurobi_trips.trips()[p]);
-		prob_array[i] = 1 / cost;
-		total_cost += 1 / cost;
+		prob_array[i] = 1 / (cost * cost);
+		total_cost += 1 / (cost * cost);
 	}
 	for (size_t p = 0; p < POPULATION; ++p, ++i)
 	{
 		double cost = _cost_1(_gurobi_trips.trips()[p]);
-		prob_array[i] = 1 / cost;
-		total_cost += 1 / cost;
+		prob_array[i] = 1 / (cost * cost);
+		total_cost += 1 / (cost * cost);
 	}
 
 	prob_array[0] = prob_array[0] / total_cost;
@@ -119,13 +119,24 @@ void GeneticAlgorithm::_start(size_t p)
 	std::array<double, POPULATION * 2> prob_array;
 	_create_prob_array(prob_array);
 
-	_trips.trips()[p] = _gurobi_trips.trips()[p];
+	double gurobi_cost = _cost_1(_gurobi_trips.trips()[p]);
+	double low_cost_cost = _cost_1(_low_cost_trips.trips()[p]);
+	
+	if (gurobi_cost < low_cost_cost)
+	{
+		_trips.trips()[p] = _gurobi_trips.trips()[p];
+	}
+	else
+	{
+		_trips.trips()[p] = _low_cost_trips.trips()[p];
+	}
+
 	std::vector<Trip> pi_best = _trips.trips()[p];
 	double best_cost = _cost_1(pi_best);
 	double init_cost = best_cost;
 
-	size_t max_count = 1000;
-	size_t max_non_improve_count = 100;
+	size_t max_count = 100;
+	size_t max_non_improve_count = 10;
 	size_t count = 0;
 	size_t non_improve_count = 0;
 	while (count < max_count && non_improve_count < max_non_improve_count)
@@ -141,7 +152,7 @@ void GeneticAlgorithm::_start(size_t p)
 
 		Gurobi gurobi(_demands, _trips);
 		gurobi.daily_trip(p);
-		
+
 		pi_best = _trips.trips()[p];
 		_trips.trips()[p] = pi_orig;
 
