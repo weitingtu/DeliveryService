@@ -30,7 +30,7 @@ void GeneticAlgorithm::_create_prob_array(std::array<double, POPULATION * 2>& pr
 	}
 	for (size_t p = 0; p < POPULATION; ++p, ++i)
 	{
-		double cost = _cost_1(_gurobi_trips.trips()[p]);
+		double cost = _cost_1(_low_cost_trips.trips()[p]);
 		prob_array[i] = 1 / (cost * cost);
 		total_cost += 1 / (cost * cost);
 	}
