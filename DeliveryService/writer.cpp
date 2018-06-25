@@ -278,7 +278,7 @@ void Writer::_write_d3(std::ofstream& ofile, size_t p, size_t t, size_t k) const
 	ofile << "average d3 " << d3 / STOCHASTIC_DEMAND << std::endl;
 }
 
-void Writer::_write_cost(std::ofstream& ofile, size_t p, size_t t ) const
+void Writer::_write_cost(std::ofstream& ofile, size_t p, size_t t) const
 {
 	ofile << "cost " << _cost_1(p, t) << std::endl;
 	double cost = 0;

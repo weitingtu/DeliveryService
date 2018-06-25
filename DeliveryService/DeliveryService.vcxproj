@@ -133,6 +133,7 @@
     <ClCompile Include="trips.cpp" />
     <ClCompile Include="verify.cpp" />
     <ClCompile Include="writer.cpp" />
+    <ClCompile Include="writerCsv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="trips.h" />
     <ClInclude Include="verify.h" />
     <ClInclude Include="writer.h" />
+    <ClInclude Include="writerCsv.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input_cost_outsourcing17.txt" />

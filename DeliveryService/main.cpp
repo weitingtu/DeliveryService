@@ -4,6 +4,7 @@
 #include "feasibleStochasticDemand.h"
 #include "lowCostPriority.h"
 #include "writer.h"
+#include "writerCsv.h"
 #include "geneticAlgorithm.h"
 
 int main()
@@ -71,11 +72,20 @@ int main()
 	l.monthly_trips();
 	l.daily_trips();
 
-	GeneticAlgorithm ga(demands, gurobi_trips, low_cost_trips);
-	ga.start();
+	//GeneticAlgorithm ga(demands, gurobi_trips, low_cost_trips);
+	//ga.start();
 
-	Writer w(demands, ga.trips());
-	w.write_trips("ga_result.txt");
+	//Writer w(demands, ga.trips());
+	//w.write_trips("ga_result.txt");
+
+	WriterCsv w1(demands, gurobi_trips);
+	w1.write_trips("gurobi.csv");
+
+	WriterCsv w2(demands, low_cost_trips);
+	w2.write_trips("low_cost.csv");
+
+	//WriterCsv w3(demands, ga.trips());
+	//w3.write_trips("ga.csv");
 
 	return 0;
 }
