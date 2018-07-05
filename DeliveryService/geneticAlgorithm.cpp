@@ -1,6 +1,8 @@
 #include "geneticAlgorithm.h"
 #include <stdlib.h>
 #include "gurobi.h"
+#include <functional>
+#include <queue>
 
 
 
@@ -44,6 +46,21 @@ void GeneticAlgorithm::_create_prob_array(std::array<double, POPULATION * 2>& pr
 }
 
 size_t GeneticAlgorithm::_random_select(std::array<double, POPULATION * 2>& prob_array) const
+{
+	double rf = rand() / (RAND_MAX + 1.0);
+	size_t i = 0;
+	for (; i < prob_array.size(); ++i)
+	{
+		if (rf <= prob_array[i])
+		{
+			break;
+		}
+	}
+
+	return i;
+}
+
+size_t GeneticAlgorithm::_random_select(const std::vector<double>& prob_array) const
 {
 	double rf = rand() / (RAND_MAX + 1.0);
 	size_t i = 0;
@@ -121,7 +138,7 @@ void GeneticAlgorithm::_start(size_t p)
 
 	double gurobi_cost = _cost_1(_gurobi_trips.trips()[p]);
 	double low_cost_cost = _cost_1(_low_cost_trips.trips()[p]);
-	
+
 	if (gurobi_cost < low_cost_cost)
 	{
 		_trips.trips()[p] = _gurobi_trips.trips()[p];
@@ -231,4 +248,166 @@ double GeneticAlgorithm::_cost_1(const Trip& trip) const
 	}
 
 	return cost;
+}
+
+void GeneticAlgorithm::start2()
+{
+	for (size_t p = 0; p < _gurobi_trips.trips().size(); ++p)
+	{
+		_100_trips.push_back(_gurobi_trips.trips()[p]);
+	}
+	for (size_t p = 0; p < _low_cost_trips.trips().size(); ++p)
+	{
+		_100_trips.push_back(_low_cost_trips.trips()[p]);
+	}
+
+	size_t count = 0;
+	while (count < 100)
+	{
+		printf("GA iteration: %zu\n", count);
+		++count;
+		_start2();
+	}
+}
+
+std::vector<double> GeneticAlgorithm::_generate_prob(const std::vector<std::vector<Trip>>& prev_trips) const
+{
+	std::vector<double> prob(prev_trips.size(), 0.0);
+	double total_cost = 0.0;
+	for (size_t p = 0; p < prev_trips.size(); ++p)
+	{
+		double cost = _cost_1(prev_trips[p]);
+		prob[p] = 1 / (cost * cost);
+		total_cost += 1 / (cost * cost);
+	}
+
+	prob[0] = prob[0] / total_cost;
+	for (size_t i = 1; i < prob.size(); ++i)
+	{
+		double p = prob[i] / total_cost;
+		prob[i] = prob[i - 1] + p;
+	}
+
+	return prob;
+}
+
+std::vector<std::vector<Trip>> GeneticAlgorithm::_select_100(const std::vector<std::vector<Trip> >& prev_trips) const
+{
+	std::vector<std::vector<Trip>> trips;
+	std::vector<double> prob = _generate_prob(prev_trips);
+
+	for (size_t p = 0; p < prev_trips.size(); ++p)
+	{
+		size_t i = _random_select(prob);
+		trips.push_back(prev_trips[p]);
+	}
+
+	return trips;
+}
+
+std::vector<Trip> GeneticAlgorithm::_mate(const std::vector<Trip>& trips1, const std::vector<Trip>& trips2) const
+{
+	std::vector<Trip> trips;
+
+	const double prob_threshold = 0.6;
+	bool start_exchange = false;
+	bool finish_exchange = false;
+
+	for (size_t i = 0; i < trips1.size(); ++i)
+	{
+		double rf = rand() / (RAND_MAX + 1.0);
+		if (rf >= prob_threshold)
+		{
+			if (!start_exchange)
+			{
+				start_exchange = true;
+			}
+			else if (!finish_exchange)
+			{
+				finish_exchange = true;
+			}
+		}
+
+		if (start_exchange && !finish_exchange)
+		{
+			trips.push_back(trips2.at(i));
+		}
+		else
+		{
+			trips.push_back(trips1.at(i));
+		}
+	}
+
+	return trips;
+}
+
+void GeneticAlgorithm::_start2()
+{
+	std::vector<std::vector<Trip>> prev_trips = _select_100(_100_trips);
+
+	std::vector<double> prob = _generate_prob(prev_trips);
+
+	std::vector<std::vector<Trip>> all_trips;
+
+	size_t count = 0;
+	while (count < 90)
+	{
+		++count;
+		size_t i_1 = _random_select(prob);
+		size_t i_2 = _random_select(prob);
+		if (i_1 == i_2)
+		{
+			all_trips.push_back(prev_trips.at(i_1));
+			continue;
+		}
+		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
+
+		// gurobi for daily trip
+		Trips g_trips = _gurobi_trips;
+		g_trips.trips()[0] = new_trips;
+
+		Gurobi gurobi(_demands, g_trips);
+		gurobi.daily_trip(0);
+
+		new_trips = g_trips.trips()[0];
+
+		all_trips.push_back(new_trips);
+	}
+
+	while (count < 94)
+	{
+		size_t idx = (size_t)((rand() / (RAND_MAX + 1.0)) * 90);
+		double rf = rand() / (RAND_MAX + 1.0);
+		if (rf > 0.01)
+		{
+			continue;
+		}
+		if (rf < 0.005)
+		{
+			continue;
+		}
+		++count;
+		std::vector<Trip> new_trips = all_trips.at(idx);
+		size_t index1 = 0;
+		size_t index2 = 0;
+		_get_exchange_index(index1, index2);
+		std::swap(new_trips.at(index1), new_trips.at(index2));
+		all_trips.push_back(new_trips);
+	}
+
+
+	std::priority_queue < std::pair<double, size_t>, std::vector<std::pair<double, size_t> >, std::greater<std::pair<double, size_t> >> q;
+	for (size_t p = 0; p < prev_trips.size(); ++p)
+	{
+		double cost = _cost_1(prev_trips[p]);
+		q.push(std::make_pair(cost, p));
+	}
+
+	while (count < 100)
+	{
+		++count;
+		all_trips.push_back(prev_trips.at(q.top().second));
+		q.pop();
+	}
+	_100_trips = all_trips;
 }

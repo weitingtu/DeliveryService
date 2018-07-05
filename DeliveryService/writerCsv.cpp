@@ -4,7 +4,7 @@
 
 
 
-WriterCsv::WriterCsv(const Demands& d, const Trips& t) :
+WriterCsv::WriterCsv(const Demands& d, const std::vector<std::vector<Trip> >& t) :
 	_demands(d),
 	_trips(t)
 {
@@ -27,7 +27,7 @@ std::string WriterCsv::_cmd_k(size_t k) const
 // (7)
 double WriterCsv::_day_cost(size_t p, size_t t) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -76,7 +76,7 @@ double WriterCsv::_day_cost(size_t p, size_t t) const
 
 double WriterCsv::_total_district_cost(size_t p, size_t t) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -112,7 +112,7 @@ double WriterCsv::_total_district_cost(size_t p, size_t t) const
 
 double WriterCsv::_total_district_task_cost(size_t p, size_t t, size_t k) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -139,7 +139,7 @@ double WriterCsv::_total_district_task_cost(size_t p, size_t t, size_t k) const
 
 double WriterCsv::_district_cost(size_t p, size_t t, size_t j) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -166,7 +166,7 @@ double WriterCsv::_district_cost(size_t p, size_t t, size_t j) const
 
 double WriterCsv::_district_task_cost(size_t p, size_t t, size_t j, size_t k) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -184,7 +184,7 @@ double WriterCsv::_district_task_cost(size_t p, size_t t, size_t j, size_t k) co
 
 double WriterCsv::_trans_cost(size_t p, size_t t) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -201,7 +201,7 @@ double WriterCsv::_trans_cost(size_t p, size_t t) const
 
 double WriterCsv::_trans_station_cost(size_t p, size_t t, size_t m) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -215,7 +215,7 @@ double WriterCsv::_trans_station_cost(size_t p, size_t t, size_t m) const
 
 double WriterCsv::_major_customer_cost(size_t p, size_t t) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -230,7 +230,7 @@ double WriterCsv::_major_customer_cost(size_t p, size_t t) const
 // (15)
 double WriterCsv::_cost_2(size_t p, size_t t, size_t s) const
 {
-	const Trip& trip = _trips.trips().at(p).at(t);
+	const Trip& trip = _trips.at(p).at(t);
 
 	double cost = 0;
 
@@ -285,7 +285,7 @@ double WriterCsv::_cost_2(size_t p, size_t t, size_t s) const
 void WriterCsv::_write_d1(std::ofstream& ofile, size_t p, size_t t, size_t j, size_t k) const
 {
 	const Demand& demand = _demands.demands()[p][t];
-	const Trip& trip = _trips.trips()[p][t];
+	const Trip& trip = _trips.at(p).at(t);
 
 	for (size_t i = 0; i < FLEET; ++i)
 	{
@@ -324,7 +324,7 @@ void WriterCsv::_write_d1(std::ofstream& ofile, size_t p, size_t t, size_t j, si
 void WriterCsv::_write_d2(std::ofstream& ofile, size_t p, size_t t, size_t m) const
 {
 	const Demand& demand = _demands.demands()[p][t];
-	const Trip& trip = _trips.trips()[p][t];
+	const Trip& trip = _trips.at(p).at(t);
 
 	for (size_t i = 0; i < FLEET; ++i)
 	{
@@ -362,7 +362,7 @@ void WriterCsv::_write_d2(std::ofstream& ofile, size_t p, size_t t, size_t m) co
 void WriterCsv::_write_d3(std::ofstream& ofile, size_t p, size_t t, size_t k) const
 {
 	const Demand& demand = _demands.demands()[p][t];
-	const Trip& trip = _trips.trips()[p][t];
+	const Trip& trip = _trips.at(p).at(t);
 
 	for (size_t i = 0; i < FLEET; ++i)
 	{
@@ -437,7 +437,7 @@ bool WriterCsv::write_trips(const std::string& file_name) const
 		<< "major customer task cost,"
 		<< std::endl;
 
-	for (size_t p = 0; p < POPULATION; ++p)
+	for (size_t p = 0; p < _trips.size(); ++p)
 	{
 		for (size_t t = 0; t < DAY; ++t)
 		{

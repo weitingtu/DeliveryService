@@ -6,7 +6,7 @@
 class WriterCsv
 {
 public:
-	WriterCsv(const Demands& d, const Trips& t);
+	WriterCsv(const Demands& d, const std::vector<std::vector<Trip> >& t);
 	~WriterCsv();
 
 	bool write_trips(const std::string& file_name) const;
@@ -28,6 +28,6 @@ private:
 	void _write_cost(std::ofstream& ofile, size_t p, size_t t) const;
 
 	const Demands& _demands;
-	const Trips&   _trips;
+	const std::vector<std::vector<Trip> >&   _trips;
 };
 

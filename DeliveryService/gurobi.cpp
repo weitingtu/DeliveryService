@@ -416,9 +416,13 @@ bool Gurobi::_write_v3(const std::vector<std::vector<GRBVar> >& v3, size_t p)
 
 void Gurobi::daily_trip(size_t p)
 {
-	_run_daily_trips(p, p);
-	Verify v(_demands, _trips);
-	v.verify_daily(p, p);
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		//printf("Run population %zu stochastic demand %zu\n", p, s);
+		_run_daily_trips(p, s);
+		Verify v(_demands, _trips);
+		v.verify_daily(p, s);
+	}
 }
 
 void Gurobi::daily_trips()
