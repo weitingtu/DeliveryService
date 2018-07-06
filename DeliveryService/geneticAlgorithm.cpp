@@ -382,10 +382,6 @@ void GeneticAlgorithm::_start2()
 		{
 			continue;
 		}
-		if (rf < 0.005)
-		{
-			continue;
-		}
 		++count;
 		std::vector<Trip> new_trips = all_trips.at(idx);
 		size_t index1 = 0;
