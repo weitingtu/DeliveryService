@@ -1,6 +1,7 @@
 #include "geneticAlgorithm.h"
 #include <stdlib.h>
 #include "gurobi.h"
+#include "lowCostPriority.h"
 #include <functional>
 #include <queue>
 
@@ -363,13 +364,14 @@ void GeneticAlgorithm::_start2()
 		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
 
 		// gurobi for daily trip
-		Trips g_trips = _gurobi_trips;
-		g_trips.trips()[0] = new_trips;
+		Trips daily_trips = _gurobi_trips;
+		daily_trips.trips()[0] = new_trips;
 
-		Gurobi gurobi(_demands, g_trips);
-		gurobi.daily_trip(0);
+		//Gurobi daily_runner(_demands, daily_trips);
+		LowCostPriority daily_runner(_demands, daily_trips);
+		daily_runner.daily_trip(0);
 
-		new_trips = g_trips.trips()[0];
+		new_trips = daily_trips.trips()[0];
 
 		all_trips.push_back(new_trips);
 	}

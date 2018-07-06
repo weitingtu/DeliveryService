@@ -222,6 +222,20 @@ void LowCostPriority::_monthly_trips(size_t p, size_t t)
 	}
 }
 
+void LowCostPriority::daily_trip(size_t p)
+{
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		printf("Run population %zu stochastic demand %zu\n", p, s);
+		_run_daily_trips(p, s);
+		Verify v(_demands, _trips);
+		if (!v.verify_daily(p, s))
+		{
+			break;
+		}
+	}
+}
+
 void LowCostPriority::daily_trips()
 {
 	bool stop = false;

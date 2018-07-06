@@ -15,6 +15,7 @@ public:
 
 	void monthly_trips();
 	void daily_trips();
+	void daily_trip(size_t p);
 
 private:
 	void _initialize_cost_array();
