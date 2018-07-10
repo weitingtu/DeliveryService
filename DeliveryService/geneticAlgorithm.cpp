@@ -4,8 +4,7 @@
 #include "lowCostPriority.h"
 #include <functional>
 #include <queue>
-
-
+#include <time.h>
 
 GeneticAlgorithm::GeneticAlgorithm(const Demands& d, const Trips& gurobi_trips, const Trips& low_cost_trips) :
 	_demands(d),
@@ -15,7 +14,6 @@ GeneticAlgorithm::GeneticAlgorithm(const Demands& d, const Trips& gurobi_trips, 
 	_prob()
 {
 }
-
 
 GeneticAlgorithm::~GeneticAlgorithm()
 {
@@ -262,12 +260,17 @@ void GeneticAlgorithm::start2()
 		_100_trips.push_back(_low_cost_trips.trips()[p]);
 	}
 
+	double total_runtime = 0.0;
 	size_t count = 0;
 	while (count < 100)
 	{
 		printf("GA iteration: %zu\n", count);
 		++count;
+		time_t start_t = clock();
 		_start2();
+		double runtime = (double)(clock() - start_t) / CLOCKS_PER_SEC;
+		total_runtime += runtime;
+		printf("run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
 	}
 }
 
@@ -344,21 +347,21 @@ std::vector<Trip> GeneticAlgorithm::_mate(const std::vector<Trip>& trips1, const
 
 void GeneticAlgorithm::_run_daily(std::vector<Trip>& new_trips) const
 {
-		for (size_t i = 0; i < new_trips.size(); ++i)
-		{
-			new_trips.at(i).clear_daily();
-		}
-		// low cost for daily trip
-		LowCostPriority::daily_trip(0, _demands, new_trips);
+	for (size_t i = 0; i < new_trips.size(); ++i)
+	{
+		new_trips.at(i).clear_daily();
+	}
+	// low cost for daily trip
+	LowCostPriority::daily_trip(0, _demands, new_trips);
 
-		// gurobi for daily trip
-		//Trips daily_trips = _gurobi_trips;
-		//daily_trips.trips()[0] = new_trips;
+	// gurobi for daily trip
+	//Trips daily_trips = _gurobi_trips;
+	//daily_trips.trips()[0] = new_trips;
 
-		//Gurobi daily_runner(_demands, daily_trips);
-		//daily_runner.daily_trip(0);
+	//Gurobi daily_runner(_demands, daily_trips);
+	//daily_runner.daily_trip(0);
 
-		//new_trips = daily_trips.trips()[0];
+	//new_trips = daily_trips.trips()[0];
 }
 
 void GeneticAlgorithm::_start2()
