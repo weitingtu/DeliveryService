@@ -260,18 +260,29 @@ void GeneticAlgorithm::start2()
 		_100_trips.push_back(_low_cost_trips.trips()[p]);
 	}
 
+	FILE* fp = nullptr;
+	errno_t err;
+	if ((err = fopen_s(&fp, "GA_runtime.txt", "w")) != 0)
+	{
+		printf("Error, unable to open file GA_runtime.txt\n");
+		return;
+	}
+
 	double total_runtime = 0.0;
 	size_t count = 0;
 	while (count < 100)
 	{
 		printf("GA iteration: %zu\n", count);
+		fprintf(fp, "GA iteration: %zu\n", count);
 		++count;
 		time_t start_t = clock();
 		_start2();
 		double runtime = (double)(clock() - start_t) / CLOCKS_PER_SEC;
 		total_runtime += runtime;
 		printf("run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
+		fprintf(fp, "run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
 	}
+	fclose(fp);
 }
 
 std::vector<double> GeneticAlgorithm::_generate_prob(const std::vector<std::vector<Trip>>& prev_trips) const
