@@ -36,6 +36,8 @@ public:
 	std::array<std::array<std::array<int, TASK>, FLEET>, STOCHASTIC_DEMAND>& x4() { return _x4; }
 	std::array<std::array<int, TASK>, STOCHASTIC_DEMAND>& y4() { return _y4; }
 
+	void clear_daily();
+
 private:
 	/*50組隨機需求下，月趟次(x1,y1,v1,v2,v3) use other model to generate(totally have 50 set)*/
 

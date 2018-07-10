@@ -222,20 +222,6 @@ void LowCostPriority::_monthly_trips(size_t p, size_t t)
 	}
 }
 
-void LowCostPriority::daily_trip(size_t p)
-{
-	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
-	{
-		printf("Run population %zu stochastic demand %zu\n", p, s);
-		_run_daily_trips(p, s);
-		Verify v(_demands, _trips);
-		if (!v.verify_daily(p, s))
-		{
-			break;
-		}
-	}
-}
-
 void LowCostPriority::daily_trips()
 {
 	bool stop = false;
@@ -408,6 +394,197 @@ void LowCostPriority::_daily_trips(size_t p, size_t s, size_t t)
 		{
 			++trip.y3()[s][m];
 			d2 -= _demands.load()[0];
+		}
+	}
+}
+
+void LowCostPriority::_initialize_cost_array(
+	const Demands& demands,
+	std::array<std::array<size_t, TASK>, DISTRICT>& min_max_c1,
+	std::array<std::array<size_t, TASK>, DISTRICT>& max_min_c1)
+{
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		std::vector<std::pair<double, size_t> > c;
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			c.push_back(std::make_pair(demands.c1()[j][k], j));
+		}
+		std::sort(c.begin(), c.end());
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			min_max_c1[j][k] = c[j].second;
+		}
+		std::reverse(c.begin(), c.end());
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			max_min_c1[j][k] = c[j].second;
+		}
+	}
+}
+
+void LowCostPriority::daily_trip(size_t p, const Demands& demands, std::vector<Trip>& trips)
+{
+	std::array<std::array<size_t, TASK>, DISTRICT> min_max_c1;
+	std::array<std::array<size_t, TASK>, DISTRICT> max_min_c1;
+	_initialize_cost_array(demands, min_max_c1, max_min_c1);
+
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			Trip& trip = trips[t];
+			const Demand& demand = demands.demands()[s][t];
+			_daily_trips(demands, min_max_c1, max_min_c1, demand, trip, s);
+			if (!Verify::verify_daily(demands, trip, p, s, t))
+			{
+				break;
+			}
+		}
+	}
+}
+
+void LowCostPriority::_daily_trips(const Demands& demands,
+	const std::array<std::array<size_t, TASK>, DISTRICT>& min_max_c1,
+	const std::array<std::array<size_t, TASK>, DISTRICT>& max_min_c1,
+	const Demand& demand, Trip& trip, size_t s)
+{
+	std::vector<std::vector<double> > task_worktime(FLEET);
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		task_worktime[i].resize(TASK, MAXWORKTIME);
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				double work_time = demands.u1()[j][k] * 2 + WORKTIME;
+				task_worktime[i][k] -= trip.x1()[i][j][k] * work_time;
+				if (task_worktime[i][k] < 0)
+				{
+					printf("i %zu, k %zu, %f < 0\n", i, k, task_worktime[i][k]);
+					return;
+				}
+			}
+		}
+	}
+
+	std::vector<double> station_worktime(FLEET, MAXWORKTIME);
+
+	// x2, y2
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		size_t i = 0;
+		for (size_t jj = 0; jj < DISTRICT; ++jj)
+		{
+			size_t j = min_max_c1[jj][k];
+			double d1 = demand.d1()[j][k];
+			for (size_t ii = 0; ii < FLEET; ++ii)
+			{
+				d1 -= trip.x1()[ii][j][k] * demands.load()[0];
+			}
+			d1 -= trip.y1()[j][k] * demands.load()[0];
+			d1 -= trip.v1()[j][k] * demands.load()[1];
+
+			double work_time = demands.u1()[j][k] * 2 + WORKTIME;
+			// x2
+			if (i < FLEET && work_time <= MAXWORKTIME)
+			{
+				while (d1 > 0)
+				{
+					while (i < FLEET && task_worktime[i][k] < work_time)
+					{
+						// change car
+						++i;
+					}
+					if (i >= FLEET)
+					{
+						// run out of car
+						break;
+					}
+					++trip.x2()[s][i][j][k];
+					task_worktime[i][k] -= work_time;
+					d1 -= demands.load()[0];
+				}
+			}
+			// y2
+			while (d1 > 0)
+			{
+				++trip.y2()[s][j][k];
+				d1 -= demands.load()[0];
+			}
+		}
+	}
+
+	// x4, y4
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		double d3 = demand.d3()[k];
+		d3 -= trip.v3()[k] * demands.load()[1];
+		double work_time = demands.u3()[k] * 2 + WORKTIME;
+		// x4
+		if (work_time <= MAXWORKTIME)
+		{
+			size_t i = 0;
+			while (d3 > 0)
+			{
+				while (i < FLEET && task_worktime[i][k] < work_time)
+				{
+					// change car
+					++i;
+				}
+				if (i >= FLEET)
+				{
+					// run out of car
+					break;
+				}
+				++trip.x4()[s][i][k];
+				task_worktime[i][k] -= work_time;
+				d3 -= demands.load()[0];
+			}
+		}
+		// y4
+		while (d3 > 0)
+		{
+			++trip.y4()[s][k];
+			d3 -= demands.load()[0];
+		}
+	}
+
+	// x3, y3
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		double d2 = demand.d2()[m];
+		for (size_t n = 0; n < CAR_TYPE; ++n)
+		{
+			d2 -= trip.v2()[n][m] * demands.load()[1];
+		}
+		double work_time = demands.u2()[m] * 2 + WORKTIME;
+		// x3
+		if (work_time <= MAXWORKTIME)
+		{
+			size_t i = 0;
+			while (d2 > 0)
+			{
+				while (i < FLEET && station_worktime[i] < work_time)
+				{
+					// change car
+					++i;
+				}
+				if (i >= FLEET)
+				{
+					// run out of car
+					break;
+				}
+				++trip.x3()[s][i][m];
+				station_worktime[i] -= work_time;
+				d2 -= demands.load()[0];
+			}
+		}
+		// y3
+		while (d2 > 0)
+		{
+			++trip.y3()[s][m];
+			d2 -= demands.load()[0];
 		}
 	}
 }

@@ -342,6 +342,25 @@ std::vector<Trip> GeneticAlgorithm::_mate(const std::vector<Trip>& trips1, const
 	return trips;
 }
 
+void GeneticAlgorithm::_run_daily(std::vector<Trip>& new_trips) const
+{
+		for (size_t i = 0; i < new_trips.size(); ++i)
+		{
+			new_trips.at(i).clear_daily();
+		}
+		// low cost for daily trip
+		LowCostPriority::daily_trip(0, _demands, new_trips);
+
+		// gurobi for daily trip
+		//Trips daily_trips = _gurobi_trips;
+		//daily_trips.trips()[0] = new_trips;
+
+		//Gurobi daily_runner(_demands, daily_trips);
+		//daily_runner.daily_trip(0);
+
+		//new_trips = daily_trips.trips()[0];
+}
+
 void GeneticAlgorithm::_start2()
 {
 	std::vector<std::vector<Trip>> prev_trips = _select_100(_100_trips);
@@ -363,17 +382,8 @@ void GeneticAlgorithm::_start2()
 		}
 		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
 
-		// gurobi for daily trip
-		Trips daily_trips = _gurobi_trips;
-		daily_trips.trips()[0] = new_trips;
-
-		//Gurobi daily_runner(_demands, daily_trips);
-		LowCostPriority daily_runner(_demands, daily_trips);
-		daily_runner.daily_trip(0);
-
-		new_trips = daily_trips.trips()[0];
-
-		all_trips.push_back(new_trips);
+		_run_daily(new_trips);
+		all_trips.push_back(std::move(new_trips));
 	}
 
 	while (count < 94)
@@ -390,7 +400,9 @@ void GeneticAlgorithm::_start2()
 		size_t index2 = 0;
 		_get_exchange_index(index1, index2);
 		std::swap(new_trips.at(index1), new_trips.at(index2));
-		all_trips.push_back(new_trips);
+
+		_run_daily(new_trips);
+		all_trips.push_back(std::move(new_trips));
 	}
 
 
@@ -404,8 +416,21 @@ void GeneticAlgorithm::_start2()
 	while (count < 100)
 	{
 		++count;
-		all_trips.push_back(prev_trips.at(q.top().second));
+		std::vector<Trip> new_trips = prev_trips.at(q.top().second);
+		_run_daily(new_trips);
+		all_trips.push_back(std::move(new_trips));
 		q.pop();
 	}
 	_100_trips = all_trips;
+
+	double min_cost = std::numeric_limits<double>::max();
+	for (size_t p = 0; p < all_trips.size(); ++p)
+	{
+		double cost = _cost_1(all_trips[p]);
+		if (cost < min_cost)
+		{
+			min_cost = cost;
+		}
+	}
+	printf("min cost %f\n", min_cost);
 }

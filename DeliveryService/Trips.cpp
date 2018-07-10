@@ -23,6 +23,67 @@ Trip::~Trip()
 {
 }
 
+void Trip::clear_daily()
+{
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					_x2.at(s).at(i).at(j).at(k) = 0;
+				}
+			}
+		}
+	}
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				_y2.at(s).at(j).at(k) = 0;
+			}
+		}
+	}
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				_x3.at(s).at(i).at(m) = 0;
+			}
+		}
+	}
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			_y3.at(s).at(m) = 0;
+		}
+	}
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				_x4.at(s).at(i).at(k) = 0;
+			}
+		}
+	}
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			_y4.at(s).at(k) = 0;
+		}
+	}
+}
+
 Trips::Trips() :
 	_trips()
 {

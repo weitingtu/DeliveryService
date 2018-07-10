@@ -647,3 +647,254 @@ bool Verify::_verify_x2_x3_x4_y2_y3_y4(size_t p, size_t t, size_t s) const
 
 	return true;
 }
+
+// static
+bool Verify::verify_daily(const Demands& demands, const Trip& trip, size_t p, size_t s, size_t t)
+{
+	//for (size_t t = 0; t < DAY; ++t)
+	{
+		//const Trip& trip = trips.at(t);
+		const Demand& demand = demands.demands().at(s).at(t);
+
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				if (!_verify_x1_y1_x2_y2(demands, demand, trip, j, k, s))
+				{
+					printf("failed to verify x1 y1 x2 y2\n");
+					return false;
+				}
+			}
+		}
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			if (!_verify_x3_y3(demands, demand, trip, m, s))
+			{
+				printf("failed to verify x3 y3\n");
+				return false;
+			}
+		}
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (!_verify_x4_y4(demands, demand, trip, k, s))
+			{
+				printf("failed to verify x4 y4\n");
+				return false;
+			}
+		}
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				if (!_verify_x1_x2_x4(demands, demand, trip, i, k, s))
+				{
+					printf("failed to verify x1 x2 x4\n");
+					return false;
+				}
+			}
+		}
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			if (!_verify_x3(demands, demand, trip, i, s))
+			{
+				printf("failed to verify x3\n");
+				return false;
+			}
+		}
+		if (!_verify_x2_x3_x4_y2_y3_y4(trip, s))
+		{
+			printf("failed to verify x2 x3 x4 y2 y3 y4\n");
+			return false;
+		}
+	}
+	//printf("verify daily successfully\n");
+	return true;
+}
+
+// verify (16)
+bool Verify::_verify_x1_y1_x2_y2(const Demands& demands, const Demand& demand, const Trip& trip,
+	size_t j, size_t k, size_t s)
+{
+	int sum_x1 = 0;
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		sum_x1 += trip.x1().at(i).at(j).at(k);
+	}
+
+	int y1 = trip.y1().at(j).at(k);
+
+	int sum_x2 = 0;
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		sum_x2 += trip.x2().at(s).at(i).at(j).at(k);
+	}
+
+	int y2 = trip.y2().at(s).at(j).at(k);
+
+	int v1 = trip.v1().at(j).at(k);
+
+	double h1 = demands.load().at(0);
+	double h2 = demands.load().at(1);
+
+	return h1 * (sum_x1 + y1 + sum_x2 + y2) + h2 * v1 >= demand.d1().at(j).at(k);
+}
+
+// verify (17)
+bool Verify::_verify_x3_y3(const Demands& demands, const Demand& demand, const Trip& trip,
+	size_t m, size_t s)
+{
+	int sum_x3 = 0;
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		sum_x3 += trip.x3().at(s).at(i).at(m);
+	}
+
+	int y3 = trip.y3().at(s).at(m);
+
+	int sum_v2 = 0;
+	for (size_t n = 0; n < CAR_TYPE; ++n)
+	{
+		sum_v2 += trip.v2().at(n).at(m);
+	}
+
+	double h1 = demands.load().at(0);
+	double h2 = demands.load().at(1);
+
+	return h1 * (sum_x3 + y3) + h2 * sum_v2 >= demand.d2().at(m);
+}
+
+// verify (18)
+bool Verify::_verify_x4_y4(const Demands& demands, const Demand& demand, const Trip& trip,
+	size_t k, size_t s)
+{
+	int sum_x4 = 0;
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		sum_x4 += trip.x4().at(s).at(i).at(k);
+	}
+
+	int y4 = trip.y4().at(s).at(k);
+
+	int v3 = trip.v3().at(k);
+
+	double h1 = demands.load().at(0);
+	double h2 = demands.load().at(1);
+
+	return h1 * (sum_x4 + y4) + h2 * v3 >= demand.d3().at(k);
+}
+
+// verify (19)
+bool Verify::_verify_x1_x2_x4(const Demands& demands, const Demand& demand, const Trip& trip,
+	size_t i, size_t k, size_t s)
+{
+	double sum_1 = 0;
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
+		double u1 = demands.u1().at(j).at(k);
+		u1 *= 2;
+		u1 += 0.5;
+		int x1 = trip.x1().at(i).at(j).at(k);
+		int x2 = trip.x2().at(s).at(i).at(j).at(k);
+		sum_1 += u1 * (double)(x1 + x2);
+	}
+
+	int x4 = trip.x4().at(s).at(i).at(k);
+	double u3 = demands.u3().at(k);
+	u3 *= 2;
+	u3 += 0.5;
+
+	//return sum_1 + u3 * (double)x4 <= MAXWORKTIME;
+	bool r = sum_1 + u3 * (double)x4 <= MAXWORKTIME;
+	if (!r)
+	{
+		printf("sum_1 %f + u3 %f * x4 %d <= %f\n", sum_1, u3, x4, MAXWORKTIME);
+	}
+	return r;
+}
+
+// verify (20)
+bool Verify::_verify_x3(const Demands& demands, const Demand& demand, const Trip& trip,
+	size_t i, size_t s)
+{
+	double sum = 0;
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		double u2 = demands.u2().at(m);
+		u2 *= 2;
+		u2 += 0.5;
+		int x3 = trip.x3().at(s).at(i).at(m);
+		sum += u2 * (double)x3;
+	}
+
+	return sum <= MAXWORKTIME;
+}
+
+// verify (21), (22), (23), (24), (25)
+bool Verify::_verify_x2_x3_x4_y2_y3_y4(const Trip& trip, size_t s)
+{
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				if (trip.x2().at(s).at(i).at(j).at(k) < 0)
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			if (trip.x3().at(s).at(i).at(m) < 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (trip.x4().at(s).at(i).at(k) < 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (trip.y2().at(s).at(j).at(k) < 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		if (trip.y3().at(s).at(m) < 0)
+		{
+			return false;
+		}
+	}
+
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		if (trip.y4().at(s).at(k) < 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}

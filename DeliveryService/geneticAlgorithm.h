@@ -30,6 +30,7 @@ private:
 	std::vector<double> _generate_prob(const std::vector<std::vector<Trip>>& prev_trips) const;
 	std::vector<std::vector<Trip> > _select_100(const std::vector<std::vector<Trip> >& prev_trips) const;
 	std::vector<Trip> _mate(const std::vector<Trip>& trips1, const std::vector<Trip>& trips2) const;
+	void _run_daily(std::vector<Trip>& new_trips) const;
 	void _start2();
 
 	const Demands& _demands;

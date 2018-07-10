@@ -21,6 +21,8 @@ public:
 	bool verify_x4(size_t p, size_t t, size_t s, size_t i, size_t k) const;
 	double cost(size_t p) const;
 
+	static bool verify_daily(const Demands& demands, const Trip& trip, size_t p, size_t s, size_t t);
+
 private:
 	double _cost_1(size_t p, size_t t) const;
 	bool _verify_v1_v2(size_t p, size_t t, size_t k) const;
@@ -34,6 +36,14 @@ private:
 	bool _verify_x1_x2_x4(size_t p, size_t t, size_t i, size_t k, size_t s) const;
 	bool _verify_x3(size_t p, size_t t, size_t i, size_t s) const;
 	bool _verify_x2_x3_x4_y2_y3_y4(size_t p, size_t t, size_t s) const;
+
+	static bool _verify_x1_y1_x2_y2(const Demands& demands, const Demand& demand, const Trip& trip, size_t j, size_t k, size_t s);
+	static bool _verify_x3_y3(const Demands& demands, const Demand& demand, const Trip& trip, size_t m, size_t s);
+	static bool _verify_x4_y4(const Demands& demands, const Demand& demand, const Trip& trip, size_t k, size_t s);
+	static bool _verify_x1_x2_x4(const Demands& demands, const Demand& demand, const Trip& trip, size_t i, size_t k, size_t s);
+	static bool _verify_x3(const Demands& demands, const Demand& demand, const Trip& trip, size_t i, size_t s);
+	static bool _verify_x2_x3_x4_y2_y3_y4(const Trip& trip, size_t s);
+
 
 	const Demands& _demands;
 	const Trips&   _trips;
