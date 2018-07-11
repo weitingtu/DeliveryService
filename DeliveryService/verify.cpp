@@ -508,7 +508,7 @@ bool Verify::_verify_x3_y3(size_t p, size_t t, size_t m, size_t s) const
 	double h1 = _demands.load().at(0);
 	double h2 = _demands.load().at(1);
 
-	return h1 * (sum_x3 + y3) + h2 * sum_v2 >= demand.d2().at(m);
+	return h1 * (sum_x3 + y3) + h2 * sum_v2 >= (demand.d2().at(m) - 0.01);
 }
 
 // verify (18)
