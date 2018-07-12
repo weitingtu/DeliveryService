@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "gurobi.h"
 #include "lowCostPriority.h"
+#include "feasibleStochasticDemand.h"
 #include <functional>
 #include <queue>
 #include <time.h>
@@ -262,9 +263,9 @@ void GeneticAlgorithm::start2()
 
 	FILE* fp = nullptr;
 	errno_t err;
-	if ((err = fopen_s(&fp, "GA_runtime.txt", "w")) != 0)
+	if ((err = fopen_s(&fp, "GA_runtime.csv", "w")) != 0)
 	{
-		printf("Error, unable to open file GA_runtime.txt\n");
+		printf("Error, unable to open file GA_runtime.csv\n");
 		return;
 	}
 	fprintf(fp, "iteration, running time, accumulated time\n");
@@ -446,5 +447,7 @@ void GeneticAlgorithm::_start2()
 			min_cost = cost;
 		}
 	}
+	FeasibleStochasticDemand fs(_demands, all_trips);
+	fs.start(count);
 	printf("min cost %f\n", min_cost);
 }
