@@ -267,20 +267,20 @@ void GeneticAlgorithm::start2()
 		printf("Error, unable to open file GA_runtime.txt\n");
 		return;
 	}
+	fprintf(fp, "iteration, running time, accumulated time\n");
 
 	double total_runtime = 0.0;
 	size_t count = 0;
 	while (count < 100)
 	{
 		printf("GA iteration: %zu\n", count);
-		fprintf(fp, "GA iteration: %zu\n", count);
-		++count;
 		time_t start_t = clock();
 		_start2();
 		double runtime = (double)(clock() - start_t) / CLOCKS_PER_SEC;
 		total_runtime += runtime;
 		printf("run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
-		fprintf(fp, "run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
+		fprintf(fp, "%zu, %.2fs, %.2fs\n", count, runtime, total_runtime);
+		++count;
 	}
 	fclose(fp);
 }
