@@ -144,9 +144,9 @@ void FeasibleStochasticDemand::start(size_t count)
 	_initialize_cost_array();
 	FILE* fp = nullptr;
 	errno_t err;
-	if ((err = fopen_s(&fp, "probability.txt", "w")) != 0)
+	if ((err = fopen_s(&fp, "probability.csv", "w")) != 0)
 	{
-		printf("Error, unable to open file GA_runtime.txt\n");
+		printf("Error, unable to open file probability.csv\n");
 		return;
 	}
 	fprintf(fp, "iteration, p, s, N1, X1, p(X>x1), N2, X1, p(X>x2), N3, X3, p(X>x3), pf = p(X>x1)*p(X>x2)*p(X>x3)\n");
