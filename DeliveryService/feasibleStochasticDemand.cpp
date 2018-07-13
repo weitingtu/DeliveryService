@@ -168,12 +168,12 @@ void FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s
 	int N2 = _get_sum_y3(p, s) + X2;
 	int X3 = _get_sum_x4(p, s);
 	int N3 = _get_sum_y4(p, s) + X3;
-	printf("%zu, %zu, %zu, %d %d %d %d %d %d\n", count, p, s, X1, N1, X2, N2, X3, N3);
+	//printf("%zu, %zu, %zu, %d %d %d %d %d %d\n", count, p, s, X1, N1, X2, N2, X3, N3);
 
 	double p1 = _get_p(X1, N1, _p1);
 	double p2 = _get_p(X2, N2, _p2);
 	double p3 = _get_p(X3, N3, _p3);
-	printf("%f %f %f\n", p1, p2, p3);
+	//printf("%f %f %f\n", p1, p2, p3);
 	fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, p1*p2*p3);
 }
