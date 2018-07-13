@@ -139,16 +139,9 @@ int FeasibleStochasticDemand::_get_sum_y4(size_t p, size_t s) const
 	return sum_y4;
 }
 
-void FeasibleStochasticDemand::start(size_t count)
+void FeasibleStochasticDemand::start(FILE* fp, size_t count)
 {
 	_initialize_cost_array();
-	FILE* fp = nullptr;
-	errno_t err;
-	if ((err = fopen_s(&fp, "probability.csv", "w")) != 0)
-	{
-		printf("Error, unable to open file probability.csv\n");
-		return;
-	}
 	fprintf(fp, "iteration, p, s, N1, X1, p(X>x1), N2, X1, p(X>x2), N3, X3, p(X>x3), pf = p(X>x1)*p(X>x2)*p(X>x3)\n");
 	for (size_t p = 0; p < _trips.size(); ++p)
 	{
@@ -157,7 +150,6 @@ void FeasibleStochasticDemand::start(size_t count)
 			_start(fp, count, p, s);
 		}
 	}
-	fclose(fp);
 }
 
 void FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s)

@@ -270,9 +270,18 @@ void GeneticAlgorithm::start2()
 	}
 	fprintf(fp, "iteration, running time, accumulated time\n");
 
+	FILE* pfp = nullptr;
+	if ((err = fopen_s(&pfp, "probability.csv", "w")) != 0)
+	{
+		printf("Error, unable to open file probability.csv\n");
+		return;
+	}
+
 	double total_runtime = 0.0;
 	size_t count = 0;
-	while (count < 100)
+	FeasibleStochasticDemand fs(_demands, _100_trips);
+	fs.start(pfp, count);
+	while (count < 3)
 	{
 		printf("GA iteration: %zu\n", count);
 		time_t start_t = clock();
@@ -281,9 +290,13 @@ void GeneticAlgorithm::start2()
 		total_runtime += runtime;
 		printf("run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
 		fprintf(fp, "%zu, %.2fs, %.2fs\n", count, runtime, total_runtime);
+
 		++count;
+	    FeasibleStochasticDemand fs(_demands, _100_trips);
+	    fs.start(pfp, count);
 	}
 	fclose(fp);
+	fclose(pfp);
 }
 
 std::vector<double> GeneticAlgorithm::_generate_prob(const std::vector<std::vector<Trip>>& prev_trips) const
@@ -447,7 +460,5 @@ void GeneticAlgorithm::_start2()
 			min_cost = cost;
 		}
 	}
-	FeasibleStochasticDemand fs(_demands, all_trips);
-	fs.start(count);
 	printf("min cost %f\n", min_cost);
 }

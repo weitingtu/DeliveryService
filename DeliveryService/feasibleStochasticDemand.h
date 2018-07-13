@@ -12,7 +12,7 @@ public:
 	FeasibleStochasticDemand(const Demands& d, const std::vector<std::vector<Trip> >& t);
 	~FeasibleStochasticDemand();
 
-	void start(size_t count);
+	void start(FILE* fp, size_t count);
 private:
 	int _get_sum_x2(size_t p, size_t s) const;
 	int _get_sum_y2(size_t p, size_t s) const;
