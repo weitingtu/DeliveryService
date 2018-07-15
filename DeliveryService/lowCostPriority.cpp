@@ -522,26 +522,26 @@ void LowCostPriority::_daily_trips(const Demands& demands,
 		d3 -= trip.v3()[k] * demands.load()[1];
 		double work_time = demands.u3()[k] * 2 + WORKTIME;
 		// x4
-		if (work_time <= MAXWORKTIME)
-		{
-			size_t i = 0;
-			while (d3 > 0)
-			{
-				while (i < FLEET && task_worktime[i][k] < work_time)
-				{
-					// change car
-					++i;
-				}
-				if (i >= FLEET)
-				{
-					// run out of car
-					break;
-				}
-				++trip.x4()[s][i][k];
-				task_worktime[i][k] -= work_time;
-				d3 -= demands.load()[0];
-			}
-		}
+		//if (work_time <= MAXWORKTIME)
+		//{
+		//	size_t i = 0;
+		//	while (d3 > 0)
+		//	{
+		//		while (i < FLEET && task_worktime[i][k] < work_time)
+		//		{
+		//			// change car
+		//			++i;
+		//		}
+		//		if (i >= FLEET)
+		//		{
+		//			// run out of car
+		//			break;
+		//		}
+		//		++trip.x4()[s][i][k];
+		//		task_worktime[i][k] -= work_time;
+		//		d3 -= demands.load()[0];
+		//	}
+		//}
 		// y4
 		while (d3 > 0)
 		{
@@ -560,26 +560,26 @@ void LowCostPriority::_daily_trips(const Demands& demands,
 		}
 		double work_time = demands.u2()[m] * 2 + WORKTIME;
 		// x3
-		if (work_time <= MAXWORKTIME)
-		{
-			size_t i = 0;
-			while (d2 > 0)
-			{
-				while (i < FLEET && station_worktime[i] < work_time)
-				{
-					// change car
-					++i;
-				}
-				if (i >= FLEET)
-				{
-					// run out of car
-					break;
-				}
-				++trip.x3()[s][i][m];
-				station_worktime[i] -= work_time;
-				d2 -= demands.load()[0];
-			}
-		}
+		//if (work_time <= MAXWORKTIME)
+		//{
+		//	size_t i = 0;
+		//	while (d2 > 0)
+		//	{
+		//		while (i < FLEET && station_worktime[i] < work_time)
+		//		{
+		//			// change car
+		//			++i;
+		//		}
+		//		if (i >= FLEET)
+		//		{
+		//			// run out of car
+		//			break;
+		//		}
+		//		++trip.x3()[s][i][m];
+		//		station_worktime[i] -= work_time;
+		//		d2 -= demands.load()[0];
+		//	}
+		//}
 		// y3
 		while (d2 > 0)
 		{
