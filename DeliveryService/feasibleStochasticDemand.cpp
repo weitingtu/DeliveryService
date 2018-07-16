@@ -143,41 +143,47 @@ int FeasibleStochasticDemand::_get_sum_y4(size_t s) const
 bool FeasibleStochasticDemand::start(FILE* fp, size_t count, size_t p, std::vector<Trip>& trips)
 {
 	_trips = &trips;
-	//fprintf(fp, "iteration, p, s, N1, X1, p(X>x1), N2, X1, p(X>x2), N3, X3, p(X>x3), pf = p(X>x1)*p(X>x2)*p(X>x3)\n");
 	bool r = true;
+	std::vector<std::string> results;
 	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
-		if (!_start(fp, count, p, s))
+		if (!_start(count, p, s, results))
 		{
 			r = false;
 			break;
 		}
 	}
 
+	if (r)
+	{
+		for (const std::string& str : results)
+		{
+			fprintf(fp, "%s\n", str.c_str());
+		}
+	}
 	return r;
 }
 
-bool FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s) const
+bool FeasibleStochasticDemand::_start(size_t count, size_t p, size_t s, std::vector<std::string>& results) const
 {
+	char buf[1024];
+
 	int X1 = _get_sum_x2(s);
 	int N1 = _get_sum_y2(s) + X1;
 	int X2 = _get_sum_x3(s);
 	int N2 = _get_sum_y3(s) + X2;
 	int X3 = _get_sum_x4(s);
 	int N3 = _get_sum_y4(s) + X3;
-	//printf("%zu, %zu, %zu, %d %d %d %d %d %d\n", count, p, s, X1, N1, X2, N2, X3, N3);
 	double p1 = _get_p(X1, N1, _p1);
 	double p2 = _get_p(X2, N2, _p2);
 	double p3 = _get_p(X3, N3, _p3);
-	//printf("%f %f %f\n", p1, p2, p3);
 	double pf = p1 * p2 * p2;
 
 	if (0 == N1 || 0 == N2 || 0 == N3)
 	{
-		//printf("%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
-			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
-		fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		results.push_back(buf);
 		return true;
 	}
 
@@ -185,8 +191,9 @@ bool FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s
 	{
 		//printf("%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
-		fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		results.push_back(buf);
 		return true;
 	}
 
@@ -206,8 +213,6 @@ bool FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s
 	{
 		//printf("failed to match: %zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
-		fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
-			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 		return false;
 	}
 
@@ -216,8 +221,9 @@ bool FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s
 		//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 	X1 = X;
 
-	fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+	snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+	results.push_back(buf);
 
 	int diff = X1 - X;
 	for (size_t t = 0; t < DAY; ++t)
@@ -233,8 +239,10 @@ bool FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s
 						break;
 					}
 					int x1 = (*_trips)[t].x2()[s][i][j][k];
-					(*_trips)[t].x2()[s][i][j][k] -= x1 >= diff ? diff : x1;
-					diff = x1 >= diff ? 0 : diff - x1;
+					int d = x1 >= diff ? diff : x1;
+					(*_trips)[t].x2()[s][i][j][k] -= d;
+					(*_trips)[t].y2()[s][j][k] += d;
+					diff -= d;
 				}
 			}
 		}

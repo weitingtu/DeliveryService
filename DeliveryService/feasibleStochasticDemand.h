@@ -22,7 +22,7 @@ private:
 	int _get_sum_y4(size_t s) const;
 	void _initialize_cost_array();
 
-	bool _start(FILE* fp, size_t count, size_t p, size_t s) const;
+	bool _start(size_t count, size_t p, size_t s, std::vector<std::string>& results) const;
 	double _get_p(int X, int N, double p) const;
 
 	const double _p1; // 自有車駕駛對臨時營業所任務出車之機率。
