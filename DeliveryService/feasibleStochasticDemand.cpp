@@ -187,6 +187,26 @@ bool FeasibleStochasticDemand::_start(size_t count, size_t p, size_t s, std::vec
 		return true;
 	}
 
+	if (p1 < 0.8)
+	{
+		int X = X1 - 1;
+		for (; X >= 0; --X)
+		{
+			p1 = _get_p(X, N1, _p1);
+			if (p1 >= 0.8)
+			{
+				break;
+			}
+		}
+		if (p1 < 0.8)
+		{
+			return false;
+		}
+		X1 = X;
+	}
+
+	pf = p1 * p2 * p2;
+
 	if (pf >= _pf)
 	{
 		//printf("%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
