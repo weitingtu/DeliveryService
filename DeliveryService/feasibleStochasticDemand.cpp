@@ -181,7 +181,7 @@ bool FeasibleStochasticDemand::_start(size_t count, size_t p, size_t s, std::vec
 
 	if (0 == N1 || 0 == N2 || 0 == N3)
 	{
-		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
 			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 		results.push_back(buf);
 		return true;
@@ -211,7 +211,7 @@ bool FeasibleStochasticDemand::_start(size_t count, size_t p, size_t s, std::vec
 	{
 		//printf("%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
 			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
-		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
 			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 		results.push_back(buf);
 		return true;
@@ -241,7 +241,7 @@ bool FeasibleStochasticDemand::_start(size_t count, size_t p, size_t s, std::vec
 		//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 	X1 = X;
 
-	snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+	snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
 		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 	results.push_back(buf);
 
