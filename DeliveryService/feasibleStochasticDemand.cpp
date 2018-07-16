@@ -179,12 +179,24 @@ bool FeasibleStochasticDemand::_start(size_t count, size_t p, size_t s, std::vec
 	double p3 = _get_p(X3, N3, _p3);
 	double pf = p1 * p2 * p2;
 
-	if (0 == N1 || 0 == N2 || 0 == N3)
+	//if (0 == N1 || 0 == N2 || 0 == N3)
+	//{
+	//	snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
+	//		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+	//	results.push_back(buf);
+	//	return true;
+	//}
+	if (0 == N1)
 	{
-		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
-			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
-		results.push_back(buf);
-		return true;
+		p1 = 1.0;
+	}
+	if (0 == N2)
+	{
+		p2 = 1.0;
+	}
+	if (0 == N3)
+	{
+		p3 = 1.0;
 	}
 
 	if (p1 < 0.8)

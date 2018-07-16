@@ -281,7 +281,7 @@ void GeneticAlgorithm::start2()
 	double total_runtime = 0.0;
 	size_t ite_count = 0;
 	FeasibleStochasticDemand fs(_demands);
-	while (ite_count < 100)
+	while (ite_count < 1)
 	{
 		printf("GA iteration: %zu\n", ite_count);
 		time_t start_t = clock();
