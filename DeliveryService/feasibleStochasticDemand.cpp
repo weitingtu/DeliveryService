@@ -8,16 +8,17 @@
 #include <boost/math/distributions/normal.hpp>
 #include <boost/math/distributions/gamma.hpp>
 
-FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands& d, const std::vector<std::vector<Trip> >& t) :
+FeasibleStochasticDemand::FeasibleStochasticDemand(const Demands& d) :
 	_p1(0.5),
 	_p2(0.1),
 	_p3(0.5),
 	_pf(0.8),
 	_demand(d),
-	_trips(t),
+	_trips(nullptr),
 	_min_max_c1(),
 	_max_min_c1()
 {
+	_initialize_cost_array();
 }
 
 FeasibleStochasticDemand::~FeasibleStochasticDemand()
@@ -46,7 +47,7 @@ void FeasibleStochasticDemand::_initialize_cost_array()
 	}
 }
 
-int FeasibleStochasticDemand::_get_sum_x2(size_t p, size_t s) const
+int FeasibleStochasticDemand::_get_sum_x2(size_t s) const
 {
 	int sum_x2 = 0;
 	for (size_t t = 0; t < DAY; ++t)
@@ -57,7 +58,7 @@ int FeasibleStochasticDemand::_get_sum_x2(size_t p, size_t s) const
 			{
 				for (size_t k = 0; k < TASK; ++k)
 				{
-					sum_x2 += _trips[p][t].x2()[s][i][j][k];
+					sum_x2 += (*_trips)[t].x2()[s][i][j][k];
 				}
 			}
 		}
@@ -65,7 +66,7 @@ int FeasibleStochasticDemand::_get_sum_x2(size_t p, size_t s) const
 	return sum_x2;
 }
 
-int FeasibleStochasticDemand::_get_sum_y2(size_t p, size_t s) const
+int FeasibleStochasticDemand::_get_sum_y2(size_t s) const
 {
 	int sum_y2 = 0;
 	for (size_t t = 0; t < DAY; ++t)
@@ -74,14 +75,14 @@ int FeasibleStochasticDemand::_get_sum_y2(size_t p, size_t s) const
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				sum_y2 += _trips[p][t].y2()[s][j][k];
+				sum_y2 += (*_trips)[t].y2()[s][j][k];
 			}
 		}
 	}
 	return sum_y2;
 }
 
-int FeasibleStochasticDemand::_get_sum_x3(size_t p, size_t s) const
+int FeasibleStochasticDemand::_get_sum_x3(size_t s) const
 {
 	int sum_x3 = 0;
 	for (size_t t = 0; t < DAY; ++t)
@@ -90,27 +91,27 @@ int FeasibleStochasticDemand::_get_sum_x3(size_t p, size_t s) const
 		{
 			for (size_t m = 0; m < STATION; ++m)
 			{
-				sum_x3 += _trips[p][t].x3()[s][i][m];
+				sum_x3 += (*_trips)[t].x3()[s][i][m];
 			}
 		}
 	}
 	return sum_x3;
 }
 
-int FeasibleStochasticDemand::_get_sum_y3(size_t p, size_t s) const
+int FeasibleStochasticDemand::_get_sum_y3(size_t s) const
 {
 	int sum_y3 = 0;
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t m = 0; m < STATION; ++m)
 		{
-			sum_y3 += _trips[p][t].y3()[s][m];
+			sum_y3 += (*_trips)[t].y3()[s][m];
 		}
 	}
 	return sum_y3;
 }
 
-int FeasibleStochasticDemand::_get_sum_x4(size_t p, size_t s) const
+int FeasibleStochasticDemand::_get_sum_x4(size_t s) const
 {
 	int sum_x4 = 0;
 	for (size_t t = 0; t < DAY; ++t)
@@ -119,55 +120,127 @@ int FeasibleStochasticDemand::_get_sum_x4(size_t p, size_t s) const
 		{
 			for (size_t k = 0; k < TASK; ++k)
 			{
-				sum_x4 += _trips[p][t].x4()[s][i][k];
+				sum_x4 += (*_trips)[t].x4()[s][i][k];
 			}
 		}
 	}
 	return sum_x4;
 }
 
-int FeasibleStochasticDemand::_get_sum_y4(size_t p, size_t s) const
+int FeasibleStochasticDemand::_get_sum_y4(size_t s) const
 {
 	int sum_y4 = 0;
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		for (size_t k = 0; k < TASK; ++k)
 		{
-			sum_y4 += _trips[p][t].y4()[s][k];
+			sum_y4 += (*_trips)[t].y4()[s][k];
 		}
 	}
 	return sum_y4;
 }
 
-void FeasibleStochasticDemand::start(FILE* fp, size_t count)
+bool FeasibleStochasticDemand::start(FILE* fp, size_t count, size_t p, std::vector<Trip>& trips)
 {
-	_initialize_cost_array();
-	fprintf(fp, "iteration, p, s, N1, X1, p(X>x1), N2, X1, p(X>x2), N3, X3, p(X>x3), pf = p(X>x1)*p(X>x2)*p(X>x3)\n");
-	for (size_t p = 0; p < _trips.size(); ++p)
+	_trips = &trips;
+	//fprintf(fp, "iteration, p, s, N1, X1, p(X>x1), N2, X1, p(X>x2), N3, X3, p(X>x3), pf = p(X>x1)*p(X>x2)*p(X>x3)\n");
+	bool r = true;
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
-		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		if (!_start(fp, count, p, s))
 		{
-			_start(fp, count, p, s);
+			r = false;
+			break;
 		}
 	}
+
+	return r;
 }
 
-void FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s)
+bool FeasibleStochasticDemand::_start(FILE* fp, size_t count, size_t p, size_t s) const
 {
-	int X1 = _get_sum_x2(p, s);
-	int N1 = _get_sum_y2(p, s) + X1;
-	int X2 = _get_sum_x3(p, s);
-	int N2 = _get_sum_y3(p, s) + X2;
-	int X3 = _get_sum_x4(p, s);
-	int N3 = _get_sum_y4(p, s) + X3;
+	int X1 = _get_sum_x2(s);
+	int N1 = _get_sum_y2(s) + X1;
+	int X2 = _get_sum_x3(s);
+	int N2 = _get_sum_y3(s) + X2;
+	int X3 = _get_sum_x4(s);
+	int N3 = _get_sum_y4(s) + X3;
 	//printf("%zu, %zu, %zu, %d %d %d %d %d %d\n", count, p, s, X1, N1, X2, N2, X3, N3);
-
 	double p1 = _get_p(X1, N1, _p1);
 	double p2 = _get_p(X2, N2, _p2);
 	double p3 = _get_p(X3, N3, _p3);
 	//printf("%f %f %f\n", p1, p2, p3);
+	double pf = p1 * p2 * p2;
+
+	if (0 == N1 || 0 == N2 || 0 == N3)
+	{
+		//printf("%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		return true;
+	}
+
+	if (pf >= _pf)
+	{
+		//printf("%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		return true;
+	}
+
+	int X = X1 - 1;
+	for (; X >= 0; --X)
+	{
+		p1 = _get_p(X, N1, _p1);
+		pf = p1 * p2 * p2;
+		if (pf >= _pf)
+		{
+			break;
+		}
+	}
+
+	// failed to match
+	if (pf < _pf)
+	{
+		//printf("failed to match: %zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+			//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+		return false;
+	}
+
+	//printf("match %d -> %d: %zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
+		//X1, X,
+		//count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+	X1 = X;
+
 	fprintf(fp, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f\n",
-		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, p1*p2*p3);
+		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+
+	int diff = X1 - X;
+	for (size_t t = 0; t < DAY; ++t)
+	{
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					if (0 == diff)
+					{
+						break;
+					}
+					int x1 = (*_trips)[t].x2()[s][i][j][k];
+					(*_trips)[t].x2()[s][i][j][k] -= x1 >= diff ? diff : x1;
+					diff = x1 >= diff ? 0 : diff - x1;
+				}
+			}
+		}
+	}
+
+	return true;
 }
 
 double FeasibleStochasticDemand::_get_p(int X, int N, double p) const

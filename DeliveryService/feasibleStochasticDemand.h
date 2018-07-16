@@ -9,20 +9,20 @@
 class FeasibleStochasticDemand
 {
 public:
-	FeasibleStochasticDemand(const Demands& d, const std::vector<std::vector<Trip> >& t);
+	FeasibleStochasticDemand(const Demands& d);
 	~FeasibleStochasticDemand();
 
-	void start(FILE* fp, size_t count);
+	bool start(FILE* fp, size_t count, size_t p, std::vector<Trip>& trips);
 private:
-	int _get_sum_x2(size_t p, size_t s) const;
-	int _get_sum_y2(size_t p, size_t s) const;
-	int _get_sum_x3(size_t p, size_t s) const;
-	int _get_sum_y3(size_t p, size_t s) const;
-	int _get_sum_x4(size_t p, size_t s) const;
-	int _get_sum_y4(size_t p, size_t s) const;
+	int _get_sum_x2(size_t s) const;
+	int _get_sum_y2(size_t s) const;
+	int _get_sum_x3(size_t s) const;
+	int _get_sum_y3(size_t s) const;
+	int _get_sum_x4(size_t s) const;
+	int _get_sum_y4(size_t s) const;
 	void _initialize_cost_array();
 
-	void _start(FILE* fp, size_t count, size_t p, size_t s);
+	bool _start(FILE* fp, size_t count, size_t p, size_t s) const;
 	double _get_p(int X, int N, double p) const;
 
 	const double _p1; // 自有車駕駛對臨時營業所任務出車之機率。
@@ -31,7 +31,7 @@ private:
 	const double _pf; // 宅配業者對臨時趟次欲達到的可行機率。
 
 	const Demands& _demand;
-	const std::vector<std::vector<Trip> >& _trips;
+	std::vector<Trip>* _trips;
 	std::array<std::array<size_t, TASK>, DISTRICT> _min_max_c1;
 	std::array<std::array<size_t, TASK>, DISTRICT> _max_min_c1;
 };

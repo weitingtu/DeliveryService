@@ -276,24 +276,22 @@ void GeneticAlgorithm::start2()
 		printf("Error, unable to open file probability.csv\n");
 		return;
 	}
+	fprintf(pfp, "iteration, p, s, N1, X1, p(X>x1), N2, X1, p(X>x2), N3, X3, p(X>x3), pf = p(X>x1)*p(X>x2)*p(X>x3)\n");
 
 	double total_runtime = 0.0;
-	size_t count = 0;
-	FeasibleStochasticDemand fs(_demands, _100_trips);
-	fs.start(pfp, count);
-	while (count < 3)
+	size_t ite_count = 0;
+	FeasibleStochasticDemand fs(_demands);
+	while (ite_count < 100)
 	{
-		printf("GA iteration: %zu\n", count);
+		printf("GA iteration: %zu\n", ite_count);
 		time_t start_t = clock();
-		_start2();
+		_start2(pfp, ite_count, fs);
 		double runtime = (double)(clock() - start_t) / CLOCKS_PER_SEC;
 		total_runtime += runtime;
 		printf("run time (total): %.2fs (%.2fs)\n", runtime, total_runtime);
-		fprintf(fp, "%zu, %.2fs, %.2fs\n", count, runtime, total_runtime);
+		fprintf(fp, "%zu, %.2fs, %.2fs\n", ite_count, runtime, total_runtime);
 
-		++count;
-	    FeasibleStochasticDemand fs(_demands, _100_trips);
-	    fs.start(pfp, count);
+		++ite_count;
 	}
 	fclose(fp);
 	fclose(pfp);
@@ -389,7 +387,7 @@ void GeneticAlgorithm::_run_daily(std::vector<Trip>& new_trips) const
 	//new_trips = daily_trips.trips()[0];
 }
 
-void GeneticAlgorithm::_start2()
+void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDemand& fs)
 {
 	std::vector<std::vector<Trip>> prev_trips = _select_100(_100_trips);
 
@@ -400,7 +398,6 @@ void GeneticAlgorithm::_start2()
 	size_t count = 0;
 	while (count < 90)
 	{
-		++count;
 		size_t i_1 = _random_select(prob);
 		size_t i_2 = _random_select(prob);
 		if (i_1 == i_2)
@@ -411,7 +408,11 @@ void GeneticAlgorithm::_start2()
 		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
 
 		_run_daily(new_trips);
-		all_trips.push_back(std::move(new_trips));
+		if (fs.start(pfp, ite_count, count, new_trips))
+		{
+			++count;
+			all_trips.push_back(std::move(new_trips));
+		}
 	}
 
 	while (count < 94)
@@ -422,7 +423,6 @@ void GeneticAlgorithm::_start2()
 		{
 			continue;
 		}
-		++count;
 		std::vector<Trip> new_trips = all_trips.at(idx);
 		size_t index1 = 0;
 		size_t index2 = 0;
@@ -430,7 +430,11 @@ void GeneticAlgorithm::_start2()
 		std::swap(new_trips.at(index1), new_trips.at(index2));
 
 		_run_daily(new_trips);
-		all_trips.push_back(std::move(new_trips));
+		if (fs.start(pfp, ite_count, count, new_trips))
+		{
+			++count;
+			all_trips.push_back(std::move(new_trips));
+		}
 	}
 
 
@@ -443,10 +447,13 @@ void GeneticAlgorithm::_start2()
 
 	while (count < 100)
 	{
-		++count;
 		std::vector<Trip> new_trips = prev_trips.at(q.top().second);
 		_run_daily(new_trips);
-		all_trips.push_back(std::move(new_trips));
+		if (fs.start(pfp, ite_count, count, new_trips))
+		{
+			++count;
+			all_trips.push_back(std::move(new_trips));
+		}
 		q.pop();
 	}
 	_100_trips = all_trips;
