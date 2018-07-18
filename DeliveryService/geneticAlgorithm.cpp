@@ -409,7 +409,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
 
 		_run_daily(new_trips);
-		if (fs.start(pfp, ite_count, count, new_trips))
+		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			++count;
 			all_trips.push_back(std::move(new_trips));
@@ -431,7 +431,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		std::swap(new_trips.at(index1), new_trips.at(index2));
 
 		_run_daily(new_trips);
-		if (fs.start(pfp, ite_count, count, new_trips))
+		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			++count;
 			all_trips.push_back(std::move(new_trips));
@@ -450,7 +450,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 	{
 		std::vector<Trip> new_trips = prev_trips.at(q.top().second);
 		_run_daily(new_trips);
-		if (fs.start(pfp, ite_count, count, new_trips))
+		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			++count;
 			all_trips.push_back(std::move(new_trips));
