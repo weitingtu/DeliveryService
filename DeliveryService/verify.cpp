@@ -649,64 +649,61 @@ bool Verify::_verify_x2_x3_x4_y2_y3_y4(size_t p, size_t t, size_t s) const
 }
 
 // static
-bool Verify::verify_daily(const Demands& demands, const Trip& trip, size_t p, size_t s, size_t t)
+bool Verify::verify_daily(const Demands& demands, const Trip& trip, size_t s, size_t t)
 {
-	//for (size_t t = 0; t < DAY; ++t)
-	{
-		//const Trip& trip = trips.at(t);
-		const Demand& demand = demands.demands().at(s).at(t);
+	//const Trip& trip = trips.at(t);
+	const Demand& demand = demands.demands().at(s).at(t);
 
-		for (size_t j = 0; j < DISTRICT; ++j)
-		{
-			for (size_t k = 0; k < TASK; ++k)
-			{
-				if (!_verify_x1_y1_x2_y2(demands, demand, trip, j, k, s))
-				{
-					printf("failed to verify x1 y1 x2 y2\n");
-					return false;
-				}
-			}
-		}
-		for (size_t m = 0; m < STATION; ++m)
-		{
-			if (!_verify_x3_y3(demands, demand, trip, m, s))
-			{
-				printf("failed to verify x3 y3\n");
-				return false;
-			}
-		}
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
 		for (size_t k = 0; k < TASK; ++k)
 		{
-			if (!_verify_x4_y4(demands, demand, trip, k, s))
+			if (!_verify_x1_y1_x2_y2(demands, demand, trip, j, k, s))
 			{
-				printf("failed to verify x4 y4\n");
+				printf("failed to verify x1 y1 x2 y2\n");
 				return false;
 			}
 		}
-		for (size_t i = 0; i < FLEET; ++i)
+	}
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		if (!_verify_x3_y3(demands, demand, trip, m, s))
 		{
-			for (size_t k = 0; k < TASK; ++k)
-			{
-				if (!_verify_x1_x2_x4(demands, demand, trip, i, k, s))
-				{
-					printf("failed to verify x1 x2 x4\n");
-					return false;
-				}
-			}
-		}
-		for (size_t i = 0; i < FLEET; ++i)
-		{
-			if (!_verify_x3(demands, demand, trip, i, s))
-			{
-				printf("failed to verify x3\n");
-				return false;
-			}
-		}
-		if (!_verify_x2_x3_x4_y2_y3_y4(trip, s))
-		{
-			printf("failed to verify x2 x3 x4 y2 y3 y4\n");
+			printf("failed to verify x3 y3\n");
 			return false;
 		}
+	}
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		if (!_verify_x4_y4(demands, demand, trip, k, s))
+		{
+			printf("failed to verify x4 y4\n");
+			return false;
+		}
+	}
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			if (!_verify_x1_x2_x4(demands, demand, trip, i, k, s))
+			{
+				printf("failed to verify x1 x2 x4\n");
+				return false;
+			}
+		}
+	}
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		if (!_verify_x3(demands, demand, trip, i, s))
+		{
+			printf("failed to verify x3\n");
+			return false;
+		}
+	}
+	if (!_verify_x2_x3_x4_y2_y3_y4(trip, s))
+	{
+		printf("failed to verify x2 x3 x4 y2 y3 y4\n");
+		return false;
 	}
 	//printf("verify daily successfully\n");
 	return true;

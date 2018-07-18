@@ -21,7 +21,7 @@ public:
 	bool verify_x4(size_t p, size_t t, size_t s, size_t i, size_t k) const;
 	double cost(size_t p) const;
 
-	static bool verify_daily(const Demands& demands, const Trip& trip, size_t p, size_t s, size_t t);
+	static bool verify_daily(const Demands& demands, const Trip& trip, size_t s, size_t t);
 
 private:
 	double _cost_1(size_t p, size_t t) const;

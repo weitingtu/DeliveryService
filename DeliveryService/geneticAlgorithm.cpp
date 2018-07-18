@@ -375,7 +375,8 @@ void GeneticAlgorithm::_run_daily(std::vector<Trip>& new_trips) const
 		new_trips.at(i).clear_daily();
 	}
 	// low cost for daily trip
-	LowCostPriority::daily_trip(0, _demands, new_trips);
+	LowCostPriority::daily_trip(_demands, new_trips);
+	Gurobi::solve_x(_demands, new_trips);
 
 	// gurobi for daily trip
 	//Trips daily_trips = _gurobi_trips;

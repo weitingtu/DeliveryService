@@ -19,6 +19,8 @@ public:
 	void daily_trips();
 	void daily_trip(size_t p);
 
+	static void solve_x(const Demands& d, std::vector<Trip>& trips);
+
 private:
 	void _run_monthly_trips(size_t scenerio);
 	void _run_daily_trips(size_t population, size_t s);
@@ -26,7 +28,7 @@ private:
 	bool _is_file_exist(const std::string& file_name) const;
 	bool _delete_file(const std::string& file_name) const;
 	bool _delete_files() const;
-	std::string _var_name(std::string str, const std::vector<size_t>& idx) const;
+	static std::string _var_name(std::string str, const std::vector<size_t>& idx);
 
 	bool _write_x1(const std::vector<std::vector<std::vector<std::vector<GRBVar> > > >& x1, size_t population);
 	bool _write_y1(const std::vector<std::vector<std::vector<GRBVar> > > & y1, size_t population);
@@ -40,6 +42,8 @@ private:
 	void _write_y2(size_t p, size_t s, const std::vector<std::vector<std::vector<GRBVar> > >& y2);
 	void _write_y3(size_t p, size_t s, const std::vector<std::vector<GRBVar> >& y3);
 	void _write_y4(size_t p, size_t s, const std::vector<std::vector<GRBVar> >& y4);
+
+	static void _solve_x(const Demands& d, std::vector<Trip>& trips, size_t s);
 
 	const Demands& _demands;
 	Trips&         _trips;

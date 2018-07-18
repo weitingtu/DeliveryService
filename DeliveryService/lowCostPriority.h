@@ -15,7 +15,7 @@ public:
 
 	void monthly_trips();
 	void daily_trips();
-	static void daily_trip(size_t p, const Demands& demands, std::vector<Trip>& trips);
+	static void daily_trip(const Demands& demands, std::vector<Trip>& trips);
 
 private:
 	void _initialize_cost_array();

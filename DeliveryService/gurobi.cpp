@@ -870,7 +870,7 @@ void Gurobi::_write_y4(size_t p, size_t s, const std::vector<std::vector<GRBVar>
 	}
 }
 
-std::string Gurobi::_var_name(std::string str, const std::vector<size_t>& idx) const
+std::string Gurobi::_var_name(std::string str, const std::vector<size_t>& idx)
 {
 	for (size_t i : idx)
 	{
@@ -987,6 +987,400 @@ void Gurobi::test() const
 
 		std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
 
+	}
+	catch (GRBException e) {
+		std::cout << "Error code = " << e.getErrorCode() << std::endl;
+		std::cout << e.getMessage() << std::endl;
+	}
+	catch (...) {
+		std::cout << "Exception during optimization" << std::endl;
+	}
+}
+
+void Gurobi::solve_x(const Demands& d, std::vector<Trip>& trips)
+{
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		printf("gurobi solve s %zu\n", s);
+		_solve_x(d, trips, s);
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			const Trip& trip = trips[t];
+			const Demand& demand = d.demands()[s][t];
+			if (!Verify::verify_daily(d, trip, s, t))
+			{
+				break;
+			}
+		}
+	}
+}
+
+void Gurobi::_solve_x(const Demands& d, std::vector<Trip>& trips, size_t s)
+{
+	// add gurobi to solve lp here
+	try {
+
+		GRBEnv env = GRBEnv();
+
+		GRBModel model = GRBModel(env);
+		// silent
+		model.getEnv().set(GRB_IntParam_OutputFlag, 0);
+
+		// Create variables
+
+		std::vector<std::vector<std::vector<std::vector<GRBVar> > > > x2(DAY); //tijk
+		std::vector<std::vector<std::vector<GRBVar> > > x3(DAY); //tim
+		std::vector<std::vector<std::vector<GRBVar> > > x4(DAY); //tik
+		//std::vector<std::vector<std::vector<GRBVar> > > y2(DAY); //tjk
+		//std::vector<std::vector<GRBVar> > y3(DAY); //tm
+		//std::vector<std::vector<GRBVar> > y4(DAY); //tk
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			x2[t].resize(FLEET);
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				x2[t][i].resize(DISTRICT);
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					x2[t][i][j].resize(TASK);
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						x2[t][i][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x2", { t, i, j, k }));
+					}
+				}
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			x3[t].resize(FLEET);
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				x3[t][i].resize(STATION);
+				for (size_t m = 0; m < STATION; ++m)
+				{
+					x3[t][i][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x3", { t, i, m }));
+				}
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			x4[t].resize(FLEET);
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				x4[t][i].resize(TASK);
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					x4[t][i][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("x4", { t, i, k }));
+				}
+			}
+		}
+
+		//for (size_t t = 0; t < DAY; ++t)
+		//{
+		//	y2[t].resize(DISTRICT);
+		//	for (size_t j = 0; j < DISTRICT; ++j)
+		//	{
+		//		y2[t][j].resize(TASK);
+		//		for (size_t k = 0; k < TASK; ++k)
+		//		{
+		//			y2[t][j][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y2", { t, j, k }));
+		//		}
+		//	}
+		//}
+
+		//for (size_t t = 0; t < DAY; ++t)
+		//{
+		//	y3[t].resize(STATION);
+		//	for (size_t m = 0; m < STATION; ++m)
+		//	{
+		//		y3[t][m] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y3", { t, m }));
+		//	}
+		//}
+
+		//for (size_t t = 0; t < DAY; ++t)
+		//{
+		//	y4[t].resize(TASK);
+		//	for (size_t k = 0; k < TASK; ++k)
+		//	{
+		//		y4[t][k] = model.addVar(0.0, GRB_INFINITY, 0.0, GRB_INTEGER, _var_name("y4", { t, k }));
+		//	}
+		//}
+
+		model.update();
+
+		// Set objective: 
+		model.set(GRB_IntAttr_ModelSense, 1);
+
+		// (15)
+		GRBLinExpr obj = 0.0;
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						double c2 = d.c2()[j][k];
+						obj += c2 * x2[t][i][j][k];
+					}
+				}
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t m = 0; m < STATION; ++m)
+				{
+					double c3 = d.c3()[m];
+					obj += c3 * x3[t][i][m];
+				}
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					double c4 = d.c4()[k];
+					obj += c4 * x4[t][i][k];
+				}
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					double b2 = d.b2()[j][k];
+					obj += b2 * trips[t].y2()[s][j][k];
+				}
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				double b3 = d.b3()[m];
+				obj += b3 * trips[t].y3()[s][m];
+			}
+		}
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				double b4 = d.b4()[k];
+				obj += b4 * trips[t].y4()[s][k];
+			}
+		}
+
+		model.setObjective(obj, GRB_MINIMIZE);
+
+		// Add constraint: 
+
+		int constr_count = 0;
+		GRBLinExpr constr = 0.0;
+
+		// (16)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			const Trip& trip = trips[t];
+			const Demand& demand = d.demands()[s][t];
+
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					constr.clear();
+					int sum_x1 = 0;
+					for (size_t i = 0; i < FLEET; ++i)
+					{
+						sum_x1 += trip.x1()[i][j][k];
+					}
+					int y1 = trip.y1()[j][k];
+					int v1 = trip.v1()[j][k];
+
+					constr += sum_x1;
+					constr += y1;
+
+					for (size_t i = 0; i < FLEET; ++i)
+					{
+						constr += x2[t][i][j][k];
+					}
+					constr += trip.y2()[s][j][k];
+					constr *= d.load()[0];
+					constr += d.load()[1] * v1;
+
+					double d1 = demand.d1()[j][k];
+					model.addConstr(constr >= d1, "c" + std::to_string(constr_count++));
+				}
+			}
+		}
+
+		// (17)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			const Trip& trip = trips[t];
+			const Demand& demand = d.demands()[s][t];
+
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				constr.clear();
+
+				int sum_v2 = 0;
+				for (size_t n = 0; n < CAR_TYPE; ++n)
+				{
+					sum_v2 += trip.v2()[n][m];
+				}
+				for (size_t i = 0; i < FLEET; ++i)
+				{
+					constr += x3[t][i][m];
+				}
+				constr += trip.y3()[s][m];
+				constr *= d.load()[0];
+				constr += d.load()[1] * sum_v2;
+
+				double d2 = demand.d2()[m];
+				model.addConstr(constr >= d2, "c" + std::to_string(constr_count++));
+			}
+		}
+
+		// (18)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			const Trip& trip = trips[t];
+			const Demand& demand = d.demands()[s][t];
+
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				constr.clear();
+
+				int v3 = trip.v3()[k];
+				for (size_t i = 0; i < FLEET; ++i)
+				{
+					constr += x4[t][i][k];
+				}
+				constr += trip.y4()[s][k];
+				constr *= d.load()[0];
+				constr += d.load()[1] * v3;
+
+				double d3 = demand.d3()[k];
+				model.addConstr(constr >= d3, "c" + std::to_string(constr_count++));
+			}
+		}
+
+		// (19)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			const Trip& trip = trips[t];
+			const Demand& demand = d.demands()[s][t];
+
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					constr.clear();
+					double sum_u1_x1 = 0.0;
+					for (size_t j = 0; j < DISTRICT; ++j)
+					{
+						double u1 = d.u1()[j][k];
+						u1 *= 2;
+						u1 += 0.5;
+						int x1 = trip.x1()[i][j][k];
+						constr += u1 * x1;
+						constr += u1 * x2[t][i][j][k];
+
+						sum_u1_x1 += u1 * x1;
+					}
+
+					double u3 = d.u3()[k];
+					u3 *= 2;
+					u3 += 0.5;
+
+					constr += u3 * x4[t][i][k];
+					model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+				}
+			}
+		}
+
+		// (20)
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			const Trip& trip = trips[t];
+			const Demand& demand = d.demands()[s][t];
+
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				constr.clear();
+				for (size_t m = 0; m < STATION; ++m)
+				{
+					double u2 = d.u2()[m];
+					u2 *= 2;
+					u2 += 0.5;
+					constr += u2 * x3[t][i][m];
+				}
+				// ??? t''
+				model.addConstr(constr <= MAXWORKTIME, "c" + std::to_string(constr_count++));
+			}
+		}
+
+		// Optimize model
+
+		model.getEnv().set(GRB_DoubleParam_MIPGap, 0.03);
+		model.optimize();
+		//model.write("out.lp");
+		//printf("finish optimization\n");
+
+		//std::cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << std::endl;
+
+		//_write_x2(p, s, x2);
+		//_write_x3(p, s, x3);
+		//_write_x4(p, s, x4);
+		//_write_y2(p, s, y2);
+		//_write_y3(p, s, y3);
+		//_write_y4(p, s, y4);
+
+		for (size_t t = 0; t < DAY; ++t)
+		{
+			Trip& trip = trips[t];
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						trip.x2()[s][i][j][k] = (int)x2[t][i][j][k].get(GRB_DoubleAttr_X);
+					}
+				}
+			}
+
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t m = 0; m < STATION; ++m)
+				{
+					trip.x3()[s][i][m] = (int)x3[t][i][m].get(GRB_DoubleAttr_X);
+				}
+			}
+
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					trip.x4()[s][i][k] = (int)x4[t][i][k].get(GRB_DoubleAttr_X);
+				}
+			}
+		}
 	}
 	catch (GRBException e) {
 		std::cout << "Error code = " << e.getErrorCode() << std::endl;

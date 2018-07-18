@@ -423,7 +423,7 @@ void LowCostPriority::_initialize_cost_array(
 	}
 }
 
-void LowCostPriority::daily_trip(size_t p, const Demands& demands, std::vector<Trip>& trips)
+void LowCostPriority::daily_trip(const Demands& demands, std::vector<Trip>& trips)
 {
 	std::array<std::array<size_t, TASK>, DISTRICT> min_max_c1;
 	std::array<std::array<size_t, TASK>, DISTRICT> max_min_c1;
@@ -436,7 +436,7 @@ void LowCostPriority::daily_trip(size_t p, const Demands& demands, std::vector<T
 			Trip& trip = trips[t];
 			const Demand& demand = demands.demands()[s][t];
 			_daily_trips(demands, min_max_c1, max_min_c1, demand, trip, s);
-			if (!Verify::verify_daily(demands, trip, p, s, t))
+			if (!Verify::verify_daily(demands, trip, s, t))
 			{
 				break;
 			}
