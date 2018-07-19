@@ -397,6 +397,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 	std::vector<std::vector<Trip>> all_trips;
 
 	time_t start_t = clock();
+	double total_runtime = 0.0;
 	size_t count = 0;
 	while (count < 90)
 	{
@@ -413,7 +414,9 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
-			printf("%zu, %zu cost %f run time %f\n", ite_count, count, _cost_1(new_trips), (double)(end_t - start_t) / CLOCKS_PER_SEC);
+			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+			total_runtime += runtime;
+			printf("%zu, %zu cost %f run time %f %f\n", ite_count, count, _cost_1(new_trips), runtime, total_runtime);
 			start_t = end_t;
 			++count;
 			all_trips.push_back(std::move(new_trips));
@@ -438,7 +441,9 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
-			printf("%zu, %zu cost %f run time %f\n", ite_count, count, _cost_1(new_trips), (double)(end_t - start_t) / CLOCKS_PER_SEC);
+			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+			total_runtime += runtime;
+			printf("%zu, %zu cost %f run time %f %f\n", ite_count, count, _cost_1(new_trips), runtime, total_runtime);
 			start_t = end_t;
 			++count;
 			all_trips.push_back(std::move(new_trips));
@@ -460,7 +465,9 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
-			printf("%zu, %zu cost %f run time %f\n", ite_count, count, _cost_1(new_trips), (double)(end_t - start_t) / CLOCKS_PER_SEC);
+			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+			total_runtime += runtime;
+			printf("%zu, %zu cost %f run time %f %f\n", ite_count, count, _cost_1(new_trips), runtime, total_runtime);
 			start_t = end_t;
 			++count;
 			all_trips.push_back(std::move(new_trips));
