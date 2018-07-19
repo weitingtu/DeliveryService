@@ -396,6 +396,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 
 	std::vector<std::vector<Trip>> all_trips;
 
+	time_t start_t = clock();
 	size_t count = 0;
 	while (count < 90)
 	{
@@ -411,7 +412,9 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		_run_daily(new_trips);
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
-			printf("%zu, %zu cost %f\n", ite_count, count, _cost_1(new_trips));
+			time_t end_t = clock();
+			printf("%zu, %zu cost %f run time %f\n", ite_count, count, _cost_1(new_trips), (double)(end_t - start_t) / CLOCKS_PER_SEC);
+			start_t = end_t;
 			++count;
 			all_trips.push_back(std::move(new_trips));
 		}
@@ -434,7 +437,9 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		_run_daily(new_trips);
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
-			printf("%zu, %zu cost %f\n", ite_count, count, _cost_1(new_trips));
+			time_t end_t = clock();
+			printf("%zu, %zu cost %f run time %f\n", ite_count, count, _cost_1(new_trips), (double)(end_t - start_t) / CLOCKS_PER_SEC);
+			start_t = end_t;
 			++count;
 			all_trips.push_back(std::move(new_trips));
 		}
@@ -454,7 +459,9 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		_run_daily(new_trips);
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
-			printf("%zu, %zu cost %f\n", ite_count, count, _cost_1(new_trips));
+			time_t end_t = clock();
+			printf("%zu, %zu cost %f run time %f\n", ite_count, count, _cost_1(new_trips), (double)(end_t - start_t) / CLOCKS_PER_SEC);
+			start_t = end_t;
 			++count;
 			all_trips.push_back(std::move(new_trips));
 		}
