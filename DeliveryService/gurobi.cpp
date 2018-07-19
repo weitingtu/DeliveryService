@@ -1001,7 +1001,6 @@ void Gurobi::solve_x(const Demands& d, std::vector<Trip>& trips)
 {
 	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
 	{
-		printf("gurobi solve s %zu\n", s);
 		_solve_x(d, trips, s);
 		for (size_t t = 0; t < DAY; ++t)
 		{

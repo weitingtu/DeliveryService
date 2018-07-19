@@ -411,6 +411,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		_run_daily(new_trips);
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
+			printf("%zu, %zu cost %f\n", ite_count, count, _cost_1(new_trips));
 			++count;
 			all_trips.push_back(std::move(new_trips));
 		}
@@ -433,6 +434,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		_run_daily(new_trips);
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
+			printf("%zu, %zu cost %f\n", ite_count, count, _cost_1(new_trips));
 			++count;
 			all_trips.push_back(std::move(new_trips));
 		}
@@ -452,6 +454,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		_run_daily(new_trips);
 		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
+			printf("%zu, %zu cost %f\n", ite_count, count, _cost_1(new_trips));
 			++count;
 			all_trips.push_back(std::move(new_trips));
 		}
