@@ -295,6 +295,8 @@ void GeneticAlgorithm::start2()
 	}
 	fclose(fp);
 	fclose(pfp);
+
+	_write_best(_100_trips);
 }
 
 std::vector<double> GeneticAlgorithm::_generate_prob(const std::vector<std::vector<Trip>>& prev_trips) const
@@ -486,4 +488,144 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		}
 	}
 	printf("min cost %f\n", min_cost);
+}
+
+void GeneticAlgorithm::_write_best(const std::vector<std::vector<Trip> >& all_trips) const
+{
+	if (all_trips.empty())
+	{
+		printf("error, unable to write best solution. Solution is empty\n");
+		return;
+	}
+
+	std::priority_queue < std::pair<double, size_t>, std::vector<std::pair<double, size_t> >, std::greater<std::pair<double, size_t> >> q;
+	for (size_t p = 0; p < all_trips.size(); ++p)
+	{
+		double cost = _cost_1(all_trips[p]);
+		q.push(std::make_pair(cost, p));
+	}
+
+	int sum_x1 = 0;
+	int sum_y1 = 0;
+	int sum_v1 = 0;
+	int sum_v2 = 0;
+	int sum_v3 = 0;
+	int sum_x2 = 0;
+	int sum_y2 = 0;
+	int sum_x3 = 0;
+	int sum_y3 = 0;
+	int sum_x4 = 0;
+	int sum_y4 = 0;
+
+	const std::vector<Trip>& trips = all_trips.at(q.top().second);
+	for (size_t t = 0; t < trips.size(); ++t)
+	{
+		const Trip& trip = trips.at(t);
+		for (size_t i = 0; i < FLEET; ++i)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					sum_x1 += trip.x1().at(i).at(j).at(k);
+				}
+			}
+		}
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				sum_y1 += trip.y1().at(j).at(k);
+			}
+		}
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				sum_v1 += trip.v1().at(j).at(k);
+			}
+		}
+		for (size_t n = 0; n < CAR_TYPE; ++n)
+		{
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				sum_v2 += trip.v2().at(n).at(m);
+			}
+		}
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			sum_v3 += trip.v3().at(k);
+		}
+
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t j = 0; j < DISTRICT; ++j)
+				{
+					for (size_t k = 0; k < TASK; ++k)
+					{
+						sum_x2 += trip.x2().at(s).at(i).at(j).at(k);
+					}
+				}
+			}
+		}
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			for (size_t j = 0; j < DISTRICT; ++j)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					sum_y2 += trip.y2().at(s).at(j).at(k);
+				}
+			}
+		}
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t m = 0; m < STATION; ++m)
+				{
+					sum_x3 += trip.x3().at(s).at(i).at(m);
+				}
+			}
+		}
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			for (size_t m = 0; m < STATION; ++m)
+			{
+				sum_y3 += trip.y3().at(s).at(m);
+			}
+		}
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			for (size_t i = 0; i < FLEET; ++i)
+			{
+				for (size_t k = 0; k < TASK; ++k)
+				{
+					sum_x4 += trip.x4().at(s).at(i).at(k);
+				}
+			}
+		}
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				sum_y4 += trip.y4().at(s).at(k);
+			}
+		}
+	}
+
+	FILE* fp = nullptr;
+	errno_t err;
+	if ((err = fopen_s(&fp, "best_sol.csv", "w")) != 0)
+	{
+		printf("Error, unable to open file best_sol.csv\n");
+		return;
+	}
+	fprintf(fp, "x1, y1, v1, v2, v3, x2, y2, x3, y3, x4, y4\n");
+	fprintf(fp, "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d\n",
+		sum_x1, sum_y1, sum_v1, sum_v2, sum_v3, sum_x2, sum_y2, sum_x3, sum_y3, sum_x4, sum_y4);
+
+	fclose(fp);
 }
