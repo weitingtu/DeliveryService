@@ -378,7 +378,7 @@ void GeneticAlgorithm::_run_daily(std::vector<Trip>& new_trips) const
 	}
 	// low cost for daily trip
 	LowCostPriority::daily_trip(_demands, new_trips);
-	Gurobi::solve_x(_demands, new_trips);
+	//Gurobi::solve_x(_demands, new_trips);
 
 	// gurobi for daily trip
 	//Trips daily_trips = _gurobi_trips;
@@ -413,7 +413,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
 
 		_run_daily(new_trips);
-		//if (fs.start(pfp, ite_count, count, new_trips))
+		if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
 			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
@@ -440,7 +440,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		std::swap(new_trips.at(index1), new_trips.at(index2));
 
 		_run_daily(new_trips);
-		//if (fs.start(pfp, ite_count, count, new_trips))
+		if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
 			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
@@ -464,7 +464,7 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 	{
 		std::vector<Trip> new_trips = prev_trips.at(q.top().second);
 		_run_daily(new_trips);
-		//if (fs.start(pfp, ite_count, count, new_trips))
+		if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
 			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
