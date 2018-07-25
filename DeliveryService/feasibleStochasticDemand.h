@@ -13,6 +13,7 @@ public:
 	~FeasibleStochasticDemand();
 
 	bool start(FILE* fp, size_t count, size_t p, std::vector<Trip>& trips);
+	void compute(FILE* fp, size_t count, size_t p, std::vector<Trip>& trips);
 private:
 	int _get_sum_x2(size_t s) const;
 	int _get_sum_y2(size_t s) const;
@@ -24,6 +25,7 @@ private:
 
 	bool _start(size_t count, size_t p, size_t s, std::vector<std::string>& results) const;
 	double _get_p(int X, int N, double p) const;
+	void _compute(size_t count, size_t p, size_t s, std::vector<std::string>& results) const;
 
 	const double _p1; // 自有車駕駛對臨時營業所任務出車之機率。
 	const double _p2; // 自有車駕駛對臨時轉運任務出車之機率。

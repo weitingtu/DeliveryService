@@ -197,6 +197,10 @@ double GeneticAlgorithm::_cost_1(const std::vector<Trip>& trip) const
 	for (size_t t = 0; t < DAY; ++t)
 	{
 		cost += _cost_1(trip[t]);
+		for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+		{
+			cost += _cost_2(trip[t], s) / STOCHASTIC_DEMAND;
+		}
 	}
 
 	return cost;
@@ -245,6 +249,58 @@ double GeneticAlgorithm::_cost_1(const Trip& trip) const
 	for (size_t k = 0; k < TASK; ++k)
 	{
 		cost += _demands.a3().at(k) * (double)trip.v3().at(k);
+	}
+
+	return cost;
+}
+
+double GeneticAlgorithm::_cost_2(const Trip& trip, size_t s) const
+{
+	double cost = 0;
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t j = 0; j < DISTRICT; ++j)
+		{
+			for (size_t k = 0; k < TASK; ++k)
+			{
+				cost += _demands.c2().at(j).at(k) * (double)trip.x2().at(s).at(i).at(j).at(k);
+			}
+		}
+	}
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t m = 0; m < STATION; ++m)
+		{
+			cost += _demands.c3().at(m) * (double)trip.x3().at(s).at(i).at(m);
+		}
+	}
+
+	for (size_t i = 0; i < FLEET; ++i)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			cost += _demands.c4().at(k) * (double)trip.x4().at(s).at(i).at(k);
+		}
+	}
+
+	for (size_t j = 0; j < DISTRICT; ++j)
+	{
+		for (size_t k = 0; k < TASK; ++k)
+		{
+			cost += _demands.b2().at(j).at(k) * (double)trip.y2().at(s).at(j).at(k);
+		}
+	}
+
+	for (size_t m = 0; m < STATION; ++m)
+	{
+		cost += _demands.b3().at(m) * (double)trip.y3().at(s).at(m);
+	}
+
+	for (size_t k = 0; k < TASK; ++k)
+	{
+		cost += _demands.b4().at(k) * (double)trip.y4().at(s).at(k);
 	}
 
 	return cost;
@@ -378,7 +434,7 @@ void GeneticAlgorithm::_run_daily(std::vector<Trip>& new_trips) const
 	}
 	// low cost for daily trip
 	LowCostPriority::daily_trip(_demands, new_trips);
-	//Gurobi::solve_x(_demands, new_trips);
+	Gurobi::solve_x(_demands, new_trips);
 
 	// gurobi for daily trip
 	//Trips daily_trips = _gurobi_trips;
@@ -413,7 +469,8 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		std::vector<Trip> new_trips = _mate(prev_trips.at(i_1), prev_trips.at(i_2));
 
 		_run_daily(new_trips);
-		if (fs.start(pfp, ite_count, count, new_trips))
+		fs.compute(pfp, ite_count, count, new_trips);
+		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
 			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
@@ -440,7 +497,8 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 		std::swap(new_trips.at(index1), new_trips.at(index2));
 
 		_run_daily(new_trips);
-		if (fs.start(pfp, ite_count, count, new_trips))
+		fs.compute(pfp, ite_count, count, new_trips);
+		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
 			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;
@@ -464,7 +522,8 @@ void GeneticAlgorithm::_start2(FILE* pfp, size_t ite_count, FeasibleStochasticDe
 	{
 		std::vector<Trip> new_trips = prev_trips.at(q.top().second);
 		_run_daily(new_trips);
-		if (fs.start(pfp, ite_count, count, new_trips))
+		fs.compute(pfp, ite_count, count, new_trips);
+		//if (fs.start(pfp, ite_count, count, new_trips))
 		{
 			time_t end_t = clock();
 			double runtime = (double)(end_t - start_t) / CLOCKS_PER_SEC;

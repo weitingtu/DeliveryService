@@ -28,6 +28,7 @@ private:
 	void _start(size_t p);
 	double _cost_1(const std::vector<Trip>& trip) const;
 	double _cost_1(const Trip& trip) const;
+	double _cost_2(const Trip& trip, size_t s) const;
 
 	std::vector<double> _generate_prob(const std::vector<std::vector<Trip>>& prev_trips) const;
 	std::vector<std::vector<Trip> > _select_100(const std::vector<std::vector<Trip> >& prev_trips) const;
