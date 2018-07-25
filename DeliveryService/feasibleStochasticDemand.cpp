@@ -322,7 +322,10 @@ void FeasibleStochasticDemand::_compute(size_t count, size_t p, size_t s, std::v
 
 	pf = p1 * p2 * p2;
 
-		snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
-			count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
-		results.push_back(buf);
+	snprintf(buf, 1024, "%zu, %zu, %zu, %d, %d, %f, %d, %d, %f, %d, %d, %f, %f",
+		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
+	results.push_back(buf);
+
+	printf("%zu, %zu, %zu, N1: %d, X1: %d, p1: %f, N2: %d, X2: %d, p2: %f, N3: %d, X3: %d, p3: %f, pf: %f",
+		count, p, s, N1, X1, p1, N2, X2, p2, N3, X3, p3, pf);
 }
