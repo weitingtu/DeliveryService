@@ -14,6 +14,7 @@ public:
 private:
 	std::string _cmd_k(size_t k) const;
 	double _day_cost(size_t p, size_t t) const;
+	double _all_day_cost(size_t p, size_t t) const;
 	double _total_district_cost(size_t p, size_t t) const;
 	double _total_district_task_cost(size_t p, size_t t, size_t k) const;
 	double _district_cost(size_t p, size_t t, size_t j) const;

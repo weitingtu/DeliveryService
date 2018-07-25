@@ -74,6 +74,17 @@ double WriterCsv::_day_cost(size_t p, size_t t) const
 	return cost;
 }
 
+double WriterCsv::_all_day_cost(size_t p, size_t t) const
+{
+	double cost = _day_cost(p, t);
+	for (size_t s = 0; s < STOCHASTIC_DEMAND; ++s)
+	{
+		cost += _cost_2(p, t, s) / STOCHASTIC_DEMAND;
+	}
+
+	return cost;
+}
+
 double WriterCsv::_total_district_cost(size_t p, size_t t) const
 {
 	const Trip& trip = _trips.at(p).at(t);
@@ -443,7 +454,7 @@ bool WriterCsv::write_trips(const std::string& file_name) const
 		{
 			ofile << p << ",";
 			ofile << t << ",";
-			ofile << _day_cost(p, t) << ",";
+			ofile << _all_day_cost(p, t) << ",";
 			ofile << _total_district_cost(p, t) << ",";
 			for (size_t k = 0; k < TASK; ++k)
 			{
